@@ -3,7 +3,7 @@ project(Triangles VERSION 1.0.1)
 
 include(cmake/clang_format.cmake)
 
-add_subdirectory(src)
+add_subdirectory(lib)
 message(STATUS "Collected libs: ${LIBLIST}")
 foreach(LIB ${LIBLIST})
   target_include_directories(${LIB} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
