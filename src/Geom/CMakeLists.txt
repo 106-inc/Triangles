@@ -1,0 +1,3 @@
+add_library(Geom vector.cc)
+
+target_include_directories(Geom PUBLIC ${CMAKE_PROJECT_DIR}/include/Geom)

@@ -1,9 +1,17 @@
 cmake_minimum_required(VERSION 3.10)
-project(Triangles VERSION 1.0.0)
+project(Triangles VERSION 1.0.1)
 
-set(TRIAN ${PROJECT_NAME})
+add_subdirectory(src)
+message(STATUS "Collected libs: ${LIBLIST}")
+foreach(LIB ${LIBLIST})
+  target_include_directories(${LIB} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+  target_compile_features(${LIB} PRIVATE cxx_std_20)
+endforeach()
 
+add_subdirectory(tools)
+message(STATUS "Collected tools: ${TOOLLIST}")
 
-add_executable(${TRIAN} ./src/Geom/vector.cc main.cc)
-target_compile_features(${TRIAN} PRIVATE cxx_std_20)
-target_include_directories(${TRIAN} PRIVATE ./include)
+foreach(TOOL ${TOOLLIST})
+  target_include_directories(${TOOL} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+  target_compile_features(${TOOL} PRIVATE cxx_std_20)
+endforeach()
