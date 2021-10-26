@@ -78,7 +78,6 @@ IncludeCategories:
     SortPriority:    0
 IncludeIsMainRegex: '(Test)?$'
 IncludeIsMainSourceRegex: ''
-IndentAccessModifiers: false
 IndentCaseLabels: false
 IndentGotoLabels: true
 IndentPPDirectives: None
