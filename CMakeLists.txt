@@ -7,6 +7,7 @@ add_subdirectory(lib)
 message(STATUS "Collected libs: ${LIBLIST}")
 foreach(LIB ${LIBLIST})
   target_include_directories(${LIB} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+  target_include_directories(${LIB} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/${LIB})
   target_compile_features(${LIB} PRIVATE cxx_std_20)
 endforeach()
 

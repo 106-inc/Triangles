@@ -1,4 +1,4 @@
-#include "Geom/vector.hh"
+#include "vector.hh"
 
 namespace geom
 {
