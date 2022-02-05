@@ -1,5 +1,5 @@
-#ifndef __VECTOR_HH__
-#define __VECTOR_HH__
+#ifndef __INCLUDE_GEOM_VECTOR_HH__
+#define __INCLUDE_GEOM_VECTOR_HH__
 
 #include <cmath>
 #include <concepts>
@@ -189,4 +189,4 @@ Vector<T> operator%(const Vector<T> &lhs, const Vector<T> &rhs)
 }
 } // namespace geom
 
-#endif // __VECTOR_HH__
+#endif // __INCLUDE_GEOM_VECTOR_HH__
