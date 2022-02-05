@@ -9,8 +9,8 @@
 
 namespace geom
 {
-template <std::floating_point T, T eps>
-bool isEqual(T lhs, T rhs)
+template <std::floating_point T>
+bool isEqual(T lhs, T rhs, T eps)
 {
   return std::abs(rhs - lhs) < eps;
 }
@@ -195,6 +195,9 @@ std::ostream &operator<<(std::ostream &ost, const Vector<T> &vec)
   ost << "(" << vec.x << ", " << vec.y << ", " << vec.z << ")" << std::endl;
   return ost;
 }
+
+using VectorD = Vector<double>;
+using VectorF = Vector<float>;
 
 } // namespace geom
 
