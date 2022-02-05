@@ -4,6 +4,7 @@
 #include <cmath>
 #include <concepts>
 #include <functional>
+#include <iostream>
 #include <limits>
 
 namespace geom
@@ -187,6 +188,14 @@ Vector<T> operator%(const Vector<T> &lhs, const Vector<T> &rhs)
 {
   return lhs.cross(rhs);
 }
+
+template <std::floating_point T>
+std::ostream &operator<<(std::ostream &ost, const Vector<T> &vec)
+{
+  ost << "(" << vec.x << ", " << vec.y << ", " << vec.z << ")" << std::endl;
+  return ost;
+}
+
 } // namespace geom
 
 #endif // __INCLUDE_GEOM_VECTOR_HH__
