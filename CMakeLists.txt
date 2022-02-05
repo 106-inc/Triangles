@@ -16,4 +16,10 @@ message(STATUS "Collected tools: ${TOOLLIST}")
 foreach(TOOL ${TOOLLIST})
   target_include_directories(${TOOL} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
   target_compile_features(${TOOL} PRIVATE cxx_std_20)
+  set_target_properties(${TOOL}
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+  )
 endforeach()
