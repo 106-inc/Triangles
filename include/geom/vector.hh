@@ -19,7 +19,7 @@ template <std::floating_point T>
 struct Vector final
 {
 private:
-  static T threshold_;
+  static inline T threshold_ = std::numeric_limits<T>::epsilon();
 
 public:
   T x{}, y{}, z{};
@@ -134,6 +134,14 @@ public:
     case 2:
       return z;
     }
+  }
+
+  bool isEq(const Vector &rhs)
+  {
+    auto res = true;
+    for (size_t i = 0; i < 3; ++i)
+      res = res && isEqual(operator[](i), rhs[i], threshold_);
+    return res;
   }
 };
 
