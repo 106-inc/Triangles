@@ -121,6 +121,9 @@ public:
     case 2:
       return z;
     }
+
+    // Dummy return
+    return x;
   }
 
   T operator[](size_t i) const
@@ -134,6 +137,9 @@ public:
     case 2:
       return z;
     }
+
+    // Dummy return
+    return x;
   }
 
   bool isEq(const Vector &rhs)
