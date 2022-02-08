@@ -26,14 +26,14 @@ TEST(Vector, isEq)
   // nothing
 
   // Assert
-  ASSERT_TRUE(v1.isEq(v2));
-  ASSERT_TRUE(v2.isEq(v1));
+  ASSERT_TRUE(v1.isEqual(v2));
+  ASSERT_TRUE(v2.isEqual(v1));
 
-  ASSERT_FALSE(v1.isEq(v3));
-  ASSERT_FALSE(v2.isEq(v3));
+  ASSERT_FALSE(v1.isEqual(v3));
+  ASSERT_FALSE(v2.isEqual(v3));
 
-  ASSERT_FALSE(v3.isEq(v1));
-  ASSERT_FALSE(v3.isEq(v2));
+  ASSERT_FALSE(v3.isEqual(v1));
+  ASSERT_FALSE(v3.isEqual(v2));
 }
 
 TEST(Vector, cross)
@@ -47,7 +47,26 @@ TEST(Vector, cross)
 
   // Assert
 
-  ASSERT_TRUE(res.isEq(geom::Vector<double>{-3, 6, -3}));
+  ASSERT_TRUE(res.isEqual(geom::Vector<double>{-3, 6, -3}));
+}
+
+TEST(Vector, normalize)
+{
+  // Arrange
+  geom::Vector<float> v1{2, 6, 9};
+  geom::Vector<float> v2{0, 0, 0};
+  geom::Vector<float> v3{0, 0, 1};
+
+  // Act
+  auto res1 = v1.normalizing();
+  auto res2 = v2.normalizing();
+  auto res3 = v3.normalizing();
+
+  // Assert
+
+  ASSERT_TRUE(res1.isEqual(v1 / 11));
+  ASSERT_TRUE(res2.isEqual(v2));
+  ASSERT_TRUE(res3.isEqual(v3));
 }
 
 int main(int argc, char **argv)
