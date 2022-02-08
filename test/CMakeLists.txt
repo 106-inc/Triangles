@@ -1,4 +1,4 @@
-set(TESTLIST vector_tst line_tst)
+set(TESTLIST vector_tst)
 
 foreach(TEST ${TESTLIST})
   add_subdirectory(${TEST})
