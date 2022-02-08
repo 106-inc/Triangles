@@ -120,10 +120,9 @@ public:
       return y;
     case 2:
       return z;
+    default:
+      throw std::logic_error{"Impossible case in operator[]\n"};
     }
-
-    // Dummy return
-    return x;
   }
 
   T operator[](size_t i) const
@@ -136,10 +135,9 @@ public:
       return y;
     case 2:
       return z;
+    default:
+      throw std::logic_error{"Impossible case in operator[]\n"};
     }
-
-    // Dummy return
-    return x;
   }
 
   bool isEq(const Vector &rhs)
