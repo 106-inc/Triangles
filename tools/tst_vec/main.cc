@@ -10,6 +10,6 @@ int main()
   auto b = a;
   std::cout << b << std::endl;
 
-  std::cout << a.isEq(b) << std::endl;
+  std::cout << a.isEqual(b) << std::endl;
   return 0;
 }

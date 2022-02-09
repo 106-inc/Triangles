@@ -46,7 +46,6 @@ TEST(Vector, cross)
   auto res = v1.cross(v2);
 
   // Assert
-
   ASSERT_TRUE(res.isEqual(geom::Vector<double>{-3, 6, -3}));
 }
 
@@ -63,7 +62,6 @@ TEST(Vector, normalize)
   auto res3 = v3.normalizing();
 
   // Assert
-
   ASSERT_TRUE(res1.isEqual(v1 / 11));
   ASSERT_TRUE(res2.isEqual(v2));
   ASSERT_TRUE(res3.isEqual(v3));
