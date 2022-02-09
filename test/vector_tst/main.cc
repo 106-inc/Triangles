@@ -23,7 +23,7 @@ TEST(Vector, isEq)
   geom::Vector<double> v3{4.0, 5.0, 5.0};
 
   // Act
-  // nothing
+  /* nothing */
 
   // Assert
   ASSERT_TRUE(v1.isEqual(v2));
