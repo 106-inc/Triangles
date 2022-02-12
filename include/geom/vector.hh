@@ -22,18 +22,16 @@ private:
 public:
   T x{}, y{}, z{};
 
-  Vector(T x, T y, T z) : x(x), y(y), z(z)
+  Vector(T coordX, T coordY, T coordZ) : x(coordX), y(coordY), z(coordZ)
   {
   }
 
-  explicit Vector(T x = {}) : Vector(x, x, x)
+  explicit Vector(T coordX = {}) : Vector(coordX, coordX, coordX)
   {
   }
 
   Vector &operator+=(const Vector &vec);
-
   Vector &operator-=(const Vector &vec);
-
   Vector operator-() const;
 
   template <Number nType>
@@ -43,29 +41,22 @@ public:
   Vector &operator/=(nType val);
 
   T dot(const Vector &rhs) const;
-
   Vector cross(const Vector &rhs) const;
 
   T length2() const;
-
   T length() const;
 
   Vector normalizing() const;
-
   Vector &normalize();
 
   T &operator[](size_t i);
-
   T operator[](size_t i) const;
 
   bool isEqual(const Vector &rhs) const;
-
   static bool isNumEq(T lhs, T rhs);
 
   static void setThreshold(T thres);
-
   static void getThreshold();
-
   static void setDefThreshold();
 };
 
