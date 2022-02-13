@@ -20,6 +20,7 @@ public:
   const Vector<T> &dir() const;
 
   bool belongs(const Vector<T> &point) const;
+  bool isEqual(const Line &line) const;
 
   static Line getBy2P(const Vector<T> &p1, const Vector<T> &p2);
 };
@@ -48,9 +49,15 @@ bool Line<T>::belongs(const Vector<T> &point) const
 }
 
 template <std::floating_point T>
+bool Line<T>::isEqual(const Line<T> &line) const
+{
+  return belongs(line.org_) && dir_.isParallel(line.dir_);
+}
+
+template <std::floating_point T>
 Line<T> Line<T>::getBy2P(const Vector<T> &p1, const Vector<T> &p2)
 {
-  return Line<T>{p2 - p1, p1};
+  return Line<T>{p1, p2 - p1};
 }
 
 template <std::floating_point T>
@@ -60,7 +67,11 @@ std::ostream &operator<<(std::ostream &ost, const Line<T> &line)
   return ost;
 }
 
-// TODO(Tako): define operator==
+template <std::floating_point T>
+bool operator==(const Line<T> &lhs, const Line<T> &rhs)
+{
+  return lhs.isEqual(rhs);
+}
 
 } // namespace geom
 

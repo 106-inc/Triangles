@@ -34,18 +34,57 @@ TEST(Line, belongs)
   ASSERT_FALSE(res2);
 }
 
-// TEST(Line, getBy2P)
-// {
-//   // Arrange
-//   geom::Vector<double> p1{1, 0, 0};
-//   geom::Vector<double> p2{0, 1, 0};
+TEST(Line, isEqual)
+{
+  // Arrange
+  geom::Line<double> l1{{0, 0, 1}, {1, 1, 1}};
+  geom::Line<double> l2{{1, 1, 2}, {6, 6, 6}};
+  geom::Line<double> l3{{-1, 1, 2}, {6, 6, 6}};
 
-//   // Act
-//   auto l = geom::Line<double>::getBy2P(p1, p2);
+  // Act
 
-//   // Assert
+  /* nothing */
 
-// }
+  // Assert
+  ASSERT_TRUE(l1.isEqual(l2));
+  ASSERT_TRUE(l2.isEqual(l1));
+
+  ASSERT_EQ(l1, l2);
+  ASSERT_EQ(l2, l1);
+
+  ASSERT_FALSE(l1.isEqual(l3));
+  ASSERT_FALSE(l2.isEqual(l3));
+
+  ASSERT_FALSE(l3.isEqual(l1));
+  ASSERT_FALSE(l3.isEqual(l2));
+
+  ASSERT_NE(l1, l3);
+  ASSERT_NE(l2, l3);
+
+  ASSERT_NE(l3, l1);
+  ASSERT_NE(l3, l2);
+
+  ASSERT_EQ(l1, l1);
+  ASSERT_EQ(l2, l2);
+  ASSERT_EQ(l3, l3);
+}
+
+TEST(Line, getBy2P)
+{
+  // Arrange
+  geom::Vector<double> p1{1, 0, 0};
+  geom::Vector<double> p2{0, 1, 0};
+
+  // Act
+  auto l = geom::Line<double>::getBy2P(p1, p2);
+
+  // Assert
+  EXPECT_TRUE(l.belongs(p1));
+  EXPECT_TRUE(l.belongs(p2));
+
+  EXPECT_TRUE(l.dir().isParallel(p1 - p2));
+  EXPECT_TRUE(l.dir().isParallel(p2 - p1));
+}
 
 int main(int argc, char **argv)
 {

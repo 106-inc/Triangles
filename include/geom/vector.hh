@@ -52,6 +52,7 @@ public:
   T &operator[](size_t i);
   T operator[](size_t i) const;
 
+  /* TODO: think of add isPerpendicular and getAngle(const Vector &rhs) */
   bool isParallel(const Vector &rhs) const;
   bool isEqual(const Vector &rhs) const;
   static bool isNumEq(T lhs, T rhs);
