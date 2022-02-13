@@ -85,11 +85,6 @@ TEST(Vector, isParallel)
   ASSERT_FALSE(res23);
 }
 
-TEST(Vector, failure)
-{
-  ASSERT_TRUE(false);
-}
-
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);
