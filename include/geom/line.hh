@@ -28,6 +28,8 @@ public:
 template <std::floating_point T>
 Line<T>::Line(const Vector<T> &org, const Vector<T> &dir) : org_{org}, dir_{dir}
 {
+  if (dir_ == Vector<T>{0})
+    throw std::logic_error{"Direction vector equals zero."};
 }
 
 template <std::floating_point T>

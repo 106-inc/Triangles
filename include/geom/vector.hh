@@ -17,7 +17,7 @@ template <std::floating_point T>
 struct Vector final
 {
 private:
-  static inline T threshold_ = std::numeric_limits<T>::epsilon();
+  static inline T threshold_ = 1e3 * std::numeric_limits<T>::epsilon();
 
 public:
   T x{}, y{}, z{};
@@ -52,7 +52,7 @@ public:
   T &operator[](size_t i);
   T operator[](size_t i) const;
 
-  /* TODO: think of add isPerpendicular and getAngle(const Vector &rhs) */
+  /* TODO: think of adding isPerpendicular and getAngle(const Vector &rhs) */
   bool isParallel(const Vector &rhs) const;
   bool isEqual(const Vector &rhs) const;
   static bool isNumEq(T lhs, T rhs);
