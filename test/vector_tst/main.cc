@@ -67,6 +67,24 @@ TEST(Vector, normalize)
   ASSERT_TRUE(res3.isEqual(v3));
 }
 
+TEST(Vector, isParallel)
+{
+  // Arrange
+  geom::VectorF v1{2, -6, 9};
+  geom::VectorF v2{8, -24, 36};
+  geom::VectorF v3{6, 4, 1};
+
+  // Act
+  auto res12 = v1.isParallel(v2);
+  auto res13 = v1.isParallel(v3);
+  auto res23 = v3.isParallel(v2);
+
+  // Assert
+  ASSERT_TRUE(res12);
+  ASSERT_FALSE(res13);
+  ASSERT_FALSE(res23);
+}
+
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);

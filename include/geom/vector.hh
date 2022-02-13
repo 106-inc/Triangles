@@ -52,6 +52,7 @@ public:
   T &operator[](size_t i);
   T operator[](size_t i) const;
 
+  bool isParallel(const Vector &rhs) const;
   bool isEqual(const Vector &rhs) const;
   static bool isNumEq(T lhs, T rhs);
 
@@ -179,6 +180,12 @@ T Vector<T>::operator[](size_t i) const
   default:
     throw std::logic_error{"Impossible case in operator[]\n"};
   }
+}
+
+template <std::floating_point T>
+bool Vector<T>::isParallel(const Vector &rhs) const
+{
+  return cross(rhs).isEqual(Vector<T>{0});
 }
 
 template <std::floating_point T>
