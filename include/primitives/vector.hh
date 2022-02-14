@@ -46,7 +46,7 @@ public:
   T length2() const;
   T length() const;
 
-  Vector normalizing() const;
+  Vector normalized() const;
   Vector &normalize();
 
   T &operator[](size_t i);
@@ -135,7 +135,7 @@ T Vector<T>::length() const
 }
 
 template <std::floating_point T>
-Vector<T> Vector<T>::normalizing() const
+Vector<T> Vector<T>::normalized() const
 {
   Vector res{*this};
   res.normalize();

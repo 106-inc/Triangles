@@ -57,9 +57,9 @@ TEST(Vector, normalize)
   geom::Vector<float> v3{0, 0, 1};
 
   // Act
-  auto res1 = v1.normalizing();
-  auto res2 = v2.normalizing();
-  auto res3 = v3.normalizing();
+  auto res1 = v1.normalized();
+  auto res2 = v2.normalized();
+  auto res3 = v3.normalized();
 
   // Assert
   ASSERT_TRUE(res1.isEqual(v1 / 11));
