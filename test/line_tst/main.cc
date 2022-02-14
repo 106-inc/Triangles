@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "geom/line.hh"
+#include "primitives/line.hh"
 
 TEST(Line, getset)
 {

@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GEOM_VECTOR_HH__
-#define __INCLUDE_GEOM_VECTOR_HH__
+#ifndef __INCLUDE_PRIMITIVES_VECTOR_HH__
+#define __INCLUDE_PRIMITIVES_VECTOR_HH__
 
 #include <cmath>
 #include <concepts>
@@ -295,4 +295,4 @@ using VectorF = Vector<float>;
 
 } // namespace geom
 
-#endif // __INCLUDE_GEOM_VECTOR_HH__
+#endif // __INCLUDE_PRIMITIVES_VECTOR_HH__

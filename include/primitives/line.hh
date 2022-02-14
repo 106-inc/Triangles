@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GEOM_LINE_HH__
-#define __INCLUDE_GEOM_LINE_HH__
+#ifndef __INCLUDE_PRIMITIVES_LINE_HH__
+#define __INCLUDE_PRIMITIVES_LINE_HH__
 
 #include "vector.hh"
 
@@ -77,4 +77,4 @@ bool operator==(const Line<T> &lhs, const Line<T> &rhs)
 
 } // namespace geom
 
-#endif // __INCLUDE_GEOM_LINE_HH__
+#endif // __INCLUDE_PRIMITIVES_LINE_HH__

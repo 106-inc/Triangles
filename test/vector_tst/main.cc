@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "geom/vector.hh"
+#include "primitives/vector.hh"
 
 TEST(Vector, dot)
 {
