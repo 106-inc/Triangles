@@ -67,7 +67,7 @@ TEST(Vector, normalize)
   ASSERT_TRUE(res3.isEqual(v3));
 }
 
-TEST(Vector, isParallel)
+TEST(Vector, isPar)
 {
   // Arrange
   geom::VectorF v1{2, -6, 9};
@@ -75,14 +75,49 @@ TEST(Vector, isParallel)
   geom::VectorF v3{6, 4, 1};
 
   // Act
-  auto res12 = v1.isParallel(v2);
-  auto res13 = v1.isParallel(v3);
-  auto res23 = v3.isParallel(v2);
+  auto res12 = v1.isPar(v2);
+  auto res13 = v1.isPar(v3);
+  auto res23 = v3.isPar(v2);
 
   // Assert
   ASSERT_TRUE(res12);
   ASSERT_FALSE(res13);
   ASSERT_FALSE(res23);
+}
+
+TEST(Vector, isPerp)
+{
+  // Arrange
+  geom::VectorF v1{1, 1, 0};
+  geom::VectorF v2{-1, 1, 0};
+  geom::VectorF v3{0, 0, 1};
+  geom::VectorF v4{1, 1, 1};
+  geom::VectorF vz{0};
+
+  // Act
+
+  // Assert
+  ASSERT_TRUE(v1.isPerp(v2));
+  ASSERT_TRUE(v2.isPerp(v1));
+
+  ASSERT_TRUE(v1.isPerp(v3));
+  ASSERT_TRUE(v2.isPerp(v3));
+
+  ASSERT_TRUE(v3.isPerp(v1));
+  ASSERT_TRUE(v3.isPerp(v2));
+
+  ASSERT_TRUE(v2.isPerp(v4));
+  ASSERT_TRUE(v4.isPerp(v2));
+
+  ASSERT_TRUE(vz.isPerp(v1));
+
+  ASSERT_FALSE(v1.isPerp(v4));
+  ASSERT_FALSE(v3.isPerp(v4));
+
+  ASSERT_FALSE(v4.isPerp(v1));
+  ASSERT_FALSE(v4.isPerp(v3));
+
+  ASSERT_FALSE(v4.isPerp(v4));
 }
 
 int main(int argc, char **argv)

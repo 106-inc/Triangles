@@ -52,8 +52,8 @@ public:
   T &operator[](size_t i);
   T operator[](size_t i) const;
 
-  /* TODO: think of adding isPerpendicular and getAngle(const Vector &rhs) */
-  bool isParallel(const Vector &rhs) const;
+  bool isPar(const Vector &rhs) const;
+  bool isPerp(const Vector &rhs) const;
   bool isEqual(const Vector &rhs) const;
   static bool isNumEq(T lhs, T rhs);
 
@@ -184,9 +184,15 @@ T Vector<T>::operator[](size_t i) const
 }
 
 template <std::floating_point T>
-bool Vector<T>::isParallel(const Vector &rhs) const
+bool Vector<T>::isPar(const Vector &rhs) const
 {
   return cross(rhs).isEqual(Vector<T>{0});
+}
+
+template <std::floating_point T>
+bool Vector<T>::isPerp(const Vector &rhs) const
+{
+  return isNumEq(dot(rhs), 0);
 }
 
 template <std::floating_point T>

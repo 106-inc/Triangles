@@ -53,7 +53,7 @@ bool Line<T>::belongs(const Vector<T> &point) const
 template <std::floating_point T>
 bool Line<T>::isEqual(const Line<T> &line) const
 {
-  return belongs(line.org_) && dir_.isParallel(line.dir_);
+  return belongs(line.org_) && dir_.isPar(line.dir_);
 }
 
 template <std::floating_point T>
