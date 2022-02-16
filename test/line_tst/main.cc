@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "geom/line.hh"
+#include "primitives/line.hh"
 
 TEST(Line, getset)
 {
@@ -82,8 +82,8 @@ TEST(Line, getBy2P)
   EXPECT_TRUE(l.belongs(p1));
   EXPECT_TRUE(l.belongs(p2));
 
-  EXPECT_TRUE(l.dir().isParallel(p1 - p2));
-  EXPECT_TRUE(l.dir().isParallel(p2 - p1));
+  EXPECT_TRUE(l.dir().isPar(p1 - p2));
+  EXPECT_TRUE(l.dir().isPar(p2 - p1));
 }
 
 int main(int argc, char **argv)

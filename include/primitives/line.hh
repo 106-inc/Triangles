@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GEOM_LINE_HH__
-#define __INCLUDE_GEOM_LINE_HH__
+#ifndef __INCLUDE_PRIMITIVES_LINE_HH__
+#define __INCLUDE_PRIMITIVES_LINE_HH__
 
 #include "vector.hh"
 
@@ -53,7 +53,7 @@ bool Line<T>::belongs(const Vector<T> &point) const
 template <std::floating_point T>
 bool Line<T>::isEqual(const Line<T> &line) const
 {
-  return belongs(line.org_) && dir_.isParallel(line.dir_);
+  return belongs(line.org_) && dir_.isPar(line.dir_);
 }
 
 template <std::floating_point T>
@@ -77,4 +77,4 @@ bool operator==(const Line<T> &lhs, const Line<T> &rhs)
 
 } // namespace geom
 
-#endif // __INCLUDE_GEOM_LINE_HH__
+#endif // __INCLUDE_PRIMITIVES_LINE_HH__

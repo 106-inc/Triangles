@@ -1,4 +1,4 @@
-set(LIBLIST geom)
+set(LIBLIST primitives)
 
 foreach(LIB ${LIBLIST})
   add_subdirectory(${LIB})

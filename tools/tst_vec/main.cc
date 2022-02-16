@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "geom/vector.hh"
+#include "primitives/vector.hh"
 
 int main()
 {
