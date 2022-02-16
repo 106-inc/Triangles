@@ -292,7 +292,7 @@ bool operator!=(const Vector<T> &lhs, const Vector<T> &rhs)
 template <std::floating_point T>
 std::ostream &operator<<(std::ostream &ost, const Vector<T> &vec)
 {
-  ost << "(" << vec.x << ", " << vec.y << ", " << vec.z << ")" << std::endl;
+  ost << "(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
   return ost;
 }
 
