@@ -22,8 +22,21 @@ public:
   bool belongs(const Vector<T> &point) const;
   bool isEqual(const Line &line) const;
 
-  static Line getBy2P(const Vector<T> &p1, const Vector<T> &p2);
+  static Line getBy2Points(const Vector<T> &p1, const Vector<T> &p2);
 };
+
+template <std::floating_point T>
+std::ostream &operator<<(std::ostream &ost, const Line<T> &line)
+{
+  ost << line.org() << " + " << line.dir() << " * t";
+  return ost;
+}
+
+template <std::floating_point T>
+bool operator==(const Line<T> &lhs, const Line<T> &rhs)
+{
+  return lhs.isEqual(rhs);
+}
 
 template <std::floating_point T>
 Line<T>::Line(const Vector<T> &org, const Vector<T> &dir) : org_{org}, dir_{dir}
@@ -57,22 +70,9 @@ bool Line<T>::isEqual(const Line<T> &line) const
 }
 
 template <std::floating_point T>
-Line<T> Line<T>::getBy2P(const Vector<T> &p1, const Vector<T> &p2)
+Line<T> Line<T>::getBy2Points(const Vector<T> &p1, const Vector<T> &p2)
 {
   return Line<T>{p1, p2 - p1};
-}
-
-template <std::floating_point T>
-std::ostream &operator<<(std::ostream &ost, const Line<T> &line)
-{
-  ost << line.org() << " + " << line.dir() << " * t";
-  return ost;
-}
-
-template <std::floating_point T>
-bool operator==(const Line<T> &lhs, const Line<T> &rhs)
-{
-  return lhs.isEqual(rhs);
 }
 
 } // namespace geom

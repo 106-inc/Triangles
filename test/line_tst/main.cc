@@ -2,6 +2,18 @@
 
 #include "primitives/line.hh"
 
+TEST(Line, copyCtor)
+{
+  // Arrange
+  geom::Line<double> l1{{1, 1, 1}, {2, 2, 2}};
+  auto l2{l1};
+  auto l3 = l1;
+
+  // Act & Assert
+  ASSERT_EQ(l1, l2);
+  ASSERT_EQ(l1, l3);
+}
+
 TEST(Line, getset)
 {
   // Arrange
@@ -69,14 +81,14 @@ TEST(Line, isEqual)
   ASSERT_EQ(l3, l3);
 }
 
-TEST(Line, getBy2P)
+TEST(Line, getBy2Points)
 {
   // Arrange
   geom::Vector<double> p1{1, 0, 0};
   geom::Vector<double> p2{0, 1, 0};
 
   // Act
-  auto l = geom::Line<double>::getBy2P(p1, p2);
+  auto l = geom::Line<double>::getBy2Points(p1, p2);
 
   // Assert
   EXPECT_TRUE(l.belongs(p1));
@@ -88,6 +100,6 @@ TEST(Line, getBy2P)
 
 int main(int argc, char **argv)
 {
-  ::testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
