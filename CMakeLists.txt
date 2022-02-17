@@ -52,3 +52,10 @@ foreach(TEST ${TESTLIST})
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/test"
   )
 endforeach()
+
+# Test running stuff
+enable_testing()
+
+foreach(TEST ${TESTLIST})
+  add_test(NAME ${TEST} COMMAND ${TEST})
+endforeach()
