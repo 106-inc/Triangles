@@ -289,7 +289,7 @@ Vector<T> operator*(const nT &val, const Vector<T> &rhs)
  * @tparam nT type of value to multiply by
  * @tparam T vector template parameter
  * @param[in] val value to multiply by
- * @param[in] rhs vector to multiply by value
+ * @param[in] lhs vector to multiply by value
  * @return Vector<T> result vector
  */
 template <Number nT, std::floating_point T>
@@ -306,7 +306,7 @@ Vector<T> operator*(const Vector<T> &lhs, const nT &val)
  * @tparam nT type of value to divide by
  * @tparam T vector template parameter
  * @param[in] val value to divide by
- * @param[in] rhs vector to divide by value
+ * @param[in] lhs vector to divide by value
  * @return Vector<T> result vector
  */
 template <Number nT, std::floating_point T>
