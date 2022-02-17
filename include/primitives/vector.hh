@@ -63,6 +63,80 @@ public:
 };
 
 template <std::floating_point T>
+Vector<T> operator+(const Vector<T> &lhs, const Vector<T> &rhs)
+{
+  Vector<T> res{lhs};
+  res += rhs;
+  return res;
+}
+
+template <std::floating_point T>
+Vector<T> operator-(const Vector<T> &lhs, const Vector<T> &rhs)
+{
+  Vector<T> res{lhs};
+  res -= rhs;
+  return res;
+}
+
+template <Number nT, std::floating_point T>
+Vector<T> operator*(const nT &val, const Vector<T> &rhs)
+{
+  Vector<T> res{rhs};
+  res *= val;
+  return res;
+}
+
+template <Number nT, std::floating_point T>
+Vector<T> operator*(const Vector<T> &lhs, const nT &val)
+{
+  Vector<T> res{lhs};
+  res *= val;
+  return res;
+}
+
+template <Number nT, std::floating_point T>
+Vector<T> operator/(const Vector<T> &lhs, const nT &val)
+{
+  Vector<T> res{lhs};
+  res /= val;
+  return res;
+}
+
+template <std::floating_point T>
+T operator&(const Vector<T> &lhs, const Vector<T> &rhs)
+{
+  return lhs.dot(rhs);
+}
+
+template <std::floating_point T>
+Vector<T> operator%(const Vector<T> &lhs, const Vector<T> &rhs)
+{
+  return lhs.cross(rhs);
+}
+
+template <std::floating_point T>
+bool operator==(const Vector<T> &lhs, const Vector<T> &rhs)
+{
+  return lhs.isEqual(rhs);
+}
+
+template <std::floating_point T>
+bool operator!=(const Vector<T> &lhs, const Vector<T> &rhs)
+{
+  return !(lhs == rhs);
+}
+
+template <std::floating_point T>
+std::ostream &operator<<(std::ostream &ost, const Vector<T> &vec)
+{
+  ost << "(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
+  return ost;
+}
+
+using VectorD = Vector<double>;
+using VectorF = Vector<float>;
+
+template <std::floating_point T>
 Vector<T> &Vector<T>::operator+=(const Vector &vec)
 {
   x += vec.x;
@@ -224,80 +298,6 @@ void Vector<T>::setDefThreshold()
 {
   threshold_ = std::numeric_limits<T>::epsilon();
 }
-
-template <std::floating_point T>
-Vector<T> operator+(const Vector<T> &lhs, const Vector<T> &rhs)
-{
-  Vector<T> res{lhs};
-  res += rhs;
-  return res;
-}
-
-template <std::floating_point T>
-Vector<T> operator-(const Vector<T> &lhs, const Vector<T> &rhs)
-{
-  Vector<T> res{lhs};
-  res -= rhs;
-  return res;
-}
-
-template <Number nT, std::floating_point T>
-Vector<T> operator*(const nT &val, const Vector<T> &rhs)
-{
-  Vector<T> res{rhs};
-  res *= val;
-  return res;
-}
-
-template <Number nT, std::floating_point T>
-Vector<T> operator*(const Vector<T> &lhs, const nT &val)
-{
-  Vector<T> res{lhs};
-  res *= val;
-  return res;
-}
-
-template <Number nT, std::floating_point T>
-Vector<T> operator/(const Vector<T> &lhs, const nT &val)
-{
-  Vector<T> res{lhs};
-  res /= val;
-  return res;
-}
-
-template <std::floating_point T>
-T operator&(const Vector<T> &lhs, const Vector<T> &rhs)
-{
-  return lhs.dot(rhs);
-}
-
-template <std::floating_point T>
-Vector<T> operator%(const Vector<T> &lhs, const Vector<T> &rhs)
-{
-  return lhs.cross(rhs);
-}
-
-template <std::floating_point T>
-bool operator==(const Vector<T> &lhs, const Vector<T> &rhs)
-{
-  return lhs.isEqual(rhs);
-}
-
-template <std::floating_point T>
-bool operator!=(const Vector<T> &lhs, const Vector<T> &rhs)
-{
-  return !(lhs == rhs);
-}
-
-template <std::floating_point T>
-std::ostream &operator<<(std::ostream &ost, const Vector<T> &vec)
-{
-  ost << "(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
-  return ost;
-}
-
-using VectorD = Vector<double>;
-using VectorF = Vector<float>;
 
 } // namespace geom
 

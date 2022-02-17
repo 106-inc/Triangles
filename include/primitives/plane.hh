@@ -35,6 +35,19 @@ public:
 };
 
 template <std::floating_point T>
+bool operator==(const Plane<T> &lhs, const Plane<T> &rhs)
+{
+  return lhs.isEqual(rhs);
+}
+
+template <std::floating_point T>
+std::ostream &operator<<(std::ostream &ost, const Plane<T> &pl)
+{
+  ost << pl.norm() << " * X = " << pl.dist();
+  return ost;
+}
+
+template <std::floating_point T>
 Plane<T>::Plane(const Vector<T> &norm, T dist) : norm_(norm), dist_(dist)
 {
   if (norm == Vector<T>{0})
@@ -98,19 +111,6 @@ Plane<T> Plane<T>::getNormalDist(const Vector<T> &norm, T dist)
 {
   auto normalized = norm.normalized();
   return Plane{normalized, dist};
-}
-
-template <std::floating_point T>
-bool operator==(const Plane<T> &lhs, const Plane<T> &rhs)
-{
-  return lhs.isEqual(rhs);
-}
-
-template <std::floating_point T>
-std::ostream &operator<<(std::ostream &ost, const Plane<T> &pl)
-{
-  ost << pl.norm() << " * X = " << pl.dist();
-  return ost;
 }
 
 } // namespace geom

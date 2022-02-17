@@ -81,14 +81,14 @@ TEST(Line, isEqual)
   ASSERT_EQ(l3, l3);
 }
 
-TEST(Line, getBy2P)
+TEST(Line, getBy2Points)
 {
   // Arrange
   geom::Vector<double> p1{1, 0, 0};
   geom::Vector<double> p2{0, 1, 0};
 
   // Act
-  auto l = geom::Line<double>::getBy2P(p1, p2);
+  auto l = geom::Line<double>::getBy2Points(p1, p2);
 
   // Assert
   EXPECT_TRUE(l.belongs(p1));
