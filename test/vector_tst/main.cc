@@ -2,6 +2,18 @@
 
 #include "primitives/vector.hh"
 
+TEST(Vector, copyCtor)
+{
+  // Arrange
+  geom::Vector<double> v1{1, 2, 3};
+  geom::Vector<double> v2 = v1;
+  geom::Vector<double> v3{v1};
+
+  // Act & Arrange
+  ASSERT_EQ(v1, v2);
+  ASSERT_EQ(v1, v3);
+}
+
 TEST(Vector, dot)
 {
   // Arrange
