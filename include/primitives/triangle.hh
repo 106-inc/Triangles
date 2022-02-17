@@ -21,6 +21,18 @@ public:
 };
 
 template <std::floating_point T>
+std::ostream &operator<<(std::ostream &ost, const Triangle<T> &tr)
+{
+  ost << "Triangle: {";
+  for (size_t i : {0, 1, 2})
+    ost << tr[i] << (i == 2 ? "" : ", ");
+
+  ost << "}";
+
+  return ost;
+}
+
+template <std::floating_point T>
 Triangle<T>::Triangle(const Vector<T> &p1, const Vector<T> &p2, const Vector<T> &p3)
   : vertices_{p1, p2, p3}
 {

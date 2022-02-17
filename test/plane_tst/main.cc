@@ -97,7 +97,7 @@ TEST(Plane, isEqual)
   ASSERT_NE(pl2, pl4);
 }
 
-TEST(Plane, ostream)
+TEST(Plane, output)
 {
   // Arrange
   auto pl = Plane<double>::getNormalDist({2, 0, 0}, 17);
