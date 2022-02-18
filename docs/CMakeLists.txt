@@ -44,6 +44,7 @@ if (BUILD_DOC)
     add_custom_command(
       TARGET doc POST_BUILD
       COMMAND pdflatex -jobname=documentation refman.tex > documentation.cmake.log
+      COMMAND pdflatex -jobname=documentation refman.tex > documentation.cmake.log
       COMMAND cp documentation.pdf ${CMAKE_CURRENT_SOURCE_DIR}
       COMMENT "Building documentation pdf from LaTeX"
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/latex/
