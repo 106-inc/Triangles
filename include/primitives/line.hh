@@ -22,14 +22,9 @@ class Line final
 {
 private:
   /**
-   * @brief Origin vector
+   * @brief Origin and direction vectors
    */
-  Vector<T> org_{};
-
-  /**
-   * @brief Direction vector
-   */
-  Vector<T> dir_{};
+  Vector<T> org_{}, dir_{};
 
 public:
   /**
@@ -64,7 +59,7 @@ public:
   bool belongs(const Vector<T> &point) const;
 
   /**
-   * @brief Checks is *this equals to line
+   * @brief Checks is *this equals to another line
    *
    * @param[in] line const reference to another line
    * @return true if lines are equal
@@ -75,8 +70,8 @@ public:
   /**
    * @brief Get line by 2 points
    *
-   * @param[in] p1 const reference to 1st line
-   * @param[in] p2 const reference to 2nd line
+   * @param[in] p1 1st point
+   * @param[in] p2 2nd point
    * @return Line passing through two points
    */
   static Line getBy2Points(const Vector<T> &p1, const Vector<T> &p2);
