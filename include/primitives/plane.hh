@@ -6,40 +6,148 @@
 #include "line.hh"
 #include "vector.hh"
 
+/**
+ * @brief
+ * Plane class implementation
+ */
+
 namespace geom
 {
 
+/**
+ * @class Plane
+ * @brief Plane class realization
+ *
+ * @tparam T - floating point type of coordinates
+ */
 template <std::floating_point T>
 class Plane final
 {
 private:
-  Vector<T> norm_{}; // normal vector, length equals to 1
-  T dist_{};         // distance from zero to plane
+  /**
+   * @brief Normal vector, length equals to 1
+   */
+  Vector<T> norm_{};
 
+  /**
+   * @brief Distance from zero to plane
+   */
+  T dist_{};
+
+  /**
+   * @brief Construct a new Plane object from normal vector and distance
+   *
+   * @param[in] norm normal vector
+   * @param[in] dist distance from plane to zero
+   */
   Plane(const Vector<T> &norm, T dist);
 
 public:
+  /**
+   * @brief Getter for distance
+   *
+   * @return T value of distance
+   */
   T dist() const;
+
+  /**
+   * @brief Getter for normal vector
+   *
+   * @return const Vector<T>& const reference to normal vector
+   */
   const Vector<T> &norm() const;
 
+  /**
+   * @brief Checks if point belongs to plane
+   *
+   * @param[in] point const referene to point vector
+   * @return true if point belongs to plane
+   * @return false if point doesn't belong to plane
+   */
   bool belongs(const Vector<T> &point) const;
+
+  /**
+   * @brief Checks if line belongs to plane
+   *
+   * @param[in] line const referene to line
+   * @return true if line belongs to plane
+   * @return false if line doesn't belong to plane
+   */
   bool belongs(const Line<T> &line) const;
+
+  /**
+   * @brief Checks is *this equals to another plane
+   *
+   * @param[in] rhs const reference to another plane
+   * @return true if planes are equal
+   * @return false if planes are not equal
+   */
   bool isEqual(const Plane &rhs) const;
 
+  /**
+   * @brief Get plane by 3 points
+   *
+   * @param[in] pt1 1st point
+   * @param[in] pt2 2nd point
+   * @param[in] pt3 3rd point
+   * @return Plane passing through three points
+   */
   static Plane getBy3Points(const Vector<T> &pt1, const Vector<T> &pt2,
                             const Vector<T> &pt3);
+
+  /**
+   * @brief Get plane from parametric plane equation
+   *
+   * @param[in] org origin vector
+   * @param[in] dir1 1st direction vector
+   * @param[in] dir2 2nd direction vector
+   * @return Plane
+   */
   static Plane getParametric(const Vector<T> &org, const Vector<T> &dir1,
                              const Vector<T> &dir2);
+
+  /**
+   * @brief Get plane from normal point plane equation
+   *
+   * @param[in] norm normal vector
+   * @param[in] point point lying on the plane
+   * @return Plane
+   */
   static Plane getNormalPoint(const Vector<T> &norm, const Vector<T> &point);
+
+  /**
+   * @brief Get plane form normal const plane equation
+   *
+   * @param[in] norm normal vector
+   * @param[in] constant distance
+   * @return Plane
+   */
   static Plane getNormalDist(const Vector<T> &norm, T constant);
 };
 
+/**
+ * @brief Plane equality operator
+ *
+ * @tparam T - floating point type of coordinates
+ * @param[in] lhs 1st plane
+ * @param[in] rhs 2nd plane
+ * @return true if planes are equal
+ * @return false if planes are not equal
+ */
 template <std::floating_point T>
 bool operator==(const Plane<T> &lhs, const Plane<T> &rhs)
 {
   return lhs.isEqual(rhs);
 }
 
+/**
+ * @brief Plane print operator
+ *
+ * @tparam T - floating point type of coordinates
+ * @param[in, out] ost output stream
+ * @param[in] pl plane to print
+ * @return std::ostream& modified ostream instance
+ */
 template <std::floating_point T>
 std::ostream &operator<<(std::ostream &ost, const Plane<T> &pl)
 {

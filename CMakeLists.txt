@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
 project(Triangles VERSION 1.0.1)
 
+# indicate the documentation build
+option(BUILD_DOC "Build documentation" ON)
+add_subdirectory(docs)
+
 # Include formatter
 include(cmake/clang_format.cmake)
 
