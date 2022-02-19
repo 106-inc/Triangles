@@ -53,8 +53,7 @@ public:
    * @param[in] coordZ z coordinate
    */
   Vector(T coordX, T coordY, T coordZ) : x(coordX), y(coordY), z(coordZ)
-  {
-  }
+  {}
 
   /**
    * @brief Construct a new Vector object with equals coordinates
@@ -62,8 +61,7 @@ public:
    * @param[in] coordX coordinate (default to {})
    */
   explicit Vector(T coordX = {}) : Vector(coordX, coordX, coordX)
-  {
-  }
+  {}
 
   /**
    * @brief Overloaded += operator

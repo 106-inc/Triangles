@@ -71,8 +71,7 @@ std::ostream &operator<<(std::ostream &ost, const Triangle<T> &tr)
 template <std::floating_point T>
 Triangle<T>::Triangle(const Vector<T> &p1, const Vector<T> &p2, const Vector<T> &p3)
   : vertices_{p1, p2, p3}
-{
-}
+{}
 
 template <std::floating_point T>
 const Vector<T> &Triangle<T>::operator[](std::size_t idx) const
