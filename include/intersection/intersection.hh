@@ -2,12 +2,34 @@
 #define __INCLUDE_INTERSECTION_INTERSECTION_HH__
 
 #include <concepts>
+#include <variant>
 
 #include "primitives/plane.hh"
 #include "primitives/triangle.hh"
 
 namespace geom
 {
+
+template <std::floating_point T>
+std::variant<std::monostate, Line<T>, Plane<T>> intersect(const Plane<T> &pl1,
+                                                          const Plane<T> &pl2)
+{
+  const auto &n1 = pl1.norm();
+  const auto &n2 = pl2.norm();
+
+  auto dir = cross(n1, n2);
+
+  if (Vector<T>{0} == dir)
+  {
+    if (pl1.isEqual(pl2))
+      return pl1;
+
+    return std::monostate{};
+  }
+
+  return std::monostate{};
+}
+
 namespace detail
 {
 

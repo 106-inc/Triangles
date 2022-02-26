@@ -4,7 +4,7 @@
 
 using namespace geom;
 
-TEST(Intersection, parallel1)
+TEST(Intersection, parallelTriangles1)
 {
   // Arrange
   Triangle<double> t1{{0, 0, 0}, {0, 1, 0}, {0, 0, 1}};
@@ -17,7 +17,7 @@ TEST(Intersection, parallel1)
   ASSERT_FALSE(isIntersect(t2, t3));
 }
 
-TEST(Intersection, parallel2)
+TEST(Intersection, parallelTriangles2)
 {
   // Arrange
   Triangle<double> t1{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
@@ -25,6 +25,32 @@ TEST(Intersection, parallel2)
 
   // Act & Assert
   ASSERT_FALSE(isIntersect(t1, t2));
+}
+
+TEST(Intersection, samePlanes)
+{
+  // Arrane
+  auto pl1 = Plane<double>::getNormalDist({0, 0, 1}, 1);
+  auto pl2 = Plane<double>::getNormalDist({0, 0, 1}, 1);
+
+  // Act
+  bool res = std::holds_alternative<Plane<double>>(intersect(pl1, pl2));
+
+  // Assert
+  ASSERT_TRUE(res);
+}
+
+TEST(Intersection, parallelPlanes)
+{
+  // Arrange
+  auto pl1 = Plane<double>::getNormalDist({0, 0, 1}, 1);
+  auto pl2 = Plane<double>::getNormalDist({0, 0, 1}, 2);
+
+  // Act
+  bool res = std::holds_alternative<std::monostate>(intersect(pl1, pl2));
+
+  // Assert
+  ASSERT_TRUE(res);
 }
 
 int main(int argc, char **argv)
