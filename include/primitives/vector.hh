@@ -316,7 +316,7 @@ Vector<T> operator/(const Vector<T> &lhs, const nT &val)
 }
 
 /**
- * @brief Dot product operator
+ * @brief Dot product function
  *
  * @tparam T vector template parameter
  * @param[in] lhs first vector
@@ -324,13 +324,13 @@ Vector<T> operator/(const Vector<T> &lhs, const nT &val)
  * @return T dot production
  */
 template <std::floating_point T>
-T operator&(const Vector<T> &lhs, const Vector<T> &rhs)
+T dot(const Vector<T> &lhs, const Vector<T> &rhs)
 {
   return lhs.dot(rhs);
 }
 
 /**
- * @brief Cross product operator
+ * @brief Cross product function
  *
  * @tparam T vector template parameter
  * @param[in] lhs first vector
@@ -338,7 +338,7 @@ T operator&(const Vector<T> &lhs, const Vector<T> &rhs)
  * @return T cross production
  */
 template <std::floating_point T>
-Vector<T> operator%(const Vector<T> &lhs, const Vector<T> &rhs)
+Vector<T> cross(const Vector<T> &lhs, const Vector<T> &rhs)
 {
   return lhs.cross(rhs);
 }
