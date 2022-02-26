@@ -4,7 +4,7 @@
 
 using namespace geom;
 
-TEST(Intersection, parallel)
+TEST(Intersection, parallel1)
 {
   // Arrange
   Triangle<double> t1{{0, 0, 0}, {0, 1, 0}, {0, 0, 1}};
@@ -12,9 +12,19 @@ TEST(Intersection, parallel)
   Triangle<double> t3{{1e-4, 0, 0}, {1e-4, 1, 0}, {1e-4, 0, 1}};
 
   // Act & Assert
-  ASSERT_FALSE(intersect(t1, t2));
-  ASSERT_FALSE(intersect(t1, t3));
-  ASSERT_FALSE(intersect(t2, t3));
+  ASSERT_FALSE(isIntersect(t1, t2));
+  ASSERT_FALSE(isIntersect(t1, t3));
+  ASSERT_FALSE(isIntersect(t2, t3));
+}
+
+TEST(Intersection, parallel2)
+{
+  // Arrange
+  Triangle<double> t1{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+  Triangle<double> t2{{2, 0, 0}, {0, 2, 0}, {0, 0, 2}};
+
+  // Act & Assert
+  ASSERT_FALSE(isIntersect(t1, t2));
 }
 
 int main(int argc, char **argv)
