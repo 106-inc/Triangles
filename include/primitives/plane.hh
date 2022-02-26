@@ -85,6 +85,15 @@ public:
   bool isEqual(const Plane &rhs) const;
 
   /**
+   * @brief Checks is *this is parallel to another plane
+   *
+   * @param[in] rhs const reference to another plane
+   * @return true if planes are parallel
+   * @return false if planes are not parallel
+   */
+  bool isPar(const Plane &rhs) const;
+
+  /**
    * @brief Get plane by 3 points
    *
    * @param[in] pt1 1st point
@@ -190,6 +199,12 @@ template <std::floating_point T>
 bool Plane<T>::isEqual(const Plane &rhs) const
 {
   return (norm_ * dist_ == rhs.norm_ * rhs.dist_) && (norm_.isPar(rhs.norm_));
+}
+
+template <std::floating_point T>
+bool Plane<T>::isPar(const Plane &rhs) const
+{
+  return norm_.isPar(rhs.norm_);
 }
 
 template <std::floating_point T>

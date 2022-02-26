@@ -110,6 +110,27 @@ TEST(Plane, output)
   ASSERT_EQ(ss.str(), "(1, 0, 0) * X = 17");
 }
 
+TEST(Plane, isPar)
+{
+  // Arrange
+  auto pl1 = Plane<double>::getBy3Points({0, 0, 0}, {0, 0, 1}, {0, 1, 0});
+  auto pl2 = Plane<double>::getBy3Points({1, 0, 0}, {1, 0, 1}, {1, 1, 0});
+  auto pl3 = Plane<double>::getBy3Points({1, 1, 1}, {0, 0, 1}, {0, 1, 0});
+
+  // Act & Assert
+  ASSERT_TRUE(pl1.isPar(pl2));
+  ASSERT_TRUE(pl2.isPar(pl1));
+
+  ASSERT_FALSE(pl1.isPar(pl3));
+  ASSERT_FALSE(pl2.isPar(pl3));
+  ASSERT_FALSE(pl3.isPar(pl1));
+  ASSERT_FALSE(pl3.isPar(pl2));
+
+  ASSERT_TRUE(pl1.isPar(pl1));
+  ASSERT_TRUE(pl2.isPar(pl2));
+  ASSERT_TRUE(pl3.isPar(pl3));
+}
+
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);
