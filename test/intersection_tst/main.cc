@@ -4,7 +4,7 @@
 
 using namespace geom;
 
-TEST(Intersection, parallelTriangles1)
+TEST(Intersection, TrianglesParallel1)
 {
   // Arrange
   Triangle<double> t1{{0, 0, 0}, {0, 1, 0}, {0, 0, 1}};
@@ -17,7 +17,7 @@ TEST(Intersection, parallelTriangles1)
   ASSERT_FALSE(isIntersect(t2, t3));
 }
 
-TEST(Intersection, parallelTriangles2)
+TEST(Intersection, TrianglesParallel2)
 {
   // Arrange
   Triangle<double> t1{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
@@ -27,7 +27,7 @@ TEST(Intersection, parallelTriangles2)
   ASSERT_FALSE(isIntersect(t1, t2));
 }
 
-TEST(Intersection, samePlanes)
+TEST(Intersection, PlanesSame)
 {
   // Arrane
   auto pl1 = Plane<double>::getNormalDist({0, 0, 1}, 1);
@@ -40,7 +40,7 @@ TEST(Intersection, samePlanes)
   ASSERT_TRUE(res);
 }
 
-TEST(Intersection, parallelPlanes)
+TEST(Intersection, PlanesParallel)
 {
   // Arrange
   auto pl1 = Plane<double>::getNormalDist({0, 0, 1}, 1);
@@ -51,6 +51,20 @@ TEST(Intersection, parallelPlanes)
 
   // Assert
   ASSERT_TRUE(res);
+}
+
+TEST(Intersection, Planes)
+{
+  // Arrange
+  auto pl1 = Plane<double>::getBy3Points({0, 0, 0}, {1, 0, 0}, {0, 1, 0});
+  auto pl2 = Plane<double>::getBy3Points({0, 0, 0}, {0, 0, 1}, {0, 1, 0});
+  Line<double> l{{0, 0, 0}, {0, 1, 0}};
+
+  // Act
+  auto res = std::get<Line<double>>(intersect(pl1, pl2));
+
+  // Assert
+  ASSERT_EQ(l, res);
 }
 
 int main(int argc, char **argv)
