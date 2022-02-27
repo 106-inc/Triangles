@@ -4,8 +4,8 @@
 #include <concepts>
 #include <variant>
 
-#include "primitives/plane.hh"
-#include "primitives/triangle.hh"
+#include "distance/distance.hh"
+#include "primitives/primitives.hh"
 
 namespace geom
 {
@@ -66,6 +66,10 @@ bool isIntersect2D(const Triangle<T> &tr1, const Triangle<T> &tr2);
 template <std::floating_point T>
 bool isIntersectMollerHaines(const Triangle<T> &tr1, const Triangle<T> &tr2);
 
+template <std::floating_point T>
+bool isOverlap(const T &params10, const T &params11, const T &params20,
+               const T &params21);
+
 } // namespace detail
 } // namespace geom
 
@@ -85,7 +89,7 @@ bool isIntersect(const Triangle<T> &tr1, const Triangle<T> &tr2)
   if (pl1.isPar(pl2))
     return false;
 
-  return detail::isIntersectMollerHaines(tr1, tr1);
+  return detail::isIntersectMollerHaines(tr1, tr2);
 }
 
 template <std::floating_point T>
@@ -129,6 +133,12 @@ bool isIntersect2D(const Triangle<T> &tr1, const Triangle<T> &tr2)
 template <std::floating_point T>
 bool isIntersectMollerHaines(const Triangle<T> &tr1, const Triangle<T> &tr2)
 {
+  // All this function is HARDCODE
+  // TODO:
+  // 1) make it more beautiful
+  // 2) add handling such case: all points of triangle has signed dist to plane of another
+  // triangle of same sign
+
   auto pl1 = Plane<T>::getBy3Points(tr1[0], tr1[1], tr1[2]);
   auto pl2 = Plane<T>::getBy3Points(tr2[0], tr2[1], tr2[2]);
 
@@ -142,10 +152,55 @@ bool isIntersectMollerHaines(const Triangle<T> &tr1, const Triangle<T> &tr2)
     vert2[i] = dot(l.dir(), tr2[i] - l.org());
   }
 
-  /* TODO: get and compare parameters */
-  assert(false && "Not implemented yet");
-  return false;
+  std::array<T, 3> sdist1, sdist2;
+  for (size_t i = 0; i < 3; ++i)
+  {
+    sdist1[i] = distance(pl2, tr1[i]);
+    sdist2[i] = distance(pl1, tr2[i]);
+  }
+
+  std::array<T, 3> sign1, sign2;
+  for (size_t i = 0; i < 3; ++i)
+  {
+    sign1[i] = sdist1[i] * sdist1[(i + 1) % 3];
+    sign2[i] = sdist2[i] * sdist2[(i + 1) % 3];
+  }
+
+  size_t rogue1 = 0;
+  size_t rogue2 = 0;
+  for (size_t i = 0; i < 3; ++i)
+  {
+    if (sign1[i] >= 0)
+      rogue1 = (i + 2) % 3;
+
+    if (sign2[i] >= 0)
+      rogue2 = (i + 2) % 3;
+  }
+
+  std::vector<T> params1, params2;
+  std::array<size_t, 2> arr1{(rogue1 + 1) % 3, (rogue1 + 2) % 3};
+  std::array<size_t, 2> arr2{(rogue2 + 1) % 3, (rogue2 + 2) % 3};
+
+  for (size_t i : arr1)
+    params1.push_back(vert1[i] + (vert1[rogue1] - vert1[i]) * sdist1[i] /
+                                   (sdist1[i] - sdist1[rogue1]));
+
+  for (size_t i : arr2)
+    params2.push_back(vert2[i] + (vert2[rogue2] - vert2[i]) * sdist2[i] /
+                                   (sdist2[i] - sdist2[rogue2]));
+
+  std::sort(params1.begin(), params1.end());
+  std::sort(params2.begin(), params2.end());
+
+  return isOverlap(params1[0], params1[1], params2[0], params2[1]);
 }
+
+template <std::floating_point T>
+bool isOverlap(const T &params10, const T &params11, const T &params20, const T &params21)
+{
+  return (params20 <= params11) && (params21 >= params10);
+}
+
 } // namespace detail
 } // namespace geom
 
