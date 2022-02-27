@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "primitives/vector.hh"
+#include "primitives/primitives.hh"
 
 TEST(Vector, copyCtor)
 {

@@ -3,7 +3,7 @@
 
 #include <gtest/gtest.h>
 
-#include "primitives/plane.hh"
+#include "primitives/primitives.hh"
 
 using namespace geom;
 

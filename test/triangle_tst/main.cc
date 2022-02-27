@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#include "primitives/triangle.hh"
+#include "primitives/primitives.hh"
 
 using namespace geom;
 

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "primitives/line.hh"
+#include "primitives/primitives.hh"
 
 TEST(Line, copyCtor)
 {
