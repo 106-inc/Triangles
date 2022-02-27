@@ -4,7 +4,7 @@
 
 using namespace geom;
 
-TEST(Intersection, TrianglesParallel1)
+TEST(intersection, TrianglesParallel1)
 {
   // Arrange
   Triangle<double> t1{{0, 0, 0}, {0, 1, 0}, {0, 0, 1}};
@@ -17,7 +17,7 @@ TEST(Intersection, TrianglesParallel1)
   ASSERT_FALSE(isIntersect(t2, t3));
 }
 
-TEST(Intersection, TrianglesParallel2)
+TEST(intersection, TrianglesParallel2)
 {
   // Arrange
   Triangle<double> t1{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
@@ -27,7 +27,7 @@ TEST(Intersection, TrianglesParallel2)
   ASSERT_FALSE(isIntersect(t1, t2));
 }
 
-TEST(Intersection, PlanesSame)
+TEST(intersection, PlanesSame)
 {
   // Arrane
   auto pl1 = Plane<double>::getNormalDist({0, 0, 1}, 1);
@@ -40,7 +40,7 @@ TEST(Intersection, PlanesSame)
   ASSERT_TRUE(res);
 }
 
-TEST(Intersection, PlanesParallel)
+TEST(intersection, PlanesParallel)
 {
   // Arrange
   auto pl1 = Plane<double>::getNormalDist({0, 0, 1}, 1);
@@ -53,7 +53,7 @@ TEST(Intersection, PlanesParallel)
   ASSERT_TRUE(res);
 }
 
-TEST(Intersection, Planes)
+TEST(intersection, Planes)
 {
   // Arrange
   auto pl1 = Plane<double>::getBy3Points({0, 0, 0}, {1, 0, 0}, {0, 1, 0});
