@@ -1,4 +1,4 @@
-set(LIBLIST primitives intersection)
+set(LIBLIST primitives intersection distance)
 
 foreach(LIB ${LIBLIST})
   add_subdirectory(${LIB})

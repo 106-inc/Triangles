@@ -67,6 +67,10 @@ template <std::floating_point T>
 bool isIntersectMollerHaines(const Triangle<T> &tr1, const Triangle<T> &tr2);
 
 } // namespace detail
+} // namespace geom
+
+namespace geom
+{
 
 template <std::floating_point T>
 bool isIntersect(const Triangle<T> &tr1, const Triangle<T> &tr2)
@@ -143,7 +147,6 @@ bool isIntersectMollerHaines(const Triangle<T> &tr1, const Triangle<T> &tr2)
   return false;
 }
 } // namespace detail
-
 } // namespace geom
 
 #endif // __INCLUDE_INTERSECTION_INTERSECTION_HH__
