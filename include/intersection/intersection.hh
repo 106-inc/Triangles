@@ -71,6 +71,7 @@ bool isIntersectMollerHaines(const Triangle<T> &tr1, const Triangle<T> &tr2);
 template <std::floating_point T>
 bool isIntersect(const Triangle<T> &tr1, const Triangle<T> &tr2)
 {
+  /* TODO: handle invalid triangles case */
   auto pl1 = Plane<T>::getBy3Points(tr1[0], tr1[1], tr1[2]);
   auto pl2 = Plane<T>::getBy3Points(tr2[0], tr2[1], tr2[2]);
 
@@ -124,6 +125,20 @@ bool isIntersect2D(const Triangle<T> &tr1, const Triangle<T> &tr2)
 template <std::floating_point T>
 bool isIntersectMollerHaines(const Triangle<T> &tr1, const Triangle<T> &tr2)
 {
+  auto pl1 = Plane<T>::getBy3Points(tr1[0], tr1[1], tr1[2]);
+  auto pl2 = Plane<T>::getBy3Points(tr2[0], tr2[1], tr2[2]);
+
+  auto l = std::get<Line<T>>(intersect(pl1, pl2));
+
+  /* Project the triangle vertices onto line */
+  std::array<T, 3> vert1, vert2;
+  for (size_t i = 0; i < 3; ++i)
+  {
+    vert1[i] = dot(l.dir(), tr1[i] - l.org());
+    vert2[i] = dot(l.dir(), tr2[i] - l.org());
+  }
+
+  /* TODO: get and compare parameters */
   assert(false && "Not implemented yet");
   return false;
 }
