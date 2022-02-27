@@ -432,9 +432,9 @@ template <std::floating_point T>
 template <Number nType>
 Vector<T> &Vector<T>::operator/=(nType val)
 {
-  x /= val;
-  y /= val;
-  z /= val;
+  x /= static_cast<T>(val);
+  y /= static_cast<T>(val);
+  z /= static_cast<T>(val);
 
   return *this;
 }
