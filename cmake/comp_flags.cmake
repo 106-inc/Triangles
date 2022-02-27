@@ -87,14 +87,14 @@ set(GCC_WARNINGS
 -fno-omit-frame-pointer
 )
 
-function(apply_compiler_flags TARGET)
+function(apply_compiler_flags TARGET VISIBILIY)
   # Add sanitizers
-  target_link_options(${TARGET} PRIVATE "$<$<CONFIG:Debug>:${SANITIZERS}>")
-  target_compile_options(${TARGET} PRIVATE "$<$<CONFIG:Debug>:${SANITIZERS}>")
+  target_link_options(${TARGET} ${VISIBILIY} "$<$<CONFIG:Debug>:${SANITIZERS}>")
+  target_compile_options(${TARGET} ${VISIBILIY} "$<$<CONFIG:Debug>:${SANITIZERS}>")
 
   # Compile stuff
-  target_compile_options(${TARGET} PRIVATE "$<$<CONFIG:Debug>:${COMMON_WARNINGS}>")
-  target_compile_options(${TARGET} PRIVATE "$<$<CXX_COMPILER_ID:GNU>:$<$<CONFIG:Debug>:${GCC_WARNINGS}>>")
+  target_compile_options(${TARGET} ${VISIBILIY} "$<$<CONFIG:Debug>:${COMMON_WARNINGS}>")
+  target_compile_options(${TARGET} ${VISIBILIY} "$<$<CXX_COMPILER_ID:GNU>:$<$<CONFIG:Debug>:${GCC_WARNINGS}>>")
 endfunction()
 
 string(REPLACE " " ";" DED_SAN_LST "${SANITIZERS}")
