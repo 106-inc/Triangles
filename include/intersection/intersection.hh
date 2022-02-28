@@ -27,26 +27,65 @@ bool isIntersect2D(const Triangle<T> &tr1, const Triangle<T> &tr2);
  * @details
  * Common intersection case (parallel planes case is trivial):
  *
- * Let P = point in space
+ * Let \f$ \overrightarrow{P} \f$ - point in space
  *
- * pl1 equation: dot(n1, P) = d1
- * pl2 equation: dot(n2, P) = d2
+ * \f$ pl_1 \f$ equation: \f$ \overrightarrow{n}_1 \cdot \overrightarrow{P} = d_1 \f$
  *
- * Intersection line direction: dir = cross(n1, n2)
+ * \f$ pl_2 \f$ equation: \f$ \overrightarrow{n}_2 \cdot \overrightarrow{P} = d_2 \f$
  *
- * Let origin of intersection line be a linear combination of n1 and n2:
- * P = a * n1 + b * n2
+ * Intersection line direction: \f$ \overrightarrow{dir} = \overrightarrow{n}_1 \times
+ * \overrightarrow{n}_2 \f$
  *
- * P must satisfy both pl1 and pl2 equations:
- * dot(n1, P) = d1 <=> dot(n1, a * n1 + b * n2) = d1 <=> a + b * dot(n1, n2) = d1
- * dot(n2, P) = d2 <=> dot(n2, a * n1 + b * n2) = d2 <=> a * dot(n1, n2) + b = d2
+ * Let origin of intersection line be a linear combination of \f$ \overrightarrow{n}_1 \f$
+ * and \f$ \overrightarrow{n}_2 \f$: \f[ \overrightarrow{P} = a \cdot \overrightarrow{n}_1
+ * + b \cdot \overrightarrow{n}_2 \f]
  *
- * Let's find a and b:
- * a = (d2 * dot(n1, n2) - d1) / ((dot(n1, n2))^2 - 1)
- * b = (d1 * dot(n1, n2) - d2) / ((dot(n1, n2))^2 - 1)
+ * \f$ \overrightarrow{P} \f$ must satisfy both \f$ pl_1 \f$ and \f$ pl_1 \f$ equations:
+ * \f[
+ * \overrightarrow{n}_1 \cdot \overrightarrow{P} = d_1
+ * \Leftrightarrow
+ * \overrightarrow{n}_1
+ * \cdot
+ * \left(
+ *  a \cdot \overrightarrow{n}_1 + b \cdot \overrightarrow{n}_2
+ *  \right)
+ *  = d_1
+ * \Leftrightarrow
+ * a + b \cdot \overrightarrow{n}_1 \cdot \overrightarrow{n}_2  = d_1
+ * \f]
+ * \f[
+ * \overrightarrow{n}_2 \cdot \overrightarrow{P} = d_2
+ * \Leftrightarrow
+ * \overrightarrow{n}_2
+ * \cdot
+ * \left(
+ *  a \cdot \overrightarrow{n}_1 + b \cdot \overrightarrow{n}_2
+ *  \right) = d_2
+ * \Leftrightarrow
+ * a \cdot \overrightarrow{n}_1 \cdot \overrightarrow{n}_2 + b = d_2
+ * \f]
+ *
+ * Let's find \f$a\f$ and \f$b\f$:
+ * \f[
+ * a = \frac{
+ *  d_2 \cdot \overrightarrow{n}_1 \cdot \overrightarrow{n}_2 - d_1
+ * }{
+ *  \left( \overrightarrow{n}_1 \cdot \overrightarrow{n}_2\right)^2 - 1
+ * }
+ * \f]
+ * \f[
+ * b = \frac{
+ * d_1 \cdot \overrightarrow{n}_1 \cdot \overrightarrow{n}_2 - d_2
+ * }{
+ *  \left( \overrightarrow{n}_1 \cdot \overrightarrow{n}_2\right)^2 - 1
+ * }
+ * \f]
  *
  * Intersection line equation:
- * L = P + t * cross(n1, n2) = (a * n1 + b * n2) + t * cross(n1, n2)
+ * \f[
+ * \overrightarrow{r}(t) = \overrightarrow{P} + t \cdot \overrightarrow{n}_1 \times
+ * \overrightarrow{n}_2 = (a \cdot \overrightarrow{n}_1 + b \cdot \overrightarrow{n}_2) +
+ * t \cdot \overrightarrow{n}_1 \times \overrightarrow{n}_2 \f]
  *
  * @tparam T - floating point type of coordinates
  * @param pl1 first plane
