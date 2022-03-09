@@ -25,6 +25,18 @@ TEST(intersection, TrianglesParallel2)
 
   // Act & Assert
   ASSERT_FALSE(isIntersect(t1, t2));
+  ASSERT_FALSE(isIntersect(t2, t1));
+}
+
+TEST(intersection, TrianglesSameSide)
+{
+  // Arrange
+  Triangle<double> t1{{0, 0, 0}, {0, 1, 0}, {1, 0, 0}};
+  Triangle<double> t2{{0, 0, 1}, {0, 1, 1}, {1, 0, 2}};
+
+  // Act & Assert
+  ASSERT_FALSE(isIntersect(t1, t2));
+  ASSERT_FALSE(isIntersect(t2, t1));
 }
 
 TEST(intersection, commonCase)

@@ -70,6 +70,12 @@ template <std::floating_point T>
 bool isOverlap(const T &params10, const T &params11, const T &params20,
                const T &params21);
 
+template <std::forward_iterator It>
+bool isSameSign(It begin, It end);
+
+template <std::floating_point T>
+bool isOnOneSide(const Plane<T> &pl, const Triangle<T> &tr);
+
 } // namespace detail
 } // namespace geom
 
@@ -80,13 +86,21 @@ template <std::floating_point T>
 bool isIntersect(const Triangle<T> &tr1, const Triangle<T> &tr2)
 {
   /* TODO: handle invalid triangles case */
+
   auto pl1 = Plane<T>::getBy3Points(tr1[0], tr1[1], tr1[2]);
+
+  if (!detail::isOnOneSide(pl1, tr2))
+    return false;
+
   auto pl2 = Plane<T>::getBy3Points(tr2[0], tr2[1], tr2[2]);
 
   if (pl1 == pl2)
     return detail::isIntersect2D(tr1, tr2);
 
   if (pl1.isPar(pl2))
+    return false;
+
+  if (!detail::isOnOneSide(pl2, tr1))
     return false;
 
   return detail::isIntersectMollerHaines(tr1, tr2);
@@ -136,8 +150,6 @@ bool isIntersectMollerHaines(const Triangle<T> &tr1, const Triangle<T> &tr2)
   // All this function is HARDCODE
   // TODO:
   // 1) make it more beautiful
-  // 2) add handling such case: all points of triangle has signed dist to plane of another
-  // triangle of same sign
 
   auto pl1 = Plane<T>::getBy3Points(tr1[0], tr1[1], tr1[2]);
   auto pl2 = Plane<T>::getBy3Points(tr2[0], tr2[1], tr2[2]);
@@ -199,6 +211,32 @@ template <std::floating_point T>
 bool isOverlap(const T &params10, const T &params11, const T &params20, const T &params21)
 {
   return (params20 <= params11) && (params21 >= params10);
+}
+
+template <std::forward_iterator It>
+bool isSameSign(It begin, It end)
+{
+  auto cur = begin;
+  auto prev = begin;
+
+  for (++cur; cur != end; ++cur)
+    if ((*cur) * (*prev) < 0)
+      return false;
+
+  return true;
+}
+
+template <std::floating_point T>
+bool isOnOneSide(const Plane<T> &pl, const Triangle<T> &tr)
+{
+  std::array<T, 3> sdist{};
+  for (size_t i = 0; i < 3; ++i)
+    sdist[i] = distance(pl, tr[i]);
+
+  if (detail::isSameSign(sdist.begin(), sdist.end()))
+    return false;
+
+  return true;
 }
 
 } // namespace detail
