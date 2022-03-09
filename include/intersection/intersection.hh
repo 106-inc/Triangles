@@ -106,8 +106,11 @@ template <std::floating_point T>
 bool isIntersectMollerHaines(const Triangle<T> &tr1, const Triangle<T> &tr2);
 
 template <std::floating_point T>
-bool isOverlap(const T &params10, const T &params11, const T &params20,
-               const T &params21);
+std::pair<T, T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl,
+                                   const Line<T> &l);
+
+template <std::floating_point T>
+bool isOverlap(std::pair<T, T> &params1, std::pair<T, T> &params2);
 
 template <std::forward_iterator It>
 bool isSameSign(It begin, It end);
@@ -195,61 +198,52 @@ bool isIntersectMollerHaines(const Triangle<T> &tr1, const Triangle<T> &tr2)
 
   auto l = std::get<Line<T>>(intersect(pl1, pl2));
 
-  /* Project the triangle vertices onto line */
-  std::array<T, 3> vert1, vert2;
-  for (size_t i = 0; i < 3; ++i)
-  {
-    vert1[i] = dot(l.dir(), tr1[i] - l.org());
-    vert2[i] = dot(l.dir(), tr2[i] - l.org());
-  }
+  auto params1 = helperMollerHaines(tr1, pl2, l);
+  auto params2 = helperMollerHaines(tr2, pl1, l);
 
-  std::array<T, 3> sdist1, sdist2;
-  for (size_t i = 0; i < 3; ++i)
-  {
-    sdist1[i] = distance(pl2, tr1[i]);
-    sdist2[i] = distance(pl1, tr2[i]);
-  }
-
-  std::array<T, 3> sign1, sign2;
-  for (size_t i = 0; i < 3; ++i)
-  {
-    sign1[i] = sdist1[i] * sdist1[(i + 1) % 3];
-    sign2[i] = sdist2[i] * sdist2[(i + 1) % 3];
-  }
-
-  size_t rogue1 = 0;
-  size_t rogue2 = 0;
-  for (size_t i = 0; i < 3; ++i)
-  {
-    if (sign1[i] >= 0)
-      rogue1 = (i + 2) % 3;
-
-    if (sign2[i] >= 0)
-      rogue2 = (i + 2) % 3;
-  }
-
-  std::vector<T> params1, params2;
-  std::array<size_t, 2> arr1{(rogue1 + 1) % 3, (rogue1 + 2) % 3};
-  std::array<size_t, 2> arr2{(rogue2 + 1) % 3, (rogue2 + 2) % 3};
-
-  for (size_t i : arr1)
-    params1.push_back(vert1[i] + (vert1[rogue1] - vert1[i]) * sdist1[i] /
-                                   (sdist1[i] - sdist1[rogue1]));
-
-  for (size_t i : arr2)
-    params2.push_back(vert2[i] + (vert2[rogue2] - vert2[i]) * sdist2[i] /
-                                   (sdist2[i] - sdist2[rogue2]));
-
-  std::sort(params1.begin(), params1.end());
-  std::sort(params2.begin(), params2.end());
-
-  return isOverlap(params1[0], params1[1], params2[0], params2[1]);
+  return isOverlap(params1, params2);
 }
 
 template <std::floating_point T>
-bool isOverlap(const T &params10, const T &params11, const T &params20, const T &params21)
+std::pair<T, T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl,
+                                   const Line<T> &l)
 {
-  return (params20 <= params11) && (params21 >= params10);
+  /* Project the triangle vertices onto line */
+  std::array<T, 3> vert{};
+  for (size_t i = 0; i < 3; ++i)
+    vert[i] = dot(l.dir(), tr[i] - l.org());
+
+  std::array<T, 3> sdist{};
+  for (size_t i = 0; i < 3; ++i)
+    sdist[i] = distance(pl, tr[i]);
+
+  std::array<bool, 3> isOneSide{};
+  for (size_t i = 0; i < 3; ++i)
+    isOneSide[i] = (sdist[i] * sdist[(i + 1) % 3] > 0);
+
+  /* Looking for vertex which is alone on it's side */
+  size_t rogue = 0;
+  for (size_t i = 0; i < 3; ++i)
+    if (isOneSide[i])
+      rogue = (i + 2) % 3;
+
+  std::vector<T> params{};
+  std::array<size_t, 2> arr{(rogue + 1) % 3, (rogue + 2) % 3};
+
+  for (size_t i : arr)
+    params.push_back(vert[i] +
+                     (vert[rogue] - vert[i]) * sdist[i] / (sdist[i] - sdist[rogue]));
+
+  if (params[0] > params[1])
+    std::swap(params[0], params[1]);
+
+  return {params[0], params[1]};
+}
+
+template <std::floating_point T>
+bool isOverlap(std::pair<T, T> &params1, std::pair<T, T> &params2)
+{
+  return (params2.first <= params1.second) && (params2.second >= params1.first);
 }
 
 template <std::forward_iterator It>
