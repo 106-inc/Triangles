@@ -99,6 +99,9 @@ std::variant<std::monostate, Line<T>, Plane<T>> intersect(const Plane<T> &pl1,
 namespace detail
 {
 
+template <typename T>
+using Segment = std::pair<T, T>;
+
 template <std::floating_point T>
 bool isIntersect2D(const Triangle<T> &tr1, const Triangle<T> &tr2);
 
@@ -106,11 +109,11 @@ template <std::floating_point T>
 bool isIntersectMollerHaines(const Triangle<T> &tr1, const Triangle<T> &tr2);
 
 template <std::floating_point T>
-std::pair<T, T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl,
-                                   const Line<T> &l);
+Segment<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl,
+                              const Line<T> &l);
 
 template <std::floating_point T>
-bool isOverlap(std::pair<T, T> &params1, std::pair<T, T> &params2);
+bool isOverlap(Segment<T> &segm1, Segment<T> &segm2);
 
 template <std::forward_iterator It>
 bool isSameSign(It begin, It end);
@@ -205,8 +208,7 @@ bool isIntersectMollerHaines(const Triangle<T> &tr1, const Triangle<T> &tr2)
 }
 
 template <std::floating_point T>
-std::pair<T, T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl,
-                                   const Line<T> &l)
+Segment<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const Line<T> &l)
 {
   /* Project the triangle vertices onto line */
   std::array<T, 3> vert{};
@@ -227,23 +229,24 @@ std::pair<T, T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl,
     if (isOneSide[i])
       rogue = (i + 2) % 3;
 
-  std::vector<T> params{};
+  std::vector<T> segm{};
   std::array<size_t, 2> arr{(rogue + 1) % 3, (rogue + 2) % 3};
 
   for (size_t i : arr)
-    params.push_back(vert[i] +
-                     (vert[rogue] - vert[i]) * sdist[i] / (sdist[i] - sdist[rogue]));
+    segm.push_back(vert[i] +
+                   (vert[rogue] - vert[i]) * sdist[i] / (sdist[i] - sdist[rogue]));
 
-  if (params[0] > params[1])
-    std::swap(params[0], params[1]);
+  /* Sort segment's ends */
+  if (segm[0] > segm[1])
+    std::swap(segm[0], segm[1]);
 
-  return {params[0], params[1]};
+  return {segm[0], segm[1]};
 }
 
 template <std::floating_point T>
-bool isOverlap(std::pair<T, T> &params1, std::pair<T, T> &params2)
+bool isOverlap(Segment<T> &segm1, Segment<T> &segm2)
 {
-  return (params2.first <= params1.second) && (params2.second >= params1.first);
+  return (segm2.first <= segm1.second) && (segm2.second >= segm1.first);
 }
 
 template <std::forward_iterator It>
