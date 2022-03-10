@@ -192,10 +192,6 @@ bool isIntersect2D(const Triangle<T> &tr1, const Triangle<T> &tr2)
 template <std::floating_point T>
 bool isIntersectMollerHaines(const Triangle<T> &tr1, const Triangle<T> &tr2)
 {
-  // All this function is HARDCODE
-  // TODO:
-  // 1) make it more beautiful
-
   auto pl1 = Plane<T>::getBy3Points(tr1[0], tr1[1], tr1[2]);
   auto pl2 = Plane<T>::getBy3Points(tr2[0], tr2[1], tr2[2]);
 
