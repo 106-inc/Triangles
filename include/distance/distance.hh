@@ -15,7 +15,7 @@ namespace geom
  * @return T signed distance between point and plane
  */
 template <std::floating_point T>
-T distance(const Plane<T> &pl, const Vector<T> &pt);
+T distance(const Plane<T> &pl, const Vec3<T> &pt);
 
 } // namespace geom
 
@@ -23,7 +23,7 @@ namespace geom
 {
 
 template <std::floating_point T>
-T distance(const Plane<T> &pl, const Vector<T> &pt)
+T distance(const Plane<T> &pl, const Vec3<T> &pt)
 {
   return dot(pt, pl.norm()) - pl.dist();
 }

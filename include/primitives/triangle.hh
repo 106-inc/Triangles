@@ -27,7 +27,7 @@ private:
   /**
    * @brief Vertices of triangle
    */
-  std::array<Vector<T>, 3> vertices_;
+  std::array<Vec3<T>, 3> vertices_;
 
 public:
   /**
@@ -37,15 +37,15 @@ public:
    * @param[in] p2 2nd point
    * @param[in] p3 3rd point
    */
-  Triangle(const Vector<T> &p1, const Vector<T> &p2, const Vector<T> &p3);
+  Triangle(const Vec3<T> &p1, const Vec3<T> &p2, const Vec3<T> &p3);
 
   /**
    * @brief Overloaded operator[] to get access to vertices
    *
    * @param[in] idx index of vertex
-   * @return const Vector<T>& const reference to vertex
+   * @return const Vec3<T>& const reference to vertex
    */
-  const Vector<T> &operator[](std::size_t idx) const;
+  const Vec3<T> &operator[](std::size_t idx) const;
 };
 
 /**
@@ -69,12 +69,12 @@ std::ostream &operator<<(std::ostream &ost, const Triangle<T> &tr)
 }
 
 template <std::floating_point T>
-Triangle<T>::Triangle(const Vector<T> &p1, const Vector<T> &p2, const Vector<T> &p3)
+Triangle<T>::Triangle(const Vec3<T> &p1, const Vec3<T> &p2, const Vec3<T> &p3)
   : vertices_{p1, p2, p3}
 {}
 
 template <std::floating_point T>
-const Vector<T> &Triangle<T>::operator[](std::size_t idx) const
+const Vec3<T> &Triangle<T>::operator[](std::size_t idx) const
 {
   return vertices_[idx % 3];
 }

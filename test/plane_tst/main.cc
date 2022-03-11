@@ -8,7 +8,7 @@
 using namespace geom;
 
 template <std::floating_point T>
-static void checkCtor(const Plane<T> &pl, const Vector<T> &normExpected, T distExpected)
+static void checkCtor(const Plane<T> &pl, const Vec3<T> &normExpected, T distExpected)
 {
   // Act
   auto norm = pl.norm();
@@ -16,7 +16,7 @@ static void checkCtor(const Plane<T> &pl, const Vector<T> &normExpected, T distE
 
   // Assert
   ASSERT_TRUE(normExpected.isEqual(norm));
-  ASSERT_TRUE(Vector<T>::isNumEq(distExpected, dist));
+  ASSERT_TRUE(Vec3<T>::isNumEq(distExpected, dist));
 }
 
 TEST(Plane, ctor)
@@ -53,11 +53,11 @@ TEST(Plane, belongsPoint)
   auto pl2 = Plane<double>::getNormalPoint({-1, -1, -1}, {0, 0, 0});
 
   // Act
-  auto resTrue1 = pl1.belongs(VectorD{0, 0, 1});
-  auto resFalse1 = pl1.belongs(VectorD{0, 0, 2});
+  auto resTrue1 = pl1.belongs(Vec3D{0, 0, 1});
+  auto resFalse1 = pl1.belongs(Vec3D{0, 0, 2});
 
-  auto resTrue2 = pl2.belongs(VectorD{1, 1, -2});
-  auto resFalse2 = pl2.belongs(VectorD{1, 1, 1});
+  auto resTrue2 = pl2.belongs(Vec3D{1, 1, -2});
+  auto resFalse2 = pl2.belongs(Vec3D{1, 1, 1});
 
   // Assert
   ASSERT_TRUE(resTrue1);

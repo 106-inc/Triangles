@@ -4,7 +4,7 @@
 
 int main()
 {
-  geom::Vector<float> a{3, 4, 5};
+  geom::Vec3<float> a{3, 4, 5};
   std::cout << a << std::endl;
 
   auto b = a;

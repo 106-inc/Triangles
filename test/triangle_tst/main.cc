@@ -9,9 +9,9 @@ using namespace geom;
 TEST(Triangle, ctor)
 {
   // Arrange
-  VectorD v1{1, 2, 3};
-  VectorD v2{4, 5, 6};
-  VectorD v3{7, 8, 9};
+  Vec3D v1{1, 2, 3};
+  Vec3D v2{4, 5, 6};
+  Vec3D v3{7, 8, 9};
   Triangle tr{v1, v2, v3};
 
   // Act & Assert
@@ -23,9 +23,9 @@ TEST(Triangle, ctor)
 TEST(Triangle, output)
 {
   // Arrange
-  VectorD v1{1, 2, 3};
-  VectorD v2{4, 5, 6};
-  VectorD v3{7, 8, 9};
+  Vec3D v1{1, 2, 3};
+  Vec3D v2{4, 5, 6};
+  Vec3D v3{7, 8, 9};
   Triangle trian{v1, v2, v3};
 
   // Act

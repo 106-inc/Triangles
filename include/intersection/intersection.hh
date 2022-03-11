@@ -161,7 +161,7 @@ std::variant<std::monostate, Line<T>, Plane<T>> intersect(const Plane<T> &pl1,
   auto dir = cross(n1, n2);
 
   /* if planes are parallel */
-  if (Vector<T>{0} == dir)
+  if (Vec3<T>{0} == dir)
   {
     if (pl1 == pl2)
       return pl1;

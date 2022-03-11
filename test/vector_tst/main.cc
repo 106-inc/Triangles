@@ -2,23 +2,23 @@
 
 #include "primitives/primitives.hh"
 
-TEST(Vector, copyCtor)
+TEST(Vec3, copyCtor)
 {
   // Arrange
-  geom::Vector<double> v1{1, 2, 3};
-  geom::Vector<double> v2 = v1;
-  geom::Vector<double> v3{v1};
+  geom::Vec3<double> v1{1, 2, 3};
+  geom::Vec3<double> v2 = v1;
+  geom::Vec3<double> v3{v1};
 
   // Act & Arrange
   ASSERT_EQ(v1, v2);
   ASSERT_EQ(v1, v3);
 }
 
-TEST(Vector, dot)
+TEST(Vec3, dot)
 {
   // Arrange
-  geom::Vector<double> v1{1, 2, 3};
-  geom::Vector<double> v2{4, 5, 6};
+  geom::Vec3<double> v1{1, 2, 3};
+  geom::Vec3<double> v2{4, 5, 6};
 
   // Act
   auto res = v1.dot(v2);
@@ -27,12 +27,12 @@ TEST(Vector, dot)
   ASSERT_DOUBLE_EQ(res, 32);
 }
 
-TEST(Vector, isEq)
+TEST(Vec3, isEq)
 {
   // Arrange
-  geom::Vector<double> v1{1.0, 2.0, 3.0};
-  geom::Vector<double> v2{1.0, 2.0, 3.0};
-  geom::Vector<double> v3{4.0, 5.0, 5.0};
+  geom::Vec3<double> v1{1.0, 2.0, 3.0};
+  geom::Vec3<double> v2{1.0, 2.0, 3.0};
+  geom::Vec3<double> v3{4.0, 5.0, 5.0};
 
   // Act
   /* nothing */
@@ -48,25 +48,25 @@ TEST(Vector, isEq)
   ASSERT_FALSE(v3.isEqual(v2));
 }
 
-TEST(Vector, cross)
+TEST(Vec3, cross)
 {
   // Arrange
-  geom::Vector<double> v1{1, 2, 3};
-  geom::Vector<double> v2{4, 5, 6};
+  geom::Vec3<double> v1{1, 2, 3};
+  geom::Vec3<double> v2{4, 5, 6};
 
   // Act
   auto res = v1.cross(v2);
 
   // Assert
-  ASSERT_TRUE(res.isEqual(geom::Vector<double>{-3, 6, -3}));
+  ASSERT_TRUE(res.isEqual(geom::Vec3<double>{-3, 6, -3}));
 }
 
-TEST(Vector, normalize)
+TEST(Vec3, normalize)
 {
   // Arrange
-  geom::Vector<float> v1{2, 6, 9};
-  geom::Vector<float> v2{0, 0, 0};
-  geom::Vector<float> v3{0, 0, 1};
+  geom::Vec3<float> v1{2, 6, 9};
+  geom::Vec3<float> v2{0, 0, 0};
+  geom::Vec3<float> v3{0, 0, 1};
 
   // Act
   auto res1 = v1.normalized();
@@ -79,12 +79,12 @@ TEST(Vector, normalize)
   ASSERT_TRUE(res3.isEqual(v3));
 }
 
-TEST(Vector, isPar)
+TEST(Vec3, isPar)
 {
   // Arrange
-  geom::VectorF v1{2, -6, 9};
-  geom::VectorF v2{8, -24, 36};
-  geom::VectorF v3{6, 4, 1};
+  geom::Vec3F v1{2, -6, 9};
+  geom::Vec3F v2{8, -24, 36};
+  geom::Vec3F v3{6, 4, 1};
 
   // Act
   auto res12 = v1.isPar(v2);
@@ -97,14 +97,14 @@ TEST(Vector, isPar)
   ASSERT_FALSE(res23);
 }
 
-TEST(Vector, isPerp)
+TEST(Vec3, isPerp)
 {
   // Arrange
-  geom::VectorF v1{1, 1, 0};
-  geom::VectorF v2{-1, 1, 0};
-  geom::VectorF v3{0, 0, 1};
-  geom::VectorF v4{1, 1, 1};
-  geom::VectorF vz{0};
+  geom::Vec3F v1{1, 1, 0};
+  geom::Vec3F v2{-1, 1, 0};
+  geom::Vec3F v3{0, 0, 1};
+  geom::Vec3F v4{1, 1, 1};
+  geom::Vec3F vz{0};
 
   // Act
 

@@ -8,7 +8,7 @@ TEST(distance, PlanePoint1)
 {
   // Arrange
   auto pl = Plane<double>::getNormalDist({0, 0, 1}, 0);
-  Vector<double> pt{0, 0, 1};
+  Vec3<double> pt{0, 0, 1};
 
   // Act
   auto dist = distance(pl, pt);
@@ -21,7 +21,7 @@ TEST(distance, PlanePoint2)
 {
   // Arrange
   auto pl = Plane<double>::getNormalDist({5, 67, 3}, 7);
-  Vector<double> pt{0, 0, 0};
+  Vec3<double> pt{0, 0, 0};
 
   // Act
   auto dist = distance(pl, pt);

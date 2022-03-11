@@ -9,7 +9,7 @@
 
 /**
  * @file vector.hh
- * Vector class implementation
+ * Vec3 class implementation
  */
 
 namespace geom
@@ -25,13 +25,13 @@ template <class T>
 concept Number = std::is_floating_point_v<T> || std::is_integral_v<T>;
 
 /**
- * @class Vector
- * @brief Vector class realization
+ * @class Vec3
+ * @brief Vec3 class realization
  *
  * @tparam T - floating point type of coordinates
  */
 template <std::floating_point T>
-struct Vector final
+struct Vec3 final
 {
 private:
   /**
@@ -41,72 +41,72 @@ private:
 
 public:
   /**
-   * @brief Vector coordinates
+   * @brief Vec3 coordinates
    */
   T x{}, y{}, z{};
 
   /**
-   * @brief Construct a new Vector object from 3 coordinates
+   * @brief Construct a new Vec3 object from 3 coordinates
    *
    * @param[in] coordX x coordinate
    * @param[in] coordY y coordinate
    * @param[in] coordZ z coordinate
    */
-  Vector(T coordX, T coordY, T coordZ) : x(coordX), y(coordY), z(coordZ)
+  Vec3(T coordX, T coordY, T coordZ) : x(coordX), y(coordY), z(coordZ)
   {}
 
   /**
-   * @brief Construct a new Vector object with equals coordinates
+   * @brief Construct a new Vec3 object with equals coordinates
    *
    * @param[in] coordX coordinate (default to {})
    */
-  explicit Vector(T coordX = {}) : Vector(coordX, coordX, coordX)
+  explicit Vec3(T coordX = {}) : Vec3(coordX, coordX, coordX)
   {}
 
   /**
    * @brief Overloaded += operator
    * Increments vector coordinates by corresponding coordinates of vec
    * @param[in] vec vector to incremented with
-   * @return Vector& reference to current instance
+   * @return Vec3& reference to current instance
    */
-  Vector &operator+=(const Vector &vec);
+  Vec3 &operator+=(const Vec3 &vec);
 
   /**
    * @brief Overloaded -= operator
    * Decrements vector coordinates by corresponding coordinates of vec
    * @param[in] vec vector to decremented with
-   * @return Vector& reference to current instance
+   * @return Vec3& reference to current instance
    */
-  Vector &operator-=(const Vector &vec);
+  Vec3 &operator-=(const Vec3 &vec);
 
   /**
    * @brief Unary - operator
    *
-   * @return Vector negated Vector instance
+   * @return Vec3 negated Vec3 instance
    */
-  Vector operator-() const;
+  Vec3 operator-() const;
 
   /**
    * @brief Overloaded *= by number operator
    *
    * @tparam nType numeric type of value to multiply by
    * @param[in] val value to multiply by
-   * @return Vector& reference to vector instance
+   * @return Vec3& reference to vector instance
    */
   template <Number nType>
-  Vector &operator*=(nType val);
+  Vec3 &operator*=(nType val);
 
   /**
    * @brief Overloaded /= by number operator
    *
    * @tparam nType numeric type of value to divide by
    * @param[in] val value to divide by
-   * @return Vector& reference to vector instance
+   * @return Vec3& reference to vector instance
    *
    * @warning Does not check if val equals 0
    */
   template <Number nType>
-  Vector &operator/=(nType val);
+  Vec3 &operator/=(nType val);
 
   /**
    * @brief Dot product function
@@ -114,15 +114,15 @@ public:
    * @param rhs vector to dot product with
    * @return T dot product of two vectors
    */
-  T dot(const Vector &rhs) const;
+  T dot(const Vec3 &rhs) const;
 
   /**
    * @brief Cross product function
    *
    * @param rhs vector to cross product with
-   * @return Vector cross product of two vectors
+   * @return Vec3 cross product of two vectors
    */
-  Vector cross(const Vector &rhs) const;
+  Vec3 cross(const Vec3 &rhs) const;
 
   /**
    * @brief Calculate squared length of a vector function
@@ -141,16 +141,16 @@ public:
   /**
    * @brief Get normalized vector function
    *
-   * @return Vector normalized vector
+   * @return Vec3 normalized vector
    */
-  Vector normalized() const;
+  Vec3 normalized() const;
 
   /**
    * @brief Normalize vector function
    *
-   * @return Vector& reference to instance
+   * @return Vec3& reference to instance
    */
-  Vector &normalize();
+  Vec3 &normalize();
 
   /**
    * @brief Overloaded operator [] (non-const version)
@@ -179,7 +179,7 @@ public:
    * @return true if vector is parallel
    * @return false otherwise
    */
-  bool isPar(const Vector &rhs) const;
+  bool isPar(const Vec3 &rhs) const;
 
   /**
    * @brief Check if vector is perpendicular to another
@@ -188,7 +188,7 @@ public:
    * @return true if vector is perpendicular
    * @return false otherwise
    */
-  bool isPerp(const Vector &rhs) const;
+  bool isPerp(const Vec3 &rhs) const;
 
   /**
    * @brief Check if vector is equal to another
@@ -199,7 +199,7 @@ public:
    *
    * @note Equality check performs using isNumEq(T lhs, T rhs) function
    */
-  bool isEqual(const Vector &rhs) const;
+  bool isEqual(const Vec3 &rhs) const;
 
   /**
    * @brief Check equality (with threshold) of two floating point numbers function
@@ -238,12 +238,12 @@ public:
  * @tparam T vector template parameter
  * @param[in] lhs first vector
  * @param[in] rhs second vector
- * @return Vector<T> sum of two vectors
+ * @return Vec3<T> sum of two vectors
  */
 template <std::floating_point T>
-Vector<T> operator+(const Vector<T> &lhs, const Vector<T> &rhs)
+Vec3<T> operator+(const Vec3<T> &lhs, const Vec3<T> &rhs)
 {
-  Vector<T> res{lhs};
+  Vec3<T> res{lhs};
   res += rhs;
   return res;
 }
@@ -254,12 +254,12 @@ Vector<T> operator+(const Vector<T> &lhs, const Vector<T> &rhs)
  * @tparam T vector template parameter
  * @param[in] lhs first vector
  * @param[in] rhs second vector
- * @return Vector<T> res of two vectors
+ * @return Vec3<T> res of two vectors
  */
 template <std::floating_point T>
-Vector<T> operator-(const Vector<T> &lhs, const Vector<T> &rhs)
+Vec3<T> operator-(const Vec3<T> &lhs, const Vec3<T> &rhs)
 {
-  Vector<T> res{lhs};
+  Vec3<T> res{lhs};
   res -= rhs;
   return res;
 }
@@ -271,12 +271,12 @@ Vector<T> operator-(const Vector<T> &lhs, const Vector<T> &rhs)
  * @tparam T vector template parameter
  * @param[in] val value to multiply by
  * @param[in] rhs vector to multiply by value
- * @return Vector<T> result vector
+ * @return Vec3<T> result vector
  */
 template <Number nT, std::floating_point T>
-Vector<T> operator*(const nT &val, const Vector<T> &rhs)
+Vec3<T> operator*(const nT &val, const Vec3<T> &rhs)
 {
-  Vector<T> res{rhs};
+  Vec3<T> res{rhs};
   res *= val;
   return res;
 }
@@ -288,12 +288,12 @@ Vector<T> operator*(const nT &val, const Vector<T> &rhs)
  * @tparam T vector template parameter
  * @param[in] val value to multiply by
  * @param[in] lhs vector to multiply by value
- * @return Vector<T> result vector
+ * @return Vec3<T> result vector
  */
 template <Number nT, std::floating_point T>
-Vector<T> operator*(const Vector<T> &lhs, const nT &val)
+Vec3<T> operator*(const Vec3<T> &lhs, const nT &val)
 {
-  Vector<T> res{lhs};
+  Vec3<T> res{lhs};
   res *= val;
   return res;
 }
@@ -305,12 +305,12 @@ Vector<T> operator*(const Vector<T> &lhs, const nT &val)
  * @tparam T vector template parameter
  * @param[in] val value to divide by
  * @param[in] lhs vector to divide by value
- * @return Vector<T> result vector
+ * @return Vec3<T> result vector
  */
 template <Number nT, std::floating_point T>
-Vector<T> operator/(const Vector<T> &lhs, const nT &val)
+Vec3<T> operator/(const Vec3<T> &lhs, const nT &val)
 {
-  Vector<T> res{lhs};
+  Vec3<T> res{lhs};
   res /= val;
   return res;
 }
@@ -324,7 +324,7 @@ Vector<T> operator/(const Vector<T> &lhs, const nT &val)
  * @return T dot production
  */
 template <std::floating_point T>
-T dot(const Vector<T> &lhs, const Vector<T> &rhs)
+T dot(const Vec3<T> &lhs, const Vec3<T> &rhs)
 {
   return lhs.dot(rhs);
 }
@@ -338,13 +338,13 @@ T dot(const Vector<T> &lhs, const Vector<T> &rhs)
  * @return T cross production
  */
 template <std::floating_point T>
-Vector<T> cross(const Vector<T> &lhs, const Vector<T> &rhs)
+Vec3<T> cross(const Vec3<T> &lhs, const Vec3<T> &rhs)
 {
   return lhs.cross(rhs);
 }
 
 /**
- * @brief Vector equality operator
+ * @brief Vec3 equality operator
  *
  * @tparam T vector template parameter
  * @param[in] lhs first vector
@@ -353,13 +353,13 @@ Vector<T> cross(const Vector<T> &lhs, const Vector<T> &rhs)
  * @return false otherwise
  */
 template <std::floating_point T>
-bool operator==(const Vector<T> &lhs, const Vector<T> &rhs)
+bool operator==(const Vec3<T> &lhs, const Vec3<T> &rhs)
 {
   return lhs.isEqual(rhs);
 }
 
 /**
- * @brief Vector inequality operator
+ * @brief Vec3 inequality operator
  *
  * @tparam T vector template parameter
  * @param[in] lhs first vector
@@ -368,13 +368,13 @@ bool operator==(const Vector<T> &lhs, const Vector<T> &rhs)
  * @return false otherwise
  */
 template <std::floating_point T>
-bool operator!=(const Vector<T> &lhs, const Vector<T> &rhs)
+bool operator!=(const Vec3<T> &lhs, const Vec3<T> &rhs)
 {
   return !(lhs == rhs);
 }
 
 /**
- * @brief Vector print operator
+ * @brief Vec3 print operator
  *
  * @tparam T vector template parameter
  * @param[in, out] ost output stream
@@ -382,17 +382,17 @@ bool operator!=(const Vector<T> &lhs, const Vector<T> &rhs)
  * @return std::ostream& modified stream instance
  */
 template <std::floating_point T>
-std::ostream &operator<<(std::ostream &ost, const Vector<T> &vec)
+std::ostream &operator<<(std::ostream &ost, const Vec3<T> &vec)
 {
   ost << "(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
   return ost;
 }
 
-using VectorD = Vector<double>;
-using VectorF = Vector<float>;
+using Vec3D = Vec3<double>;
+using Vec3F = Vec3<float>;
 
 template <std::floating_point T>
-Vector<T> &Vector<T>::operator+=(const Vector &vec)
+Vec3<T> &Vec3<T>::operator+=(const Vec3 &vec)
 {
   x += vec.x;
   y += vec.y;
@@ -402,7 +402,7 @@ Vector<T> &Vector<T>::operator+=(const Vector &vec)
 }
 
 template <std::floating_point T>
-Vector<T> &Vector<T>::operator-=(const Vector &vec)
+Vec3<T> &Vec3<T>::operator-=(const Vec3 &vec)
 {
   x -= vec.x;
   y -= vec.y;
@@ -412,14 +412,14 @@ Vector<T> &Vector<T>::operator-=(const Vector &vec)
 }
 
 template <std::floating_point T>
-Vector<T> Vector<T>::operator-() const
+Vec3<T> Vec3<T>::operator-() const
 {
-  return Vector{-x, -y, -z};
+  return Vec3{-x, -y, -z};
 }
 
 template <std::floating_point T>
 template <Number nType>
-Vector<T> &Vector<T>::operator*=(nType val)
+Vec3<T> &Vec3<T>::operator*=(nType val)
 {
   x *= val;
   y *= val;
@@ -430,7 +430,7 @@ Vector<T> &Vector<T>::operator*=(nType val)
 
 template <std::floating_point T>
 template <Number nType>
-Vector<T> &Vector<T>::operator/=(nType val)
+Vec3<T> &Vec3<T>::operator/=(nType val)
 {
   x /= static_cast<T>(val);
   y /= static_cast<T>(val);
@@ -440,39 +440,39 @@ Vector<T> &Vector<T>::operator/=(nType val)
 }
 
 template <std::floating_point T>
-T Vector<T>::dot(const Vector &rhs) const
+T Vec3<T>::dot(const Vec3 &rhs) const
 {
   return x * rhs.x + y * rhs.y + z * rhs.z;
 }
 
 template <std::floating_point T>
-Vector<T> Vector<T>::cross(const Vector &rhs) const
+Vec3<T> Vec3<T>::cross(const Vec3 &rhs) const
 {
-  return Vector{y * rhs.z - z * rhs.y, z * rhs.x - x * rhs.z, x * rhs.y - y * rhs.x};
+  return Vec3{y * rhs.z - z * rhs.y, z * rhs.x - x * rhs.z, x * rhs.y - y * rhs.x};
 }
 
 template <std::floating_point T>
-T Vector<T>::length2() const
+T Vec3<T>::length2() const
 {
   return dot(*this);
 }
 
 template <std::floating_point T>
-T Vector<T>::length() const
+T Vec3<T>::length() const
 {
   return std::sqrt(length2());
 }
 
 template <std::floating_point T>
-Vector<T> Vector<T>::normalized() const
+Vec3<T> Vec3<T>::normalized() const
 {
-  Vector res{*this};
+  Vec3 res{*this};
   res.normalize();
   return res;
 }
 
 template <std::floating_point T>
-Vector<T> &Vector<T>::normalize()
+Vec3<T> &Vec3<T>::normalize()
 {
   T len2 = length2();
   if (isNumEq(len2, 0) || isNumEq(len2, 1))
@@ -481,7 +481,7 @@ Vector<T> &Vector<T>::normalize()
 }
 
 template <std::floating_point T>
-T &Vector<T>::operator[](size_t i)
+T &Vec3<T>::operator[](size_t i)
 {
   switch (i % 3)
   {
@@ -497,7 +497,7 @@ T &Vector<T>::operator[](size_t i)
 }
 
 template <std::floating_point T>
-T Vector<T>::operator[](size_t i) const
+T Vec3<T>::operator[](size_t i) const
 {
   switch (i % 3)
   {
@@ -513,43 +513,43 @@ T Vector<T>::operator[](size_t i) const
 }
 
 template <std::floating_point T>
-bool Vector<T>::isPar(const Vector &rhs) const
+bool Vec3<T>::isPar(const Vec3 &rhs) const
 {
-  return cross(rhs).isEqual(Vector<T>{0});
+  return cross(rhs).isEqual(Vec3<T>{0});
 }
 
 template <std::floating_point T>
-bool Vector<T>::isPerp(const Vector &rhs) const
+bool Vec3<T>::isPerp(const Vec3 &rhs) const
 {
   return isNumEq(dot(rhs), 0);
 }
 
 template <std::floating_point T>
-bool Vector<T>::isEqual(const Vector &rhs) const
+bool Vec3<T>::isEqual(const Vec3 &rhs) const
 {
   return isNumEq(x, rhs.x) && isNumEq(y, rhs.y) && isNumEq(z, rhs.z);
 }
 
 template <std::floating_point T>
-bool Vector<T>::isNumEq(T lhs, T rhs)
+bool Vec3<T>::isNumEq(T lhs, T rhs)
 {
   return std::abs(rhs - lhs) < threshold_;
 }
 
 template <std::floating_point T>
-void Vector<T>::setThreshold(T thres)
+void Vec3<T>::setThreshold(T thres)
 {
   threshold_ = thres;
 }
 
 template <std::floating_point T>
-void Vector<T>::getThreshold()
+void Vec3<T>::getThreshold()
 {
   return threshold_;
 }
 
 template <std::floating_point T>
-void Vector<T>::setDefThreshold()
+void Vec3<T>::setDefThreshold()
 {
   threshold_ = std::numeric_limits<T>::epsilon();
 }

@@ -17,8 +17,8 @@ TEST(Line, copyCtor)
 TEST(Line, getset)
 {
   // Arrange
-  geom::Vector<double> v1{1, 0, 0};
-  geom::Vector<double> v2{0, 1, 0};
+  geom::Vec3<double> v1{1, 0, 0};
+  geom::Vec3<double> v2{0, 1, 0};
   geom::Line<double> l{v1, v2};
 
   // Act
@@ -33,8 +33,8 @@ TEST(Line, getset)
 TEST(Line, belongs)
 {
   // Arrange
-  geom::Vector<double> v1{1, 1, 2};
-  geom::Vector<double> v2{1, 1, 3};
+  geom::Vec3<double> v1{1, 1, 2};
+  geom::Vec3<double> v2{1, 1, 3};
   geom::Line<double> l{{0, 0, 1}, {1, 1, 1}};
 
   // Act
@@ -84,8 +84,8 @@ TEST(Line, isEqual)
 TEST(Line, getBy2Points)
 {
   // Arrange
-  geom::Vector<double> p1{1, 0, 0};
-  geom::Vector<double> p2{0, 1, 0};
+  geom::Vec3<double> p1{1, 0, 0};
+  geom::Vec3<double> p2{0, 1, 0};
 
   // Act
   auto l = geom::Line<double>::getBy2Points(p1, p2);
