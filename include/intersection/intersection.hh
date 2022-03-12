@@ -117,6 +117,12 @@ Segment<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl,
                               const Line<T> &l);
 
 template <std::floating_point T>
+bool isIntersectBothInvalid(const Triangle<T> &tr1, const Triangle<T> &tr2);
+
+template <std::floating_point T>
+bool isIntersectValidInvalid(const Triangle<T> &tr1, const Triangle<T> &tr2);
+
+template <std::floating_point T>
 bool isOverlap(Segment<T> &segm1, Segment<T> &segm2);
 
 template <std::forward_iterator It>
@@ -144,6 +150,17 @@ template <std::floating_point T>
 bool isIntersect(const Triangle<T> &tr1, const Triangle<T> &tr2)
 {
   /* TODO: handle invalid triangles case */
+  auto isInv1 = !tr1.isValid();
+  auto isInv2 = !tr2.isValid();
+
+  if (isInv1 && isInv2)
+    return detail::isIntersectBothInvalid(tr1, tr2);
+
+  if (isInv1)
+    return detail::isIntersectValidInvalid(tr2, tr1);
+
+  if (isInv2)
+    return detail::isIntersectValidInvalid(tr1, tr2);
 
   auto pl1 = tr1.getPlane();
   if (detail::isOnOneSide(pl1, tr2))
@@ -266,6 +283,18 @@ Segment<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const L
     std::swap(segm[0], segm[1]);
 
   return {segm[0], segm[1]};
+}
+
+template <std::floating_point T>
+bool isIntersectBothInvalid(const Triangle<T> &tr1, const Triangle<T> &tr2)
+{
+  return false;
+}
+
+template <std::floating_point T>
+bool isIntersectValidInvalid(const Triangle<T> &tr1, const Triangle<T> &tr2)
+{
+  return false;
 }
 
 template <std::floating_point T>
