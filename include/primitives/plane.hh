@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "line.hh"
-#include "vector.hh"
+#include "vec3.hh"
 
 /**
  * @brief

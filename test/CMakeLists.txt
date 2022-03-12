@@ -1,4 +1,4 @@
-set(TESTLIST vector_tst line_tst plane_tst triangle_tst intersection_tst distance_tst)
+set(TESTLIST vec3_tst line_tst plane_tst triangle_tst intersection_tst distance_tst)
 
 foreach(TEST ${TESTLIST})
   add_subdirectory(${TEST})

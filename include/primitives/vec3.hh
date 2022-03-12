@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_PRIMITIVES_VECTOR_HH__
-#define __INCLUDE_PRIMITIVES_VECTOR_HH__
+#ifndef __INCLUDE_PRIMITIVES_VEC3_HH__
+#define __INCLUDE_PRIMITIVES_VEC3_HH__
 
 #include <cmath>
 #include <concepts>
@@ -8,7 +8,7 @@
 #include <limits>
 
 /**
- * @file vector.hh
+ * @file vec3.hh
  * Vec3 class implementation
  */
 
@@ -556,4 +556,4 @@ void Vec3<T>::setDefThreshold()
 
 } // namespace geom
 
-#endif // __INCLUDE_PRIMITIVES_VECTOR_HH__
+#endif // __INCLUDE_PRIMITIVES_VEC3_HH__

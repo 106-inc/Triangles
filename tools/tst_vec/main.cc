@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "primitives/vector.hh"
+#include "primitives/vec3.hh"
 
 int main()
 {

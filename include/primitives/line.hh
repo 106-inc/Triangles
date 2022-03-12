@@ -1,7 +1,7 @@
 #ifndef __INCLUDE_PRIMITIVES_LINE_HH__
 #define __INCLUDE_PRIMITIVES_LINE_HH__
 
-#include "vector.hh"
+#include "vec3.hh"
 
 /**
  * @brief line.hh
