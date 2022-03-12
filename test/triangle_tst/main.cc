@@ -36,6 +36,19 @@ TEST(Triangle, output)
   ASSERT_STREQ(sst.str().c_str(), "Triangle: {(1, 2, 3), (4, 5, 6), (7, 8, 9)}");
 }
 
+TEST(Triangle, isValid)
+{
+  // Arrange
+  Triangle<double> tr1{{1, 0, 0}, {0, 1, 0}, {0, 0, 0}};
+  Triangle<double> tr2{{1, 0, 0}, {0, 1, 0}, {0, 1, 0}};
+  Triangle<double> tr3{{1, 0, 0}, {1, 0, 0}, {1, 0, 0}};
+
+  // Act & Assert
+  ASSERT_TRUE(tr1.isValid());
+  ASSERT_FALSE(tr2.isValid());
+  ASSERT_FALSE(tr3.isValid());
+}
+
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);

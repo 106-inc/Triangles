@@ -214,7 +214,7 @@ public:
   /**
    * @brief Get current threshold value
    */
-  static void getThreshold();
+  static T getThreshold();
 
   /**
    * @brief Set threshold to default value
@@ -513,7 +513,7 @@ void Vec2<T>::setThreshold(T thres)
 }
 
 template <std::floating_point T>
-void Vec2<T>::getThreshold()
+T Vec2<T>::getThreshold()
 {
   return threshold_;
 }

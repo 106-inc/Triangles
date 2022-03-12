@@ -54,6 +54,14 @@ public:
    * @return Plane<T>
    */
   Plane<T> getPlane() const;
+
+  /**
+   * @brief Check is triangle valid
+   *
+   * @return true if triangle is valid
+   * @return false if triangle is invalid
+   */
+  bool isValid() const;
 };
 
 /**
@@ -91,6 +99,16 @@ template <std::floating_point T>
 Plane<T> Triangle<T>::getPlane() const
 {
   return Plane<T>::getBy3Points(vertices_[0], vertices_[1], vertices_[2]);
+}
+
+template <std::floating_point T>
+bool Triangle<T>::isValid() const
+{
+  auto edge1 = vertices_[1] - vertices_[0];
+  auto edge2 = vertices_[2] - vertices_[0];
+
+  auto cross12 = cross(edge1, edge2);
+  return (cross12 != Vec3<T>{});
 }
 
 } // namespace geom
