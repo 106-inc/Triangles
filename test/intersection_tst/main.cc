@@ -4,7 +4,7 @@
 
 using namespace geom;
 
-TEST(intersection, TrianglesParallel1)
+TEST(triangles, Parallel1)
 {
   // Arrange
   Triangle<double> t1{{0, 0, 0}, {0, 1, 0}, {0, 0, 1}};
@@ -17,7 +17,7 @@ TEST(intersection, TrianglesParallel1)
   ASSERT_FALSE(isIntersect(t2, t3));
 }
 
-TEST(intersection, TrianglesParallel2)
+TEST(triangles, Parallel2)
 {
   // Arrange
   Triangle<double> t1{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
@@ -28,7 +28,25 @@ TEST(intersection, TrianglesParallel2)
   ASSERT_FALSE(isIntersect(t2, t1));
 }
 
-TEST(intersection, TrianglesSameSide)
+TEST(triangles, SamePlane)
+{
+  // Arrange
+  Triangle<double> t1{{1, 0, 0}, {0, 1, 0}, {0, 0, 0}};
+  Triangle<double> t2{{3, 0, 0}, {0, 3, 0}, {2, 2, 0}};
+  Triangle<double> t3{{3, 0, 0}, {0, 3, 0}, {0, 0, 0}};
+
+  // Act & Assert
+  EXPECT_FALSE(isIntersect(t1, t2));
+  EXPECT_FALSE(isIntersect(t2, t1));
+
+  EXPECT_TRUE(isIntersect(t1, t3));
+  EXPECT_TRUE(isIntersect(t3, t1));
+
+  EXPECT_TRUE(isIntersect(t2, t3));
+  EXPECT_TRUE(isIntersect(t3, t2));
+}
+
+TEST(triangles, SameSide)
 {
   // Arrange
   Triangle<double> t1{{0, 0, 0}, {0, 1, 0}, {1, 0, 0}};
@@ -39,7 +57,7 @@ TEST(intersection, TrianglesSameSide)
   ASSERT_FALSE(isIntersect(t2, t1));
 }
 
-TEST(intersection, commonCase)
+TEST(triangles, CommonCase)
 {
   // Arrange
   Triangle<double> t1{{0, 0, 0}, {0, 1, 0}, {1, 0, 0}};
@@ -49,7 +67,7 @@ TEST(intersection, commonCase)
   ASSERT_TRUE(isIntersect(t1, t2));
 }
 
-TEST(intersection, PlanesSame)
+TEST(planes, Same)
 {
   // Arrane
   auto pl1 = Plane<double>::getNormalDist({0, 0, 1}, 1);
@@ -62,7 +80,7 @@ TEST(intersection, PlanesSame)
   ASSERT_TRUE(res);
 }
 
-TEST(intersection, PlanesParallel)
+TEST(planes, Parallel)
 {
   // Arrange
   auto pl1 = Plane<double>::getNormalDist({0, 0, 1}, 1);
@@ -75,7 +93,7 @@ TEST(intersection, PlanesParallel)
   ASSERT_TRUE(res);
 }
 
-TEST(intersection, Planes)
+TEST(planes, Common)
 {
   // Arrange
   auto pl1 = Plane<double>::getBy3Points({0, 0, 0}, {1, 0, 0}, {0, 1, 0});
@@ -94,7 +112,7 @@ TEST(intersection, Planes)
   ASSERT_EQ(l2, res13);
 }
 
-TEST(intersection, intervalOverlap)
+TEST(detail, intervalOverlap)
 {
   // Arrange
   std::pair<double, double> interv1{-10, 10};
@@ -123,6 +141,108 @@ TEST(intersection, intervalOverlap)
   ASSERT_FALSE(detail::isOverlap(interv1, interv7));
   ASSERT_FALSE(detail::isOverlap(interv6, interv1));
   ASSERT_FALSE(detail::isOverlap(interv7, interv1));
+}
+
+TEST(detail, isSameSign)
+{
+  // Arrange
+  std::vector<double> arr1{1.0, 34.0, 5.0, 2.0};
+  std::vector<double> arr2{-1.0, 34.0, 5.0, 2.0};
+  std::vector<double> arr3{0.0, 34.0, 5.0, 2.0};
+
+  // Act & Assert
+  ASSERT_TRUE(detail::isSameSign(arr1.begin(), arr1.end()));
+  ASSERT_FALSE(detail::isSameSign(arr2.begin(), arr2.end()));
+  ASSERT_FALSE(detail::isSameSign(arr3.begin(), arr3.end()));
+}
+
+TEST(detail, isOnOneSide)
+{
+  // Arrange
+  auto pl = Plane<double>::getNormalDist({0, 0, 1}, 0);
+
+  Triangle<double> t1{{0, 0, 1}, {1, 0, 1}, {0, 1, 1}};
+  Triangle<double> t2{{0, 0, 0}, {1, 0, 1}, {0, 1, 1}};
+  Triangle<double> t3{{0, 0, -1}, {1, 0, 1}, {0, 1, 1}};
+
+  // Act & Assert
+  ASSERT_TRUE(detail::isOnOneSide(pl, t1));
+  ASSERT_FALSE(detail::isOnOneSide(pl, t2));
+  ASSERT_FALSE(detail::isOnOneSide(pl, t3));
+}
+
+TEST(detail, isCounterClockwise)
+{
+  // Arrange
+  detail::Trian2<double> tr1;
+  tr1[0] = {1.0, 0.0}, tr1[1] = {0.0, 1.0}, tr1[2] = {0, -1.0};
+
+  detail::Trian2<double> tr2;
+  tr2[0] = {1.0, 0.0}, tr2[1] = {0.0, -1.0}, tr2[2] = {0, 1.0};
+
+  detail::Trian2<double> tr3;
+  tr3[0] = {0.0, 1.0}, tr3[1] = {0.0, 0.0}, tr3[2] = {1.0, 0.0};
+
+  detail::Trian2<double> tr4;
+  tr4[0] = {0.0, 0.0}, tr4[1] = {0.0, 1.0}, tr4[2] = {1.0, 0.0};
+
+  // Act & Assert
+  ASSERT_TRUE(detail::isCounterClockwise(tr1));
+  ASSERT_FALSE(detail::isCounterClockwise(tr2));
+  ASSERT_TRUE(detail::isCounterClockwise(tr3));
+  ASSERT_FALSE(detail::isCounterClockwise(tr4));
+}
+
+TEST(detail, isIntersect2D)
+{
+  // Arrange
+  Triangle<double> t1{{1, 0, 0}, {0, 1, 0}, {0, 0, 0}};
+  Triangle<double> t2{{3, 0, 0}, {0, 3, 0}, {2, 2, 0}};
+  Triangle<double> t3{{3, 0, 0}, {0, 3, 0}, {0, 0, 0}};
+
+  // Act & Assert
+  EXPECT_FALSE(detail::isIntersect2D(t1, t2));
+  EXPECT_FALSE(detail::isIntersect2D(t2, t1));
+
+  EXPECT_TRUE(detail::isIntersect2D(t1, t3));
+  EXPECT_TRUE(detail::isIntersect2D(t3, t1));
+
+  EXPECT_TRUE(detail::isIntersect2D(t2, t3));
+  EXPECT_TRUE(detail::isIntersect2D(t3, t2));
+}
+
+TEST(detail, getTrian2CounterClockwise)
+{
+  // Arrange
+  auto pl = Plane<double>::getNormalDist({0, 1, 1e-3}, 0);
+  Triangle<double> t{{0, 2, 0}, {1, 0, 0}, {0, -1, 1}};
+  detail::Trian2<double> res1;
+  res1[0] = {0, 0}, res1[1] = {1, 0}, res1[2] = {0, 1};
+
+  // Act
+  auto res2 = detail::getTrian2(pl, t);
+
+  // Assert
+  EXPECT_EQ(res1[0], res2[0]);
+  EXPECT_EQ(res1[1], res2[1]);
+  EXPECT_EQ(res1[2], res2[2]);
+}
+
+TEST(detail, getTrian2Clockwise)
+{
+  // Arrange
+  auto pl = Plane<double>::getNormalDist({1, 1e-3, 0}, 0);
+  Triangle<double> t{{0, 0, 0}, {2, 0, 1}, {-1, 1, 0}};
+  detail::Trian2<double> res1;
+  res1[0] = {0, 1}, res1[1] = {0, 0}, res1[2] = {1, 0};
+
+  // Act
+  auto res2 = detail::getTrian2(pl, t);
+
+  // Assert
+  EXPECT_EQ(res1[0], res2[0]);
+  EXPECT_EQ(res1[1], res2[1]);
+  EXPECT_EQ(res1[2], res2[2]);
 }
 
 int main(int argc, char **argv)

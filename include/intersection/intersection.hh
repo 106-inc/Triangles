@@ -6,6 +6,7 @@
 
 #include "distance/distance.hh"
 #include "primitives/primitives.hh"
+#include "primitives/vec2.hh"
 
 namespace geom
 {
@@ -20,7 +21,7 @@ namespace geom
  * @return false if triangles are not intersect
  */
 template <std::floating_point T>
-bool isIntersect2D(const Triangle<T> &tr1, const Triangle<T> &tr2);
+bool isIntersect(const Triangle<T> &tr1, const Triangle<T> &tr2);
 
 /**
  * @brief Intersect 2 planes and return result of intersection
@@ -103,6 +104,9 @@ template <typename T>
 using Segment = std::pair<T, T>;
 
 template <std::floating_point T>
+using Trian2 = std::array<Vec2<T>, 3>;
+
+template <std::floating_point T>
 bool isIntersect2D(const Triangle<T> &tr1, const Triangle<T> &tr2);
 
 template <std::floating_point T>
@@ -121,6 +125,15 @@ bool isSameSign(It begin, It end);
 template <std::floating_point T>
 bool isOnOneSide(const Plane<T> &pl, const Triangle<T> &tr);
 
+template <std::floating_point T>
+Trian2<T> getTrian2(const Plane<T> &pl, const Triangle<T> &tr);
+
+template <std::floating_point T>
+bool isCounterClockwise(Trian2<T> &tr);
+
+template <std::floating_point T>
+Segment<T> computeInterval(const Trian2<T> &tr, const Vec2<T> &d);
+
 } // namespace detail
 } // namespace geom
 
@@ -134,7 +147,7 @@ bool isIntersect(const Triangle<T> &tr1, const Triangle<T> &tr2)
 
   auto pl1 = Plane<T>::getBy3Points(tr1[0], tr1[1], tr1[2]);
 
-  if (!detail::isOnOneSide(pl1, tr2))
+  if (detail::isOnOneSide(pl1, tr2))
     return false;
 
   auto pl2 = Plane<T>::getBy3Points(tr2[0], tr2[1], tr2[2]);
@@ -145,7 +158,7 @@ bool isIntersect(const Triangle<T> &tr1, const Triangle<T> &tr2)
   if (pl1.isPar(pl2))
     return false;
 
-  if (!detail::isOnOneSide(pl2, tr1))
+  if (detail::isOnOneSide(pl2, tr1))
     return false;
 
   return detail::isIntersectMollerHaines(tr1, tr2);
@@ -185,8 +198,26 @@ namespace detail
 template <std::floating_point T>
 bool isIntersect2D(const Triangle<T> &tr1, const Triangle<T> &tr2)
 {
-  assert(false && "Not implemented yet");
-  return false;
+  auto pl = Plane<T>::getBy3Points(tr1[0], tr1[1], tr1[2]);
+
+  auto trian1 = getTrian2(pl, tr1);
+  auto trian2 = getTrian2(pl, tr2);
+
+  for (auto trian : {trian1, trian2})
+  {
+    for (size_t i0 = 0, i1 = 2; i0 < 3; i1 = i0, ++i0)
+    {
+      auto d = (trian[i0] - trian[i1]).getPerp();
+
+      auto s1 = computeInterval(trian1, d);
+      auto s2 = computeInterval(trian2, d);
+
+      if (s2.second < s1.first || s1.second < s2.first)
+        return false;
+    }
+  }
+
+  return true;
 }
 
 template <std::floating_point T>
@@ -252,7 +283,7 @@ bool isSameSign(It begin, It end)
   auto prev = begin;
 
   for (++cur; cur != end; ++cur)
-    if ((*cur) * (*prev) < 0)
+    if ((*cur) * (*prev) <= 0)
       return false;
 
   return true;
@@ -266,9 +297,79 @@ bool isOnOneSide(const Plane<T> &pl, const Triangle<T> &tr)
     sdist[i] = distance(pl, tr[i]);
 
   if (detail::isSameSign(sdist.begin(), sdist.end()))
-    return false;
+    return true;
 
-  return true;
+  return false;
+}
+
+template <std::floating_point T>
+Trian2<T> getTrian2(const Plane<T> &pl, const Triangle<T> &tr)
+{
+  auto norm = pl.norm();
+
+  const Vec3<T> x{1, 0, 0};
+  const Vec3<T> y{0, 1, 0};
+  const Vec3<T> z{0, 0, 1};
+
+  std::array<Vec3<T>, 3> xyz{x, y, z};
+  std::array<T, 3> xyzDot;
+
+  std::transform(xyz.begin(), xyz.end(), xyzDot.begin(),
+                 [&norm](const auto &axis) { return std::abs(dot(axis, norm)); });
+
+  auto maxIt = std::max_element(xyzDot.begin(), xyzDot.end());
+  auto maxIdx = static_cast<size_t>(maxIt - xyzDot.begin());
+
+  Trian2<T> res;
+  for (size_t i = 0; i < 3; ++i)
+    for (size_t j = 0, k = 0; j < 2; ++j, ++k)
+    {
+      if (k == maxIdx)
+        ++k;
+
+      res[i][j] = tr[i][k];
+    }
+
+  if (!isCounterClockwise(res))
+    std::swap(res[0], res[1]);
+
+  return res;
+}
+
+template <std::floating_point T>
+bool isCounterClockwise(Trian2<T> &tr)
+{
+  /**
+   * The triangle is counterclockwise ordered if \delta > 0
+   * and clockwise ordered if \delta < 0.
+   *
+   *              +  1  1  1 +
+   * \delta = det | x0 x1 x2 | = (x1 * y2 - x2 * y1) - (x0 * y2 - x2 * y0)
+   *              + y0 y1 y2 +                       + (x0 * y1 - x1 * y0)
+   *
+   */
+
+  auto x0 = tr[0][0], x1 = tr[1][0], x2 = tr[2][0];
+  auto y0 = tr[0][1], y1 = tr[1][1], y2 = tr[2][1];
+
+  auto delta = (x1 * y2 - x2 * y1) - (x0 * y2 - x2 * y0) + (x0 * y1 - x1 * y0);
+  return (delta > 0);
+}
+
+template <std::floating_point T>
+Segment<T> computeInterval(const Trian2<T> &tr, const Vec2<T> &d)
+{
+  auto init = dot(d, tr[0]);
+  auto min = init;
+  auto max = init;
+
+  for (size_t i = 1; i < 3; ++i)
+    if (auto val = dot(d, tr[i]); val < min)
+      min = val;
+    else if (val > max)
+      max = val;
+
+  return {min, max};
 }
 
 } // namespace detail
