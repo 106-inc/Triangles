@@ -145,13 +145,11 @@ bool isIntersect(const Triangle<T> &tr1, const Triangle<T> &tr2)
 {
   /* TODO: handle invalid triangles case */
 
-  auto pl1 = Plane<T>::getBy3Points(tr1[0], tr1[1], tr1[2]);
-
+  auto pl1 = tr1.getPlane();
   if (detail::isOnOneSide(pl1, tr2))
     return false;
 
-  auto pl2 = Plane<T>::getBy3Points(tr2[0], tr2[1], tr2[2]);
-
+  auto pl2 = tr2.getPlane();
   if (pl1 == pl2)
     return detail::isIntersect2D(tr1, tr2);
 
@@ -198,7 +196,7 @@ namespace detail
 template <std::floating_point T>
 bool isIntersect2D(const Triangle<T> &tr1, const Triangle<T> &tr2)
 {
-  auto pl = Plane<T>::getBy3Points(tr1[0], tr1[1], tr1[2]);
+  auto pl = tr1.getPlane();
 
   auto trian1 = getTrian2(pl, tr1);
   auto trian2 = getTrian2(pl, tr2);
@@ -223,8 +221,8 @@ bool isIntersect2D(const Triangle<T> &tr1, const Triangle<T> &tr2)
 template <std::floating_point T>
 bool isIntersectMollerHaines(const Triangle<T> &tr1, const Triangle<T> &tr2)
 {
-  auto pl1 = Plane<T>::getBy3Points(tr1[0], tr1[1], tr1[2]);
-  auto pl2 = Plane<T>::getBy3Points(tr2[0], tr2[1], tr2[2]);
+  auto pl1 = tr1.getPlane();
+  auto pl2 = tr2.getPlane();
 
   auto l = std::get<Line<T>>(intersect(pl1, pl2));
 

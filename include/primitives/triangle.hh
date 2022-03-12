@@ -4,6 +4,7 @@
 #include <array>
 #include <concepts>
 
+#include "plane.hh"
 #include "vec3.hh"
 
 /**
@@ -46,6 +47,13 @@ public:
    * @return const Vec3<T>& const reference to vertex
    */
   const Vec3<T> &operator[](std::size_t idx) const;
+
+  /**
+   * @brief Get triangle's plane
+   *
+   * @return Plane<T>
+   */
+  Plane<T> getPlane() const;
 };
 
 /**
@@ -77,6 +85,12 @@ template <std::floating_point T>
 const Vec3<T> &Triangle<T>::operator[](std::size_t idx) const
 {
   return vertices_[idx % 3];
+}
+
+template <std::floating_point T>
+Plane<T> Triangle<T>::getPlane() const
+{
+  return Plane<T>::getBy3Points(vertices_[0], vertices_[1], vertices_[2]);
 }
 
 } // namespace geom
