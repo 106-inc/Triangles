@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "primitives/primitives.hh"
+#include "primitives/vec2.hh"
 
 using namespace geom;
 
