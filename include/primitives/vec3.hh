@@ -7,6 +7,8 @@
 #include <iostream>
 #include <limits>
 
+#include "common.hh"
+
 /**
  * @file vec3.hh
  * Vec3 class implementation
@@ -14,15 +16,6 @@
 
 namespace geom
 {
-
-/**
- * @concept Number
- * @brief Useful concept which represents floating point and integral types
- *
- * @tparam T
- */
-template <class T>
-concept Number = std::is_floating_point_v<T> || std::is_integral_v<T>;
 
 /**
  * @class Vec3
