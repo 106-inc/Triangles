@@ -288,12 +288,18 @@ Segment<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const L
 template <std::floating_point T>
 bool isIntersectBothInvalid(const Triangle<T> &tr1, const Triangle<T> &tr2)
 {
+  std::cout << "both invalid" << std::endl;
+  std::cout << "tr1: " << tr1 << std::endl;
+  std::cout << "tr2: " << tr2 << std::endl;
   return false;
 }
 
 template <std::floating_point T>
 bool isIntersectValidInvalid(const Triangle<T> &tr1, const Triangle<T> &tr2)
 {
+  std::cout << "one invalid" << std::endl;
+  std::cout << "tr1: " << tr1 << std::endl;
+  std::cout << "tr2: " << tr2 << std::endl;
   return false;
 }
 

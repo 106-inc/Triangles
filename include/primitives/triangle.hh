@@ -32,6 +32,11 @@ private:
 
 public:
   /**
+   * @brief Construct a new Triangle object
+   */
+  Triangle();
+
+  /**
    * @brief Construct a new Triangle object from 3 points
    *
    * @param[in] p1 1st point
@@ -47,6 +52,14 @@ public:
    * @return const Vec3<T>& const reference to vertex
    */
   const Vec3<T> &operator[](std::size_t idx) const;
+
+  /**
+   * @brief Overloaded operator[] to get access to vertices
+   *
+   * @param[in] idx index of vertex
+   * @return Vec3<T>& reference to vertex
+   */
+  Vec3<T> &operator[](std::size_t idx);
 
   /**
    * @brief Get triangle's plane
@@ -76,7 +89,7 @@ template <std::floating_point T>
 std::ostream &operator<<(std::ostream &ost, const Triangle<T> &tr)
 {
   ost << "Triangle: {";
-  for (size_t i : {0, 1, 2})
+  for (auto i : {0, 1, 2})
     ost << tr[i] << (i == 2 ? "" : ", ");
 
   ost << "}";
@@ -85,12 +98,29 @@ std::ostream &operator<<(std::ostream &ost, const Triangle<T> &tr)
 }
 
 template <std::floating_point T>
+std::istream &operator>>(std::istream &ist, Triangle<T> &tr)
+{
+  ist >> tr[0] >> tr[1] >> tr[2];
+  return ist;
+}
+
+template <std::floating_point T>
+Triangle<T>::Triangle() : vertices_()
+{}
+
+template <std::floating_point T>
 Triangle<T>::Triangle(const Vec3<T> &p1, const Vec3<T> &p2, const Vec3<T> &p3)
   : vertices_{p1, p2, p3}
 {}
 
 template <std::floating_point T>
 const Vec3<T> &Triangle<T>::operator[](std::size_t idx) const
+{
+  return vertices_[idx % 3];
+}
+
+template <std::floating_point T>
+Vec3<T> &Triangle<T>::operator[](std::size_t idx)
 {
   return vertices_[idx % 3];
 }

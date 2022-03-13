@@ -381,6 +381,21 @@ std::ostream &operator<<(std::ostream &ost, const Vec3<T> &vec)
   return ost;
 }
 
+/**
+ * @brief Vec3 scan operator
+ *
+ * @tparam T vector template parameter
+ * @param[in, out] ist input stram
+ * @param[in, out] vec vector to scan
+ * @return std::istream& modified stream instance
+ */
+template <std::floating_point T>
+std::istream &operator>>(std::istream &ist, Vec3<T> &vec)
+{
+  ist >> vec.x >> vec.y >> vec.z;
+  return ist;
+}
+
 using Vec3D = Vec3<double>;
 using Vec3F = Vec3<float>;
 
