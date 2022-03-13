@@ -48,7 +48,7 @@ set(GCC_WARNINGS
 -Wformat-signedness
 -Wformat=2
 -Winline
--Wlarger-than=8192
+# -Wlarger-than=8192
 -Wlogical-op
 # -Wmissing-declarations
 -Wnon-virtual-dtor

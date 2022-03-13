@@ -89,7 +89,7 @@ template <std::floating_point T>
 std::ostream &operator<<(std::ostream &ost, const Triangle<T> &tr)
 {
   ost << "Triangle: {";
-  for (auto i : {0, 1, 2})
+  for (size_t i = 0; i < 3; ++i)
     ost << tr[i] << (i == 2 ? "" : ", ");
 
   ost << "}";
