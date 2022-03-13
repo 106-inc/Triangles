@@ -62,7 +62,7 @@ enable_testing()
 
 # Unit tests
 foreach(TEST ${TESTLIST})
-  add_test(NAME ${TEST} COMMAND ${TEST})
+  add_test(NAME ${TEST} COMMAND ${TEST} --gtest_color=yes)
 endforeach()
 
 # End to end tests
