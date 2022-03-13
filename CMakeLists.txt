@@ -60,6 +60,10 @@ endforeach()
 # Test running stuff
 enable_testing()
 
+# Unit tests
 foreach(TEST ${TESTLIST})
   add_test(NAME ${TEST} COMMAND ${TEST})
 endforeach()
+
+# End to end tests
+add_test(NAME e2e COMMAND python3 "${CMAKE_SOURCE_DIR}/test/e2e/my-lit.py" "${CMAKE_BINARY_DIR}/test/e2e" -v)
