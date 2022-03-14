@@ -2,7 +2,6 @@
 #define __INCLUDE_PRIMITIVES_VEC3_HH__
 
 #include <cmath>
-#include <concepts>
 #include <functional>
 #include <iostream>
 #include <limits>

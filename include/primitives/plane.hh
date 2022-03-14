@@ -1,8 +1,6 @@
 #ifndef __INCLUDE_PRIMITIVES_PLANE_HH__
 #define __INCLUDE_PRIMITIVES_PLANE_HH__
 
-#include <iostream>
-
 #include "line.hh"
 #include "vec3.hh"
 

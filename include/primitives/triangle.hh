@@ -2,7 +2,6 @@
 #define __INCLUDE_PRIMITIVES_TRIANGLE_HH__
 
 #include <array>
-#include <concepts>
 
 #include "plane.hh"
 #include "vec3.hh"
