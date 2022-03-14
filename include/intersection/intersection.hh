@@ -261,9 +261,15 @@ Segment<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const L
   for (size_t i = 0; i < 3; ++i)
     sdist[i] = distance(pl, tr[i]);
 
+  auto isSameSign = [](const auto &num1, const auto &num2) {
+    if (num1 * num2 > Vec3<T>::getThreshold())
+      return true;
+    return Vec3<T>::isNumEq(num1, 0) && Vec3<T>::isNumEq(num2, 0);
+  };
+
   std::array<bool, 3> isOneSide{};
   for (size_t i = 0; i < 3; ++i)
-    isOneSide[i] = (sdist[i] * sdist[(i + 1) % 3] > 0);
+    isOneSide[i] = isSameSign(sdist[i], sdist[(i + 1) % 3]);
 
   /* Looking for vertex which is alone on it's side */
   size_t rogue = 0;
