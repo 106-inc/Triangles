@@ -38,11 +38,5 @@
 
 #RUN: %lvl1 < %s | %fc %s
 #CHECK:     0
-#CHECK-NOT: 1
-#CHECK-NOT: 2
-#CHECK-NOT: 3
-#CHECK-NOT: 4
-#CHECK-NOT: 5
-#CHECK-NOT: 6
-#CHECK-NOT: 7
 #CHECK:     8
+#CHECK-NOT: {{[0-9]+}}
