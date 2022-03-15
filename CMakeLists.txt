@@ -66,4 +66,4 @@ foreach(TEST ${TESTLIST})
 endforeach()
 
 # End to end tests
-add_test(NAME e2e COMMAND python3 "${CMAKE_SOURCE_DIR}/test/e2e/my-lit.py" "${CMAKE_BINARY_DIR}/test/e2e" -v)
+add_test(NAME e2e COMMAND python3 ${LIT_RUN_CMD})
