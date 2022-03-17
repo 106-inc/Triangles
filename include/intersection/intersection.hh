@@ -120,7 +120,10 @@ template <std::floating_point T>
 bool isIntersectBothInvalid(const Triangle<T> &tr1, const Triangle<T> &tr2);
 
 template <std::floating_point T>
-bool isIntersectValidInvalid(const Triangle<T> &tr1, const Triangle<T> &tr2);
+bool isIntersectValidInvalid(const Triangle<T> &valid, const Triangle<T> &invalid);
+
+template <std::floating_point T>
+bool isIntersectPointTriangle(const Vec3<T> &pt, const Triangle<T> &tr);
 
 template <std::floating_point T>
 bool isPoint(const Triangle<T> &tr);
@@ -310,12 +313,43 @@ bool isIntersectBothInvalid(const Triangle<T> &tr1, const Triangle<T> &tr2)
 }
 
 template <std::floating_point T>
-bool isIntersectValidInvalid(const Triangle<T> &tr1, const Triangle<T> &tr2)
+bool isIntersectValidInvalid(const Triangle<T> &valid, const Triangle<T> &invalid)
 {
+  if (isPoint(invalid))
+    return isIntersectPointTriangle(invalid[0], valid);
+
   std::cout << "one invalid" << std::endl;
-  std::cout << "tr1: " << tr1 << std::endl;
-  std::cout << "tr2: " << tr2 << std::endl;
+  std::cout << "tr1: " << valid << std::endl;
+  std::cout << "tr2: " << invalid << std::endl;
   return false;
+}
+
+template <std::floating_point T>
+bool isIntersectPointTriangle(const Vec3<T> &pt, const Triangle<T> &tr)
+{
+  if (!tr.getPlane().belongs(pt))
+    return false;
+
+  /* TODO: comment better */
+  /* pt = point + u * edge1 + v * edge2 */
+  auto point = pt - tr[0];
+  auto edge1 = tr[1] - tr[0];
+  auto edge2 = tr[2] - tr[0];
+
+  auto dotE1E1 = dot(edge1, edge1);
+  auto dotE1E2 = dot(edge1, edge2);
+  auto dotE1PT = dot(edge1, point);
+
+  auto dotE2E2 = dot(edge2, edge2);
+  auto dotE2PT = dot(edge2, point);
+
+  auto denom = dotE1E1 * dotE2E2 - dotE1E2 * dotE1E2;
+  auto u = (dotE2E2 * dotE1PT - dotE1E2 * dotE2PT) / denom;
+  auto v = (dotE1E1 * dotE2PT - dotE1E2 * dotE1PT) / denom;
+
+  /* Point belongs to triangle if: (u >= 0) && (v >= 0) && (u + v <= 1) */
+  auto eps = Vec3<T>::getThreshold();
+  return (u > -eps) && (v > -eps) && (u + v < 1 + eps);
 }
 
 template <std::floating_point T>

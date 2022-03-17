@@ -36,14 +36,14 @@ TEST(triangles, SamePlane)
   Triangle<double> t3{{3, 0, 0}, {0, 3, 0}, {0, 0, 0}};
 
   // Act & Assert
-  EXPECT_FALSE(isIntersect(t1, t2));
-  EXPECT_FALSE(isIntersect(t2, t1));
+  ASSERT_FALSE(isIntersect(t1, t2));
+  ASSERT_FALSE(isIntersect(t2, t1));
 
-  EXPECT_TRUE(isIntersect(t1, t3));
-  EXPECT_TRUE(isIntersect(t3, t1));
+  ASSERT_TRUE(isIntersect(t1, t3));
+  ASSERT_TRUE(isIntersect(t3, t1));
 
-  EXPECT_TRUE(isIntersect(t2, t3));
-  EXPECT_TRUE(isIntersect(t3, t2));
+  ASSERT_TRUE(isIntersect(t2, t3));
+  ASSERT_TRUE(isIntersect(t3, t2));
 }
 
 TEST(triangles, SameSide)
@@ -201,14 +201,14 @@ TEST(detail, isIntersect2D)
   Triangle<double> t3{{3, 0, 0}, {0, 3, 0}, {0, 0, 0}};
 
   // Act & Assert
-  EXPECT_FALSE(detail::isIntersect2D(t1, t2));
-  EXPECT_FALSE(detail::isIntersect2D(t2, t1));
+  ASSERT_FALSE(detail::isIntersect2D(t1, t2));
+  ASSERT_FALSE(detail::isIntersect2D(t2, t1));
 
-  EXPECT_TRUE(detail::isIntersect2D(t1, t3));
-  EXPECT_TRUE(detail::isIntersect2D(t3, t1));
+  ASSERT_TRUE(detail::isIntersect2D(t1, t3));
+  ASSERT_TRUE(detail::isIntersect2D(t3, t1));
 
-  EXPECT_TRUE(detail::isIntersect2D(t2, t3));
-  EXPECT_TRUE(detail::isIntersect2D(t3, t2));
+  ASSERT_TRUE(detail::isIntersect2D(t2, t3));
+  ASSERT_TRUE(detail::isIntersect2D(t3, t2));
 }
 
 TEST(detail, getTrian2CounterClockwise)
@@ -223,9 +223,9 @@ TEST(detail, getTrian2CounterClockwise)
   auto res2 = detail::getTrian2(pl, t);
 
   // Assert
-  EXPECT_EQ(res1[0], res2[0]);
-  EXPECT_EQ(res1[1], res2[1]);
-  EXPECT_EQ(res1[2], res2[2]);
+  ASSERT_EQ(res1[0], res2[0]);
+  ASSERT_EQ(res1[1], res2[1]);
+  ASSERT_EQ(res1[2], res2[2]);
 }
 
 TEST(detail, getTrian2Clockwise)
@@ -240,9 +240,29 @@ TEST(detail, getTrian2Clockwise)
   auto res2 = detail::getTrian2(pl, t);
 
   // Assert
-  EXPECT_EQ(res1[0], res2[0]);
-  EXPECT_EQ(res1[1], res2[1]);
-  EXPECT_EQ(res1[2], res2[2]);
+  ASSERT_EQ(res1[0], res2[0]);
+  ASSERT_EQ(res1[1], res2[1]);
+  ASSERT_EQ(res1[2], res2[2]);
+}
+
+TEST(detail, isIntersectPointTriangle)
+{
+  // Arrange
+  Triangle<double> tr{{0, 0, 0}, {1, 0, 0}, {0, 1, 0}};
+
+  // Act & Assert
+  ASSERT_TRUE(detail::isIntersectPointTriangle({0, 0, 0}, tr));
+  ASSERT_TRUE(detail::isIntersectPointTriangle({1, 0, 0}, tr));
+  ASSERT_TRUE(detail::isIntersectPointTriangle({0, 1, 0}, tr));
+  ASSERT_TRUE(detail::isIntersectPointTriangle({0.5, 0.5, 0}, tr));
+  ASSERT_TRUE(detail::isIntersectPointTriangle({0.25, 0.25, 0}, tr));
+
+  ASSERT_FALSE(detail::isIntersectPointTriangle({2, 0, 0}, tr));
+  ASSERT_FALSE(detail::isIntersectPointTriangle({0, 2, 0}, tr));
+  ASSERT_FALSE(detail::isIntersectPointTriangle({1, 1, 0}, tr));
+  ASSERT_FALSE(detail::isIntersectPointTriangle({-1, 0, 0}, tr));
+  ASSERT_FALSE(detail::isIntersectPointTriangle({0, -1, 0}, tr));
+  ASSERT_FALSE(detail::isIntersectPointTriangle({-1, -1, 0}, tr));
 }
 
 int main(int argc, char **argv)
