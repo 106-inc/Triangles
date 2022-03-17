@@ -108,7 +108,8 @@ Triangle<T>::Triangle() : vertices_()
 {}
 
 template <std::floating_point T>
-Triangle<T>::Triangle(const Vec3<T> &p1, const Vec3<T> &p2, const Vec3<T> &p3) : vertices_{p1, p2, p3}
+Triangle<T>::Triangle(const Vec3<T> &p1, const Vec3<T> &p2, const Vec3<T> &p3)
+  : vertices_{p1, p2, p3}
 {}
 
 template <std::floating_point T>

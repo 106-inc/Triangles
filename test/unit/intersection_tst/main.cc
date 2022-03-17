@@ -287,9 +287,12 @@ TEST(detail, isIntersectValidInvalid_Segment1)
   ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{0.5, 0.5, 0}, {0.5, 0.5, 1}, {0.5, 0.5, -1}}));
   ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{0.5, 0.5, 1}, {0.5, 0.5, 1}, {0.5, 0.5, -1}}));
 
-  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{0.25, 0.25, 0}, {0.25, 0.25, 0}, {0.25, 0.25, -1}}));
-  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{0.25, 0.25, 0}, {0.25, 0.25, 1}, {0.25, 0.25, -1}}));
-  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{0.25, 0.25, 1}, {0.25, 0.25, 1}, {0.25, 0.25, -1}}));
+  ASSERT_TRUE(
+    detail::isIntersectValidInvalid(tr, {{0.25, 0.25, 0}, {0.25, 0.25, 0}, {0.25, 0.25, -1}}));
+  ASSERT_TRUE(
+    detail::isIntersectValidInvalid(tr, {{0.25, 0.25, 0}, {0.25, 0.25, 1}, {0.25, 0.25, -1}}));
+  ASSERT_TRUE(
+    detail::isIntersectValidInvalid(tr, {{0.25, 0.25, 1}, {0.25, 0.25, 1}, {0.25, 0.25, -1}}));
 }
 
 TEST(detail, isIntersectValidInvalid_Segment2)
