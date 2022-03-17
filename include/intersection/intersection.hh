@@ -94,17 +94,19 @@ bool isIntersect(const Triangle<T> &tr1, const Triangle<T> &tr2);
  * @return std::variant<std::monostate, Line<T>, Plane<T>>
  */
 template <std::floating_point T>
-std::variant<std::monostate, Line<T>, Plane<T>> intersect(const Plane<T> &pl1,
-                                                          const Plane<T> &pl2);
+std::variant<std::monostate, Line<T>, Plane<T>> intersect(const Plane<T> &pl1, const Plane<T> &pl2);
 
 namespace detail
 {
 
 template <typename T>
-using Segment = std::pair<T, T>;
+using Segment2D = std::pair<T, T>;
 
 template <std::floating_point T>
 using Trian2 = std::array<Vec2<T>, 3>;
+
+template <std::floating_point T>
+using Segment3D = std::pair<Vec3<T>, Vec3<T>>;
 
 template <std::floating_point T>
 bool isIntersect2D(const Triangle<T> &tr1, const Triangle<T> &tr2);
@@ -113,8 +115,7 @@ template <std::floating_point T>
 bool isIntersectMollerHaines(const Triangle<T> &tr1, const Triangle<T> &tr2);
 
 template <std::floating_point T>
-Segment<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl,
-                              const Line<T> &l);
+Segment2D<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const Line<T> &l);
 
 template <std::floating_point T>
 bool isIntersectBothInvalid(const Triangle<T> &tr1, const Triangle<T> &tr2);
@@ -129,7 +130,7 @@ template <std::floating_point T>
 bool isPoint(const Triangle<T> &tr);
 
 template <std::floating_point T>
-bool isOverlap(Segment<T> &segm1, Segment<T> &segm2);
+bool isOverlap(Segment2D<T> &segm1, Segment2D<T> &segm2);
 
 template <std::forward_iterator It>
 bool isSameSign(It begin, It end);
@@ -144,7 +145,10 @@ template <std::floating_point T>
 bool isCounterClockwise(Trian2<T> &tr);
 
 template <std::floating_point T>
-Segment<T> computeInterval(const Trian2<T> &tr, const Vec2<T> &d);
+Segment2D<T> computeInterval(const Trian2<T> &tr, const Vec2<T> &d);
+
+template <std::floating_point T>
+Segment3D<T> getSegment(const Triangle<T> &tr);
 
 } // namespace detail
 } // namespace geom
@@ -186,8 +190,7 @@ bool isIntersect(const Triangle<T> &tr1, const Triangle<T> &tr2)
 }
 
 template <std::floating_point T>
-std::variant<std::monostate, Line<T>, Plane<T>> intersect(const Plane<T> &pl1,
-                                                          const Plane<T> &pl2)
+std::variant<std::monostate, Line<T>, Plane<T>> intersect(const Plane<T> &pl1, const Plane<T> &pl2)
 {
   const auto &n1 = pl1.norm();
   const auto &n2 = pl2.norm();
@@ -256,7 +259,7 @@ bool isIntersectMollerHaines(const Triangle<T> &tr1, const Triangle<T> &tr2)
 }
 
 template <std::floating_point T>
-Segment<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const Line<T> &l)
+Segment2D<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const Line<T> &l)
 {
   /* Project the triangle vertices onto line */
   std::array<T, 3> vert{};
@@ -287,8 +290,7 @@ Segment<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const L
   std::array<size_t, 2> arr{(rogue + 1) % 3, (rogue + 2) % 3};
 
   for (size_t i : arr)
-    segm.push_back(vert[i] +
-                   (vert[rogue] - vert[i]) * sdist[i] / (sdist[i] - sdist[rogue]));
+    segm.push_back(vert[i] + (vert[rogue] - vert[i]) * sdist[i] / (sdist[i] - sdist[rogue]));
 
   /* Sort segment's ends */
   if (segm[0] > segm[1])
@@ -306,6 +308,12 @@ bool isIntersectBothInvalid(const Triangle<T> &tr1, const Triangle<T> &tr2)
   if (isPoint1 && isPoint2)
     return tr1[0] == tr2[0];
 
+  if (isPoint1)
+    return false; // TODO: handle
+
+  if (isPoint2)
+    return false; // TODO: handle
+
   std::cout << "both invalid" << std::endl;
   std::cout << "tr1: " << tr1 << std::endl;
   std::cout << "tr2: " << tr2 << std::endl;
@@ -318,10 +326,23 @@ bool isIntersectValidInvalid(const Triangle<T> &valid, const Triangle<T> &invali
   if (isPoint(invalid))
     return isIntersectPointTriangle(invalid[0], valid);
 
-  std::cout << "one invalid" << std::endl;
-  std::cout << "tr1: " << valid << std::endl;
-  std::cout << "tr2: " << invalid << std::endl;
-  return false;
+  auto segm = getSegment(invalid);
+  auto pl = valid.getPlane();
+
+  auto dst1 = distance(pl, segm.first);
+  auto dst2 = distance(pl, segm.second);
+
+  if (dst1 * dst2 > 0)
+    return false;
+
+  if (Vec3<T>::isNumEq(dst1, 0) && Vec3<T>::isNumEq(dst2, 0))
+    return false; // TODO: handle
+
+  dst1 = std::abs(dst1);
+  dst2 = std::abs(dst2);
+
+  auto pt = segm.first + (segm.second - segm.first) * dst1 / (dst1 + dst2);
+  return isIntersectPointTriangle(pt, valid);
 }
 
 template <std::floating_point T>
@@ -359,7 +380,7 @@ bool isPoint(const Triangle<T> &tr)
 }
 
 template <std::floating_point T>
-bool isOverlap(Segment<T> &segm1, Segment<T> &segm2)
+bool isOverlap(Segment2D<T> &segm1, Segment2D<T> &segm2)
 {
   return (segm2.first <= segm1.second) && (segm2.second >= segm1.first);
 }
@@ -445,7 +466,7 @@ bool isCounterClockwise(Trian2<T> &tr)
 }
 
 template <std::floating_point T>
-Segment<T> computeInterval(const Trian2<T> &tr, const Vec2<T> &d)
+Segment2D<T> computeInterval(const Trian2<T> &tr, const Vec2<T> &d)
 {
   auto init = dot(d, tr[0]);
   auto min = init;
@@ -458,6 +479,19 @@ Segment<T> computeInterval(const Trian2<T> &tr, const Vec2<T> &d)
       max = val;
 
   return {min, max};
+}
+
+template <std::floating_point T>
+Segment3D<T> getSegment(const Triangle<T> &tr)
+{
+  std::array<T, 3> lenArr{};
+  for (size_t i = 0; i < 3; ++i)
+    lenArr[i] = (tr[i] - tr[i + 1]).length2();
+
+  auto maxIt = std::max_element(lenArr.begin(), lenArr.end());
+  auto maxIdx = static_cast<size_t>(maxIt - lenArr.begin());
+
+  return {tr[maxIdx], tr[maxIdx + 1]};
 }
 
 } // namespace detail

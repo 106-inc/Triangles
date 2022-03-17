@@ -109,8 +109,7 @@ public:
    * @param[in] dir2 2nd direction vector
    * @return Plane
    */
-  static Plane getParametric(const Vec3<T> &org, const Vec3<T> &dir1,
-                             const Vec3<T> &dir2);
+  static Plane getParametric(const Vec3<T> &org, const Vec3<T> &dir1, const Vec3<T> &dir2);
 
   /**
    * @brief Get plane from normal point plane equation
@@ -205,15 +204,13 @@ bool Plane<T>::isPar(const Plane &rhs) const
 }
 
 template <std::floating_point T>
-Plane<T> Plane<T>::getBy3Points(const Vec3<T> &pt1, const Vec3<T> &pt2,
-                                const Vec3<T> &pt3)
+Plane<T> Plane<T>::getBy3Points(const Vec3<T> &pt1, const Vec3<T> &pt2, const Vec3<T> &pt3)
 {
   return getParametric(pt1, pt2 - pt1, pt3 - pt1);
 }
 
 template <std::floating_point T>
-Plane<T> Plane<T>::getParametric(const Vec3<T> &org, const Vec3<T> &dir1,
-                                 const Vec3<T> &dir2)
+Plane<T> Plane<T>::getParametric(const Vec3<T> &org, const Vec3<T> &dir1, const Vec3<T> &dir2)
 {
   auto norm = dir1.cross(dir2);
   return getNormalPoint(norm, org);

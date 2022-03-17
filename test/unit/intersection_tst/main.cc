@@ -265,6 +265,60 @@ TEST(detail, isIntersectPointTriangle)
   ASSERT_FALSE(detail::isIntersectPointTriangle({-1, -1, 0}, tr));
 }
 
+TEST(detail, isIntersectValidInvalid_Segment1)
+{
+  // Arrange
+  Triangle<double> tr{{0, 0, 0}, {1, 0, 0}, {0, 1, 0}};
+
+  // Act & Assert
+  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{0, 0, 0}, {0, 0, 0}, {0, 0, -1}}));
+  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{0, 0, 0}, {0, 0, 1}, {0, 0, -1}}));
+  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{0, 0, 1}, {0, 0, 1}, {0, 0, -1}}));
+
+  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{1, 0, 0}, {1, 0, 0}, {1, 0, -1}}));
+  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{1, 0, 0}, {1, 0, 1}, {1, 0, -1}}));
+  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{1, 0, 1}, {1, 0, 1}, {1, 0, -1}}));
+
+  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{0, 1, 0}, {0, 1, 0}, {0, 1, -1}}));
+  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{0, 1, 0}, {0, 1, 1}, {0, 1, -1}}));
+  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{0, 1, 1}, {0, 1, 1}, {0, 1, -1}}));
+
+  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{0.5, 0.5, 0}, {0.5, 0.5, 0}, {0.5, 0.5, -1}}));
+  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{0.5, 0.5, 0}, {0.5, 0.5, 1}, {0.5, 0.5, -1}}));
+  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{0.5, 0.5, 1}, {0.5, 0.5, 1}, {0.5, 0.5, -1}}));
+
+  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{0.25, 0.25, 0}, {0.25, 0.25, 0}, {0.25, 0.25, -1}}));
+  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{0.25, 0.25, 0}, {0.25, 0.25, 1}, {0.25, 0.25, -1}}));
+  ASSERT_TRUE(detail::isIntersectValidInvalid(tr, {{0.25, 0.25, 1}, {0.25, 0.25, 1}, {0.25, 0.25, -1}}));
+}
+
+TEST(detail, isIntersectValidInvalid_Segment2)
+{
+  // Arrange
+  Triangle<double> tr{{0, 0, 0}, {1, 0, 0}, {0, 1, 0}};
+
+  // Act & Assert
+  ASSERT_FALSE(detail::isIntersectValidInvalid(tr, {{5, 5, 0}, {5, 5, 0}, {5, 5, -1}}));
+  ASSERT_FALSE(detail::isIntersectValidInvalid(tr, {{5, 5, 0}, {5, 5, 1}, {5, 5, -1}}));
+  ASSERT_FALSE(detail::isIntersectValidInvalid(tr, {{5, 5, 1}, {5, 5, 1}, {5, 5, -1}}));
+
+  ASSERT_FALSE(detail::isIntersectValidInvalid(tr, {{2, 0, 0}, {2, 0, 0}, {2, 0, -1}}));
+  ASSERT_FALSE(detail::isIntersectValidInvalid(tr, {{2, 0, 0}, {2, 0, 1}, {2, 0, -1}}));
+  ASSERT_FALSE(detail::isIntersectValidInvalid(tr, {{2, 0, 1}, {2, 0, 1}, {2, 0, -1}}));
+
+  ASSERT_FALSE(detail::isIntersectValidInvalid(tr, {{0, 2, 0}, {0, 2, 0}, {0, 2, -1}}));
+  ASSERT_FALSE(detail::isIntersectValidInvalid(tr, {{0, 2, 0}, {0, 2, 1}, {0, 2, -1}}));
+  ASSERT_FALSE(detail::isIntersectValidInvalid(tr, {{0, 2, 1}, {0, 2, 1}, {0, 2, -1}}));
+
+  ASSERT_FALSE(detail::isIntersectValidInvalid(tr, {{-1, 0, 0}, {-1, 0, 0}, {-1, 0, -1}}));
+  ASSERT_FALSE(detail::isIntersectValidInvalid(tr, {{-1, 0, 0}, {-1, 0, 1}, {-1, 0, -1}}));
+  ASSERT_FALSE(detail::isIntersectValidInvalid(tr, {{-1, 0, 1}, {-1, 0, 1}, {-1, 0, -1}}));
+
+  ASSERT_FALSE(detail::isIntersectValidInvalid(tr, {{0, -1, 0}, {0, -1, 0}, {0, -1, -1}}));
+  ASSERT_FALSE(detail::isIntersectValidInvalid(tr, {{0, -1, 0}, {0, -1, 1}, {0, -1, -1}}));
+  ASSERT_FALSE(detail::isIntersectValidInvalid(tr, {{0, -1, 1}, {0, -1, 1}, {0, -1, -1}}));
+}
+
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);
