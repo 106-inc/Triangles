@@ -1,6 +1,7 @@
 #ifndef __INCLUDE_INTERSECTION_INTERSECTION_HH__
 #define __INCLUDE_INTERSECTION_INTERSECTION_HH__
 
+#include <cassert>
 #include <concepts>
 #include <variant>
 
@@ -127,6 +128,9 @@ template <std::floating_point T>
 bool isIntersectPointTriangle(const Vec3<T> &pt, const Triangle<T> &tr);
 
 template <std::floating_point T>
+bool isIntersectPointSegment(const Vec3<T> &pt, const Segment3D<T> &segm);
+
+template <std::floating_point T>
 bool isPoint(const Triangle<T> &tr);
 
 template <std::floating_point T>
@@ -159,7 +163,6 @@ namespace geom
 template <std::floating_point T>
 bool isIntersect(const Triangle<T> &tr1, const Triangle<T> &tr2)
 {
-  /* TODO: handle invalid triangles case */
   auto isInv1 = !tr1.isValid();
   auto isInv2 = !tr2.isValid();
 
@@ -309,11 +312,12 @@ bool isIntersectBothInvalid(const Triangle<T> &tr1, const Triangle<T> &tr2)
     return tr1[0] == tr2[0];
 
   if (isPoint1)
-    return false; // TODO: handle
+    return isIntersectPointSegment(tr1[0], getSegment(tr2));
 
   if (isPoint2)
-    return false; // TODO: handle
+    return isIntersectPointSegment(tr2[0], getSegment(tr1));
 
+  assert(false);
   std::cout << "both invalid" << std::endl;
   std::cout << "tr1: " << tr1 << std::endl;
   std::cout << "tr2: " << tr2 << std::endl;
@@ -336,7 +340,7 @@ bool isIntersectValidInvalid(const Triangle<T> &valid, const Triangle<T> &invali
     return false;
 
   if (Vec3<T>::isNumEq(dst1, 0) && Vec3<T>::isNumEq(dst2, 0))
-    return false; // TODO: handle
+    assert(false); // TODO: handle
 
   dst1 = std::abs(dst1);
   dst2 = std::abs(dst2);
@@ -371,6 +375,28 @@ bool isIntersectPointTriangle(const Vec3<T> &pt, const Triangle<T> &tr)
   /* Point belongs to triangle if: (u >= 0) && (v >= 0) && (u + v <= 1) */
   auto eps = Vec3<T>::getThreshold();
   return (u > -eps) && (v > -eps) && (u + v < 1 + eps);
+}
+
+template <std::floating_point T>
+bool isIntersectPointSegment(const Vec3<T> &pt, const Segment3D<T> &segm)
+{
+  auto l = Line<T>::getBy2Points(segm.first, segm.second);
+
+  if (!l.belongs(pt))
+    return false;
+
+  auto beg = dot(l.org(), segm.first);
+  auto end = dot(l.org(), segm.second);
+  if (beg > end)
+    std::swap(beg, end);
+
+  auto proj = dot(l.org(), pt);
+  if (proj > end)
+    return false;
+  if (proj < beg)
+    return false;
+
+  return true;
 }
 
 template <std::floating_point T>

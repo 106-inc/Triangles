@@ -322,6 +322,21 @@ TEST(detail, isIntersectValidInvalid_Segment2)
   ASSERT_FALSE(detail::isIntersectValidInvalid(tr, {{0, -1, 1}, {0, -1, 1}, {0, -1, -1}}));
 }
 
+TEST(detail, isIntersectPointSegment)
+{
+  // Arrange
+  detail::Segment3D<double> segm{{1, 0, 1}, {0, 1, 1}};
+
+  // Act & Assert
+  ASSERT_FALSE(detail::isIntersectPointSegment({-1, 2, 1}, segm));
+  ASSERT_FALSE(detail::isIntersectPointSegment({2, -1, 1}, segm));
+  ASSERT_FALSE(detail::isIntersectPointSegment({0, 0, 0}, segm));
+
+  ASSERT_TRUE(detail::isIntersectPointSegment({0.5, 0.5, 1}, segm));
+  ASSERT_TRUE(detail::isIntersectPointSegment({1, 0, 1}, segm));
+  ASSERT_TRUE(detail::isIntersectPointSegment({0, 1, 1}, segm));
+}
+
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);
