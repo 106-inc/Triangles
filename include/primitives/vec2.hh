@@ -455,7 +455,7 @@ Vec2<T> &Vec2<T>::normalize()
 template <std::floating_point T>
 T &Vec2<T>::operator[](size_t i)
 {
-  switch (i % 3)
+  switch (i % 2)
   {
   case 0:
     return x;
@@ -469,7 +469,7 @@ T &Vec2<T>::operator[](size_t i)
 template <std::floating_point T>
 T Vec2<T>::operator[](size_t i) const
 {
-  switch (i % 3)
+  switch (i % 2)
   {
   case 0:
     return x;
