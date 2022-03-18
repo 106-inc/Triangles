@@ -90,12 +90,65 @@ bool isIntersect(const Triangle<T> &tr1, const Triangle<T> &tr2);
  * t \cdot \overrightarrow{n}_1 \times \overrightarrow{n}_2 \f]
  *
  * @tparam T - floating point type of coordinates
- * @param pl1 first plane
- * @param pl2 second plane
+ * @param[in] pl1 first plane
+ * @param[in] pl2 second plane
  * @return std::variant<std::monostate, Line<T>, Plane<T>>
  */
 template <std::floating_point T>
 std::variant<std::monostate, Line<T>, Plane<T>> intersect(const Plane<T> &pl1, const Plane<T> &pl2);
+
+/**
+ * @brief Intersect 2 lines and return result of intersection
+ * @details
+ * Common intersection case (parallel & skew lines cases are trivial):
+ * Let \f$ \overrightarrow{P} \f$ - point in space, intersection point of two lines.
+ *
+ * \f$ l_1 \f$ equation: \f$ \overrightarrow{org}_1 + \overrightarrow{dir}_1 \cdot t_1 =
+ * \overrightarrow{P} \f$
+ *
+ * \f$ l_2 \f$ equation: \f$ \overrightarrow{org}_2 + \overrightarrow{dir}_2
+ * \cdot t_2 = \overrightarrow{P} \f$
+ *
+ * Let's equate left sides:
+ * \f[
+ * \overrightarrow{org}_1 + \overrightarrow{dir}_1 \cdot t_1 =
+ * \overrightarrow{org}_2 + \overrightarrow{dir}_2 \cdot t_2
+ * \f]
+ * Cross multiply both sides from right by \f$ \overrightarrow{dir}_2 \f$:
+ * \f[
+ * t_1 \cdot \left(\overrightarrow{dir}_1 \times \overrightarrow{dir}_2 \right) =
+ * \left(\overrightarrow{org}_2 - \overrightarrow{org}_1 \right) \times \overrightarrow{dir}_2
+ * \f]
+ * Dot multiply both sides by \f$ \frac{\overrightarrow{dir}_1 \times \overrightarrow{dir}_2}{\left|
+ * \overrightarrow{dir}_1 \times \overrightarrow{dir}_2 \right|^2} \f$:
+ *
+ * \f[
+ * t_1 = \frac{
+ *  \left(\left(\overrightarrow{org}_2 - \overrightarrow{org}_1 \right) \times
+ * \overrightarrow{dir}_2\right) \cdot \left( \overrightarrow{dir}_1 \times \overrightarrow{dir}_2
+ * \right)
+ * }{
+ * \left| \overrightarrow{dir}_1 \times \overrightarrow{dir}_2 \right|^2
+ * }
+ * \f]
+ *
+ * Thus we get intersection point parameter \f$ t_1 \f$ on \f$ l_1 \f$, let's substitute it to \f$
+ * l_1 \f$ equation: \f[ \overrightarrow{P} = \overrightarrow{org}_1 + \frac{
+ *  \left(\left(\overrightarrow{org}_2 - \overrightarrow{org}_1 \right) \times
+ * \overrightarrow{dir}_2\right) \cdot \left( \overrightarrow{dir}_1 \times \overrightarrow{dir}_2
+ * \right)
+ * }{
+ * \left| \overrightarrow{dir}_1 \times \overrightarrow{dir}_2 \right|^2
+ * } \cdot \overrightarrow{dir}_1
+ * \f]
+ *
+ * @tparam T - floating point type of coordinates
+ * @param[in] l1 first line
+ * @param[in] l2 second line
+ * @return std::variant<std::monostate, Vec3<T>, Line<T>>
+ */
+template <std::floating_point T>
+std::variant<std::monostate, Vec3<T>, Line<T>> intersect(const Line<T> &l1, const Line<T> &l2);
 
 namespace detail
 {
@@ -129,6 +182,9 @@ bool isIntersectPointTriangle(const Vec3<T> &pt, const Triangle<T> &tr);
 
 template <std::floating_point T>
 bool isIntersectPointSegment(const Vec3<T> &pt, const Segment3D<T> &segm);
+
+template <std::floating_point T>
+bool isIntersectSegmentSegment(const Segment3D<T> &segm1, const Segment3D<T> &segm2);
 
 template <std::floating_point T>
 bool isPoint(const Triangle<T> &tr);
@@ -217,6 +273,30 @@ std::variant<std::monostate, Line<T>, Plane<T>> intersect(const Plane<T> &pl1, c
   auto b = (d1 * n1n2 - d2) / (n1n2 * n1n2 - 1);
 
   return Line<T>{(a * n1) + (b * n2), dir};
+}
+
+template <std::floating_point T>
+std::variant<std::monostate, Vec3<T>, Line<T>> intersect(const Line<T> &l1, const Line<T> &l2)
+{
+  if (l1.isPar(l2))
+  {
+    if (l1.isEqual(l2))
+      return l1;
+
+    return std::monostate{};
+  }
+
+  if (l1.isSkew(l2))
+    return std::monostate{};
+
+  auto dir1xdir2 = cross(l1.dir(), l2.dir());
+  auto org21xdir2 = cross(l2.org() - l1.org(), l2.dir());
+
+  auto t1_intersect = dot(org21xdir2, dir1xdir2) / dir1xdir2.length2();
+
+  auto point = l1.getPoint(t1_intersect);
+
+  return point;
 }
 
 namespace detail
@@ -397,6 +477,13 @@ bool isIntersectPointSegment(const Vec3<T> &pt, const Segment3D<T> &segm)
     return false;
 
   return true;
+}
+
+template <std::floating_point T>
+bool isIntersectSegmentSegment(const Segment3D<T> &segm1, const Segment3D<T> &segm2)
+{
+  assert(false && "Not implemented yet");
+  return false;
 }
 
 template <std::floating_point T>

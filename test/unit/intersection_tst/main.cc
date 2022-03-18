@@ -112,6 +112,75 @@ TEST(planes, Common)
   ASSERT_EQ(l2, res13);
 }
 
+TEST(lines, Same)
+{
+  // Arrange
+  Line<double> l1{{1, 1, 0}, {24, 24, 24}};
+  Line<double> l2{{-47, -47, -48}, {24, 24, 24}};
+
+  // Act
+  auto res = std::get<Line<double>>(intersect(l1, l2));
+  auto res_rev = std::get<Line<double>>(intersect(l2, l1));
+
+  // Assert
+  ASSERT_EQ(res, l1);
+  ASSERT_EQ(res_rev, res);
+}
+
+TEST(lines, Parallel)
+{
+  // Arrange
+  Line<double> l1{{1, 1, 0}, {24, 24, 24}};
+  Line<double> l2{{0, 0, 0}, {-1, -1, -1}};
+
+  // Act
+  bool res = std::holds_alternative<std::monostate>(intersect(l1, l2));
+  bool res_rev = std::holds_alternative<std::monostate>(intersect(l2, l1));
+
+  // Assert
+  ASSERT_TRUE(res);
+  ASSERT_TRUE(res_rev);
+}
+
+TEST(lines, Skew)
+{
+  // Arrange
+  Line<double> l1{{1, 1, 0}, {24, 24, 24}};
+  Line<double> l2{{0, 0, 0}, {-1, 0, 0}};
+
+  // Act
+  bool res = std::holds_alternative<std::monostate>(intersect(l1, l2));
+  bool res_rev = std::holds_alternative<std::monostate>(intersect(l2, l1));
+
+  // Assert
+  ASSERT_TRUE(res);
+  ASSERT_TRUE(res_rev);
+}
+
+TEST(lines, Common)
+{
+  // Arrange
+  Line<double> l1{{1, 1, 0}, {1, 1, 1}};
+  Line<double> l2{{0, 0, 20}, {0, 0, 1}};
+
+  Line<double> l3{{1, 0, 0}, {0, -100, 0}};
+  Line<double> l4{{0, 1, 0}, {254, 0, 0}};
+
+  // Act
+  auto res12 = std::get<Vec3D>(intersect(l1, l2));
+  auto res21 = std::get<Vec3D>(intersect(l2, l1));
+
+  auto res34 = std::get<Vec3D>(intersect(l3, l4));
+  auto res43 = std::get<Vec3D>(intersect(l4, l3));
+
+  // Assert
+  ASSERT_EQ(res12, Vec3D(0, 0, -1));
+  ASSERT_EQ(res21, res12);
+
+  ASSERT_EQ(res34, Vec3D(1, 1, 0));
+  ASSERT_EQ(res43, res34);
+}
+
 TEST(detail, intervalOverlap)
 {
   // Arrange

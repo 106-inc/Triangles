@@ -50,6 +50,16 @@ public:
   const Vec3<T> &dir() const;
 
   /**
+   * @brief Get point on line by parameter t
+   *
+   * @tparam nType numeric type
+   * @param[in] t point paramater from line's equation
+   * @return Vec3<T> Point related to parameter
+   */
+  template <Number nType>
+  Vec3<T> getPoint(nType t) const;
+
+  /**
    * @brief Checks is point belongs to line
    *
    * @param[in] point const reference to point vector
@@ -66,6 +76,24 @@ public:
    * @return false if lines are not equal
    */
   bool isEqual(const Line &line) const;
+
+  /**
+   * @brief Checks is *this parallel to another line
+   * @note Assumes equal lines as parallel
+   * @param[in] line const reference to another line
+   * @return true if lines are parallel
+   * @return false if lines are not parallel
+   */
+  bool isPar(const Line &line) const;
+
+  /**
+   * @brief Checks is *this is skew with another line
+   *
+   * @param[in] line const reference to another line
+   * @return true if lines are skew
+   * @return false if lines are not skew
+   */
+  bool isSkew(const Line<T> &line) const;
 
   /**
    * @brief Get line by 2 points
@@ -127,6 +155,13 @@ const Vec3<T> &Line<T>::dir() const
 }
 
 template <std::floating_point T>
+template <Number nType>
+Vec3<T> Line<T>::getPoint(nType t) const
+{
+  return org_ + dir_ * t;
+}
+
+template <std::floating_point T>
 bool Line<T>::belongs(const Vec3<T> &point) const
 {
   return dir_.cross(point - org_) == Vec3<T>{0};
@@ -136,6 +171,19 @@ template <std::floating_point T>
 bool Line<T>::isEqual(const Line<T> &line) const
 {
   return belongs(line.org_) && dir_.isPar(line.dir_);
+}
+
+template <std::floating_point T>
+bool Line<T>::isPar(const Line<T> &line) const
+{
+  return dir_.isPar(line.dir_);
+}
+
+template <std::floating_point T>
+bool Line<T>::isSkew(const Line<T> &line) const
+{
+  auto res = triple(line.org_ - org_, dir_, line.dir_);
+  return !Vec3<T>::isNumEq(res, T{0});
 }
 
 template <std::floating_point T>

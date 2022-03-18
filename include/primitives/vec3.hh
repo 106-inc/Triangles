@@ -336,6 +336,21 @@ Vec3<T> cross(const Vec3<T> &lhs, const Vec3<T> &rhs)
 }
 
 /**
+ * @brief Triple product function
+ *
+ * @tparam T vector template parameter
+ * @param[in] v1 first vector
+ * @param[in] v2 second vector
+ * @param[in] v3 third vector
+ * @return T triple production
+ */
+template <std::floating_point T>
+T triple(const Vec3<T> &v1, const Vec3<T> &v2, const Vec3<T> &v3)
+{
+  return dot(v1, cross(v2, v3));
+}
+
+/**
  * @brief Vec3 equality operator
  *
  * @tparam T vector template parameter

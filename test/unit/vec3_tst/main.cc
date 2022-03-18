@@ -61,6 +61,32 @@ TEST(Vec3, cross)
   ASSERT_TRUE(res.isEqual(geom::Vec3<double>{-3, 6, -3}));
 }
 
+TEST(Vec3, triple)
+{
+  // Arrange
+  geom::Vec3<double> v1{1, 2, 3};
+  geom::Vec3<double> v2{4, 5, 6};
+  geom::Vec3<double> v3{7, 8, 9};
+
+  geom::Vec3<double> v4{1, 0, 0};
+  geom::Vec3<double> v5{0, 1, 0};
+  geom::Vec3<double> v6{0, 0, 1};
+
+  // Act
+  auto res = geom::triple(v1, v2, v3);
+  auto nres = geom::triple(v2, v1, v3);
+
+  auto res2 = geom::triple(v4, v5, v6);
+  auto nres2 = geom::triple(v6, v5, v4);
+
+  // Assert
+  ASSERT_TRUE(geom::Vec3<double>::isNumEq(res, 0));
+  ASSERT_TRUE(geom::Vec3<double>::isNumEq(nres, 0));
+
+  ASSERT_TRUE(geom::Vec3<double>::isNumEq(res2, 1));
+  ASSERT_TRUE(geom::Vec3<double>::isNumEq(nres2, -1));
+}
+
 TEST(Vec3, normalize)
 {
   // Arrange
