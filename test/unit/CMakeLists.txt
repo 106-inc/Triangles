@@ -1,7 +1,14 @@
-set(TESTLIST vec2_tst vec3_tst line_tst plane_tst triangle_tst intersection_tst distance_tst)
+file(GLOB_RECURSE TESTSRCLIST CONFIGURE_DEPENDS "*.cc")
+set(TESTLIST)
 
-foreach(TEST ${TESTLIST})
-  add_subdirectory(${TEST})
+foreach(TESTSRC ${TESTSRCLIST})
+  get_filename_component(TESTNAME ${TESTSRC} NAME)
+  set(TEST ${TESTNAME}_tst)
+
+  add_executable(${TEST} ${TESTSRC})
+  format_target(${TEST} ${CMAKE_CURRENT_SOURCE_DIR} ${TESTNAME})
+
+  LIST(APPEND TESTLIST ${TEST})
 endforeach()
 
 set(TESTLIST "${TESTLIST}" PARENT_SCOPE)
