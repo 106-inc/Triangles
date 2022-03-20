@@ -397,11 +397,7 @@ bool isIntersectBothInvalid(const Triangle<T> &tr1, const Triangle<T> &tr2)
   if (isPoint2)
     return isIntersectPointSegment(tr2[0], getSegment(tr1));
 
-  assert(false);
-  std::cout << "both invalid" << std::endl;
-  std::cout << "tr1: " << tr1 << std::endl;
-  std::cout << "tr2: " << tr2 << std::endl;
-  return false;
+  return isIntersectSegmentSegment(getSegment(tr1), getSegment(tr2));
 }
 
 template <std::floating_point T>
@@ -460,29 +456,38 @@ bool isIntersectPointTriangle(const Vec3<T> &pt, const Triangle<T> &tr)
 template <std::floating_point T>
 bool isIntersectPointSegment(const Vec3<T> &pt, const Segment3D<T> &segm)
 {
-  auto l = Line<T>::getBy2Points(segm.first, segm.second);
-
+  Line<T> l{segm.first, segm.second - segm.first};
   if (!l.belongs(pt))
     return false;
 
-  auto beg = dot(l.org(), segm.first);
-  auto end = dot(l.org(), segm.second);
-  if (beg > end)
-    std::swap(beg, end);
+  auto beg = dot(l.dir(), segm.first);
+  auto end = dot(l.dir(), segm.second);
+  auto proj = dot(l.dir(), pt);
 
-  auto proj = dot(l.org(), pt);
-  if (proj > end)
-    return false;
-  if (proj < beg)
-    return false;
-
-  return true;
+  return !((proj > end) || (proj < beg));
 }
 
 template <std::floating_point T>
 bool isIntersectSegmentSegment(const Segment3D<T> &segm1, const Segment3D<T> &segm2)
 {
-  assert(false && "Not implemented yet");
+  Line<T> l1{segm1.first, segm1.second - segm1.first};
+  Line<T> l2{segm2.first, segm2.second - segm2.first};
+  auto intersectionResult = intersect(l1, l2);
+
+  if (std::holds_alternative<Line<T>>(intersectionResult))
+  {
+    const auto &dir = l1.dir();
+    Segment2D<T> s1{dot(dir, segm1.first), dot(dir, segm1.second)};
+    Segment2D<T> s2{dot(dir, segm2.first), dot(dir, segm2.second)};
+    return isOverlap(s1, s2);
+  }
+
+  if (std::holds_alternative<Vec3<T>>(intersectionResult))
+  {
+    auto pt = std::get<Vec3<T>>(intersectionResult);
+    return isIntersectPointSegment(pt, segm1) && isIntersectPointSegment(pt, segm2);
+  }
+
   return false;
 }
 

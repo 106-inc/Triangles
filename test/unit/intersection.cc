@@ -406,6 +406,86 @@ TEST(detail, isIntersectPointSegment)
   ASSERT_TRUE(detail::isIntersectPointSegment({0, 1, 1}, segm));
 }
 
+TEST(detail, isIntersectSegmentSegment1)
+{
+  // Arrange
+  detail::Segment3D<double> segm1{{-1, 0, 0}, {1, 0, 0}};
+  detail::Segment3D<double> segm2{{1, 0, 0}, {-1, 0, 0}};
+
+  detail::Segment3D<double> segm3{{0, 0, 0}, {2, 0, 0}};
+  detail::Segment3D<double> segm4{{-2, 0, 0}, {0, 0, 0}};
+
+  detail::Segment3D<double> segm5{{-2, 0, 0}, {2, 0, 0}};
+  detail::Segment3D<double> segm6{{-0.5, 0, 0}, {0.5, 0, 0}};
+
+  detail::Segment3D<double> segm7{{1, 0, 0}, {2, 0, 0}};
+  detail::Segment3D<double> segm8{{-2, 0, 0}, {-1, 0, 0}};
+
+  detail::Segment3D<double> segm9{{2, 0, 0}, {3, 0, 0}};
+  detail::Segment3D<double> segm10{{-3, 0, 0}, {-2, 0, 0}};
+
+  // Act & Assert
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm1, segm1));
+
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm1, segm2));
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm2, segm1));
+
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm1, segm3));
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm3, segm1));
+
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm1, segm4));
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm4, segm1));
+
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm1, segm5));
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm5, segm1));
+
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm1, segm6));
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm6, segm1));
+
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm1, segm7));
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm7, segm1));
+
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm1, segm8));
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm8, segm1));
+
+  ASSERT_FALSE(detail::isIntersectSegmentSegment(segm1, segm9));
+  ASSERT_FALSE(detail::isIntersectSegmentSegment(segm9, segm1));
+
+  ASSERT_FALSE(detail::isIntersectSegmentSegment(segm1, segm10));
+  ASSERT_FALSE(detail::isIntersectSegmentSegment(segm10, segm1));
+}
+
+TEST(detail, isIntersectSegmentSegment2)
+{
+  // Arrange
+  detail::Segment3D<double> segm1{{-1, 0, 0}, {1, 0, 0}};
+  detail::Segment3D<double> segm2{{0, -1, 0}, {0, 1, 0}};
+  detail::Segment3D<double> segm3{{0, -1, 0}, {0, 0, 0}};
+  detail::Segment3D<double> segm4{{0, 0, 0}, {0, 1, 0}};
+  detail::Segment3D<double> segm5{{0, 1, 0}, {0, 2, 0}};
+  detail::Segment3D<double> segm6{{0, -2, 0}, {0, -1, 0}};
+  detail::Segment3D<double> segm7{{-1, 2, 0}, {1, 2, 0}};
+
+  // Act & Assert
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm1, segm2));
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm2, segm1));
+
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm1, segm3));
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm3, segm1));
+
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm1, segm4));
+  ASSERT_TRUE(detail::isIntersectSegmentSegment(segm4, segm1));
+
+  ASSERT_FALSE(detail::isIntersectSegmentSegment(segm1, segm5));
+  ASSERT_FALSE(detail::isIntersectSegmentSegment(segm5, segm1));
+
+  ASSERT_FALSE(detail::isIntersectSegmentSegment(segm1, segm6));
+  ASSERT_FALSE(detail::isIntersectSegmentSegment(segm6, segm1));
+
+  ASSERT_FALSE(detail::isIntersectSegmentSegment(segm1, segm7));
+  ASSERT_FALSE(detail::isIntersectSegmentSegment(segm7, segm1));
+}
+
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);
