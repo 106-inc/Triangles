@@ -1,4 +1,4 @@
-set(TOOLLIST tst_vec)
+set(TOOLLIST lvl1q)
 
 foreach(TOOL ${TOOLLIST})
   add_subdirectory(${TOOL})

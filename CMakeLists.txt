@@ -17,11 +17,10 @@ message(STATUS "Collected libs: ${LIBLIST}")
 
 foreach(LIB ${LIBLIST})
   # Include paths
-  target_include_directories(${LIB} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-  target_include_directories(${LIB} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/${LIB})
+  target_include_directories(${LIB} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-  apply_compiler_flags(${LIB})
-  target_compile_features(${LIB} PRIVATE cxx_std_20)
+  apply_compiler_flags(${LIB} INTERFACE)
+  target_compile_features(${LIB} INTERFACE cxx_std_20)
 endforeach()
 
 # Prepare project tools
@@ -36,7 +35,7 @@ foreach(TOOL ${TOOLLIST})
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
   )
 
-  apply_compiler_flags(${TOOL})
+  apply_compiler_flags(${TOOL} PRIVATE)
 endforeach()
 
 # Lookup for gtest
@@ -48,6 +47,7 @@ message(STATUS "Collected tests: ${TESTLIST}")
 foreach(TEST ${TESTLIST})
   target_include_directories(${TEST} PRIVATE ${GTEST_INCLUDE_DIRS})
   target_link_libraries(${TEST} PRIVATE ${GTEST_BOTH_LIBRARIES} pthread)
+  target_link_libraries(${TEST} PRIVATE ${LIBLIST})
 
   target_compile_features(${TEST} PRIVATE cxx_std_20)
   target_include_directories(${TEST} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -60,6 +60,10 @@ endforeach()
 # Test running stuff
 enable_testing()
 
+# Unit tests
 foreach(TEST ${TESTLIST})
-  add_test(NAME ${TEST} COMMAND ${TEST})
+  add_test(NAME ${TEST} COMMAND ${TEST} --gtest_color=yes)
 endforeach()
+
+# End to end tests
+add_test(NAME e2e COMMAND python3 ${LIT_RUN_CMD})

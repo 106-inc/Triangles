@@ -2,9 +2,9 @@
 #define __INCLUDE_PRIMITIVES_TRIANGLE_HH__
 
 #include <array>
-#include <concepts>
 
-#include "vector.hh"
+#include "plane.hh"
+#include "vec3.hh"
 
 /**
  * @brief triangle.hh
@@ -27,9 +27,14 @@ private:
   /**
    * @brief Vertices of triangle
    */
-  std::array<Vector<T>, 3> vertices_;
+  std::array<Vec3<T>, 3> vertices_;
 
 public:
+  /**
+   * @brief Construct a new Triangle object
+   */
+  Triangle();
+
   /**
    * @brief Construct a new Triangle object from 3 points
    *
@@ -37,15 +42,38 @@ public:
    * @param[in] p2 2nd point
    * @param[in] p3 3rd point
    */
-  Triangle(const Vector<T> &p1, const Vector<T> &p2, const Vector<T> &p3);
+  Triangle(const Vec3<T> &p1, const Vec3<T> &p2, const Vec3<T> &p3);
 
   /**
    * @brief Overloaded operator[] to get access to vertices
    *
    * @param[in] idx index of vertex
-   * @return const Vector<T>& const reference to vertex
+   * @return const Vec3<T>& const reference to vertex
    */
-  const Vector<T> &operator[](std::size_t idx) const;
+  const Vec3<T> &operator[](std::size_t idx) const;
+
+  /**
+   * @brief Overloaded operator[] to get access to vertices
+   *
+   * @param[in] idx index of vertex
+   * @return Vec3<T>& reference to vertex
+   */
+  Vec3<T> &operator[](std::size_t idx);
+
+  /**
+   * @brief Get triangle's plane
+   *
+   * @return Plane<T>
+   */
+  Plane<T> getPlane() const;
+
+  /**
+   * @brief Check is triangle valid
+   *
+   * @return true if triangle is valid
+   * @return false if triangle is invalid
+   */
+  bool isValid() const;
 };
 
 /**
@@ -60,7 +88,7 @@ template <std::floating_point T>
 std::ostream &operator<<(std::ostream &ost, const Triangle<T> &tr)
 {
   ost << "Triangle: {";
-  for (size_t i : {0, 1, 2})
+  for (size_t i = 0; i < 3; ++i)
     ost << tr[i] << (i == 2 ? "" : ", ");
 
   ost << "}";
@@ -69,14 +97,47 @@ std::ostream &operator<<(std::ostream &ost, const Triangle<T> &tr)
 }
 
 template <std::floating_point T>
-Triangle<T>::Triangle(const Vector<T> &p1, const Vector<T> &p2, const Vector<T> &p3)
+std::istream &operator>>(std::istream &ist, Triangle<T> &tr)
+{
+  ist >> tr[0] >> tr[1] >> tr[2];
+  return ist;
+}
+
+template <std::floating_point T>
+Triangle<T>::Triangle() : vertices_()
+{}
+
+template <std::floating_point T>
+Triangle<T>::Triangle(const Vec3<T> &p1, const Vec3<T> &p2, const Vec3<T> &p3)
   : vertices_{p1, p2, p3}
 {}
 
 template <std::floating_point T>
-const Vector<T> &Triangle<T>::operator[](std::size_t idx) const
+const Vec3<T> &Triangle<T>::operator[](std::size_t idx) const
 {
   return vertices_[idx % 3];
+}
+
+template <std::floating_point T>
+Vec3<T> &Triangle<T>::operator[](std::size_t idx)
+{
+  return vertices_[idx % 3];
+}
+
+template <std::floating_point T>
+Plane<T> Triangle<T>::getPlane() const
+{
+  return Plane<T>::getBy3Points(vertices_[0], vertices_[1], vertices_[2]);
+}
+
+template <std::floating_point T>
+bool Triangle<T>::isValid() const
+{
+  auto edge1 = vertices_[1] - vertices_[0];
+  auto edge2 = vertices_[2] - vertices_[0];
+
+  auto cross12 = cross(edge1, edge2);
+  return (cross12 != Vec3<T>{});
 }
 
 } // namespace geom

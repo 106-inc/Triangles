@@ -1,7 +1,5 @@
-set(TESTLIST vector_tst line_tst plane_tst triangle_tst)
-
-foreach(TEST ${TESTLIST})
-  add_subdirectory(${TEST})
-endforeach()
+add_subdirectory(unit)
+add_subdirectory(e2e)
 
 set(TESTLIST "${TESTLIST}" PARENT_SCOPE)
+set(LIT_RUN_CMD "${LIT_RUN_CMD}" PARENT_SCOPE)
