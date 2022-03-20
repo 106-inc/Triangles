@@ -365,9 +365,18 @@ Segment2D<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const
 
   /* Looking for vertex which is alone on it's side */
   size_t rogue = 0;
-  for (size_t i = 0; i < 3; ++i)
-    if (isOneSide[i])
-      rogue = (i + 2) % 3;
+  if (std::all_of(isOneSide.begin(), isOneSide.end(), [](const auto &elem) { return !elem; }))
+  {
+    for (size_t i = 0; i < 3; ++i)
+      if (!Vec3<T>::isNumEq(0, sdist[i]))
+        rogue = i;
+  }
+  else
+  {
+    for (size_t i = 0; i < 3; ++i)
+      if (isOneSide[i])
+        rogue = (i + 2) % 3;
+  }
 
   std::vector<T> segm{};
   std::array<size_t, 2> arr{(rogue + 1) % 3, (rogue + 2) % 3};
