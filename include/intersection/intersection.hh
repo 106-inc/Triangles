@@ -195,6 +195,9 @@ bool isOverlap(Segment2D<T> &segm1, Segment2D<T> &segm2);
 template <std::forward_iterator It>
 bool isSameSign(It begin, It end);
 
+template <Number T>
+bool isSameSign(T num1, T num2);
+
 template <std::floating_point T>
 bool isOnOneSide(const Plane<T> &pl, const Triangle<T> &tr);
 
@@ -353,12 +356,6 @@ Segment2D<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const
   for (size_t i = 0; i < 3; ++i)
     sdist[i] = distance(pl, tr[i]);
 
-  auto isSameSign = [](const auto &num1, const auto &num2) {
-    if (num1 * num2 > Vec3<T>::getThreshold())
-      return true;
-    return Vec3<T>::isNumEq(num1, 0) && Vec3<T>::isNumEq(num2, 0);
-  };
-
   std::array<bool, 3> isOneSide{};
   for (size_t i = 0; i < 3; ++i)
     isOneSide[i] = isSameSign(sdist[i], sdist[(i + 1) % 3]);
@@ -469,11 +466,10 @@ bool isIntersectPointSegment(const Vec3<T> &pt, const Segment3D<T> &segm)
   if (!l.belongs(pt))
     return false;
 
-  auto beg = dot(l.dir(), segm.first);
-  auto end = dot(l.dir(), segm.second);
-  auto proj = dot(l.dir(), pt);
+  auto beg = dot(l.dir(), segm.first - pt);
+  auto end = dot(l.dir(), segm.second - pt);
 
-  return !((proj > end) || (proj < beg));
+  return !isSameSign(beg, end);
 }
 
 template <std::floating_point T>
@@ -523,6 +519,14 @@ bool isSameSign(It begin, It end)
       return false;
 
   return true;
+}
+
+template <Number T>
+bool isSameSign(T num1, T num2)
+{
+  if (num1 * num2 > Vec3<T>::getThreshold())
+    return true;
+  return Vec3<T>::isNumEq(num1, 0) && Vec3<T>::isNumEq(num2, 0);
 }
 
 template <std::floating_point T>
