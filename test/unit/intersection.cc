@@ -486,6 +486,31 @@ TEST(detail, isIntersectSegmentSegment2)
   ASSERT_FALSE(detail::isIntersectSegmentSegment(segm7, segm1));
 }
 
+TEST(detail, isIntersectTriangleSegment2D)
+{
+  // Arrange
+  Triangle<double> tr{{1, 0, 0}, {0, 1, 0}, {0, 0, 0}};
+  // Act & Assert
+  ASSERT_TRUE(detail::isIntersect2D<double>(tr, {{-1, -1, -1}, {1, 1, 1}, {0, 0, 0}}));
+  ASSERT_TRUE(detail::isIntersect2D<double>(tr, {{-1, -1, -1}, {0, 0, 0}, {0, 0, 0}}));
+  ASSERT_TRUE(detail::isIntersect2D<double>(tr, {{1, 1, 1}, {0, 0, 0}, {0, 0, 0}}));
+
+  ASSERT_FALSE(detail::isIntersect2D<double>(tr, {{1, 1, 1}, {2, 2, 2}, {2, 2, 2}}));
+  ASSERT_FALSE(detail::isIntersect2D<double>(tr, {{-1, -1, -1}, {-2, -2, -2}, {-2, -2, -2}}));
+
+  ASSERT_TRUE(detail::isIntersect2D<double>(tr, {{1, 0, 0}, {2, 0, 0}, {2, 0, 0}}));
+  ASSERT_TRUE(detail::isIntersect2D<double>(tr, {{-1, 0, 0}, {0, 0, 0}, {0, 0, 0}}));
+
+  ASSERT_FALSE(detail::isIntersect2D<double>(tr, {{2, 0, 0}, {3, 0, 0}, {2.5, 0, 0}}));
+  ASSERT_FALSE(detail::isIntersect2D<double>(tr, {{-2, 0, 0}, {-1, 0, 0}, {-2, 0, 0}}));
+
+  ASSERT_TRUE(detail::isIntersect2D<double>(tr, {{0, 1, 0}, {0, 2, 0}, {0, 2, 0}}));
+  ASSERT_TRUE(detail::isIntersect2D<double>(tr, {{0, -1, 0}, {0, 0, 0}, {0, 0, 0}}));
+
+  ASSERT_FALSE(detail::isIntersect2D<double>(tr, {{0, 2, 0}, {0, 3, 0}, {0, 2.5, 0}}));
+  ASSERT_FALSE(detail::isIntersect2D<double>(tr, {{0, -2, 0}, {0, -1, 0}, {0, -2, 0}}));
+}
+
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);

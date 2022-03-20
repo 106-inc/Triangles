@@ -416,7 +416,7 @@ bool isIntersectValidInvalid(const Triangle<T> &valid, const Triangle<T> &invali
     return false;
 
   if (Vec3<T>::isNumEq(dst1, 0) && Vec3<T>::isNumEq(dst2, 0))
-    assert(false); // TODO: handle
+    return isIntersect2D(valid, invalid);
 
   dst1 = std::abs(dst1);
   dst2 = std::abs(dst2);
