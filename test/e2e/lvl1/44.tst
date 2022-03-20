@@ -11,4 +11,3 @@
 #RUN: %lvl1 < %s | %fc %s
 #CHECK: 0
 #CHECK: 1
-
