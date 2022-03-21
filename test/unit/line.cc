@@ -2,10 +2,19 @@
 
 #include "primitives/primitives.hh"
 
-TEST(Line, copyCtor)
+using namespace geom;
+using FPTypes = testing::Types<float, double, long double>;
+
+template <typename T>
+class LineTest : public testing::Test
+{};
+
+TYPED_TEST_SUITE(LineTest, FPTypes);
+
+TYPED_TEST(LineTest, copyCtor)
 {
   // Arrange
-  geom::Line<double> l1{{1, 1, 1}, {2, 2, 2}};
+  Line<TypeParam> l1{{1, 1, 1}, {2, 2, 2}};
   auto l2{l1};
   auto l3 = l1;
 
@@ -14,12 +23,12 @@ TEST(Line, copyCtor)
   EXPECT_EQ(l1, l3);
 }
 
-TEST(Line, getset)
+TYPED_TEST(LineTest, getset)
 {
   // Arrange
-  geom::Vec3<double> v1{1, 0, 0};
-  geom::Vec3<double> v2{0, 1, 0};
-  geom::Line<double> l{v1, v2};
+  Vec3<TypeParam> v1{1, 0, 0};
+  Vec3<TypeParam> v2{0, 1, 0};
+  Line<TypeParam> l{v1, v2};
 
   // Act
   auto org = l.org();
@@ -30,13 +39,13 @@ TEST(Line, getset)
   EXPECT_EQ(dir, v2);
 }
 
-TEST(Line, getPoint)
+TYPED_TEST(LineTest, getPoint)
 {
   // Arrange
-  geom::Vec3<double> v1{1, 0, 0};
-  geom::Vec3<double> v2{0, 1, 0};
-  geom::Line<double> l1{v1, v2};
-  geom::Line<double> l2{{456, 30, -68}, {-456, -30, 68}};
+  Vec3<TypeParam> v1{1, 0, 0};
+  Vec3<TypeParam> v2{0, 1, 0};
+  Line<TypeParam> l1{v1, v2};
+  Line<TypeParam> l2{{456, 30, -68}, {-456, -30, 68}};
 
   // Act
   auto point = l1.getPoint(20);
@@ -44,18 +53,18 @@ TEST(Line, getPoint)
   auto point3 = l2.getPoint(1);
 
   // Assert
-  EXPECT_EQ(point, geom::Vec3<double>(1, 20, 0));
+  EXPECT_EQ(point, Vec3<TypeParam>(1, 20, 0));
   EXPECT_EQ(point2, l1.org());
 
-  EXPECT_EQ(point3, geom::Vec3<double>());
+  EXPECT_EQ(point3, Vec3<TypeParam>());
 }
 
-TEST(Line, belongs)
+TYPED_TEST(LineTest, belongs)
 {
   // Arrange
-  geom::Vec3<double> v1{1, 1, 2};
-  geom::Vec3<double> v2{1, 1, 3};
-  geom::Line<double> l{{0, 0, 1}, {1, 1, 1}};
+  Vec3<TypeParam> v1{1, 1, 2};
+  Vec3<TypeParam> v2{1, 1, 3};
+  Line<TypeParam> l{{0, 0, 1}, {1, 1, 1}};
 
   // Act
   bool res1 = l.belongs(v1);
@@ -66,18 +75,14 @@ TEST(Line, belongs)
   EXPECT_FALSE(res2);
 }
 
-TEST(Line, isEqual)
+TYPED_TEST(LineTest, isEqual)
 {
   // Arrange
-  geom::Line<double> l1{{0, 0, 1}, {1, 1, 1}};
-  geom::Line<double> l2{{1, 1, 2}, {6, 6, 6}};
-  geom::Line<double> l3{{-1, 1, 2}, {6, 6, 6}};
+  Line<TypeParam> l1{{0, 0, 1}, {1, 1, 1}};
+  Line<TypeParam> l2{{1, 1, 2}, {6, 6, 6}};
+  Line<TypeParam> l3{{-1, 1, 2}, {6, 6, 6}};
 
-  // Act
-
-  /* nothing */
-
-  // Assert
+  // Act & Assert
   EXPECT_TRUE(l1.isEqual(l2));
   EXPECT_TRUE(l2.isEqual(l1));
 
@@ -101,18 +106,14 @@ TEST(Line, isEqual)
   EXPECT_EQ(l3, l3);
 }
 
-TEST(Line, isPar)
+TYPED_TEST(LineTest, isPar)
 {
   // Arrange
-  geom::Line<double> l1{{0, 0, 1}, {1, 1, 1}};
-  geom::Line<double> l2{{5, 3, 2}, {-1, -1, -1}};
-  geom::Line<double> l3{{0, 0, 0}, {1, 0, 0}};
+  Line<TypeParam> l1{{0, 0, 1}, {1, 1, 1}};
+  Line<TypeParam> l2{{5, 3, 2}, {-1, -1, -1}};
+  Line<TypeParam> l3{{0, 0, 0}, {1, 0, 0}};
 
-  // Act
-
-  /* nothing */
-
-  // Assert
+  // Act & Assert
   EXPECT_TRUE(l1.isPar(l2));
   EXPECT_TRUE(l2.isPar(l1));
 
@@ -120,19 +121,15 @@ TEST(Line, isPar)
   EXPECT_FALSE(l1.isPar(l3));
 }
 
-TEST(Line, isSkew)
+TYPED_TEST(LineTest, isSkew)
 {
   // Arrange
-  geom::Line<double> l1{{0, 0, 1}, {1, 1, 1}};
-  geom::Line<double> l2{{253, 253, 254}, {-6, -6, -6}};
-  geom::Line<double> l3{{5, 3, 2}, {-3, -1, 1}};
-  geom::Line<double> l4{{0, 0, 0}, {1, 0, 0}};
+  Line<TypeParam> l1{{0, 0, 1}, {1, 1, 1}};
+  Line<TypeParam> l2{{253, 253, 254}, {-6, -6, -6}};
+  Line<TypeParam> l3{{5, 3, 2}, {-3, -1, 1}};
+  Line<TypeParam> l4{{0, 0, 0}, {1, 0, 0}};
 
-  // Act
-
-  /* nothing */
-
-  // Assert
+  // Act & Assert
   EXPECT_FALSE(l1.isSkew(l2));
   EXPECT_FALSE(l2.isSkew(l1));
 
@@ -146,14 +143,14 @@ TEST(Line, isSkew)
   EXPECT_TRUE(l4.isSkew(l2));
 }
 
-TEST(Line, getBy2Points)
+TYPED_TEST(LineTest, getBy2Points)
 {
   // Arrange
-  geom::Vec3<double> p1{1, 0, 0};
-  geom::Vec3<double> p2{0, 1, 0};
+  Vec3<TypeParam> p1{1, 0, 0};
+  Vec3<TypeParam> p2{0, 1, 0};
 
   // Act
-  auto l = geom::Line<double>::getBy2Points(p1, p2);
+  auto l = Line<TypeParam>::getBy2Points(p1, p2);
 
   // Assert
   EXPECT_TRUE(l.belongs(p1));

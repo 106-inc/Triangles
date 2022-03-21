@@ -5,13 +5,20 @@
 #include "primitives/primitives.hh"
 
 using namespace geom;
+using FPTypes = testing::Types<float, double, long double>;
 
-TEST(Triangle, ctor)
+template <typename T>
+class TriangleTest : public testing::Test
+{};
+
+TYPED_TEST_SUITE(TriangleTest, FPTypes);
+
+TYPED_TEST(TriangleTest, ctor)
 {
   // Arrange
-  Vec3D v1{1, 2, 3};
-  Vec3D v2{4, 5, 6};
-  Vec3D v3{7, 8, 9};
+  Vec3<TypeParam> v1{1, 2, 3};
+  Vec3<TypeParam> v2{4, 5, 6};
+  Vec3<TypeParam> v3{7, 8, 9};
   Triangle tr{v1, v2, v3};
 
   // Act & Assert
@@ -20,12 +27,12 @@ TEST(Triangle, ctor)
   EXPECT_EQ(tr[2], v3);
 }
 
-TEST(Triangle, output)
+TYPED_TEST(TriangleTest, output)
 {
   // Arrange
-  Vec3D v1{1, 2, 3};
-  Vec3D v2{4, 5, 6};
-  Vec3D v3{7, 8, 9};
+  Vec3<TypeParam> v1{1, 2, 3};
+  Vec3<TypeParam> v2{4, 5, 6};
+  Vec3<TypeParam> v3{7, 8, 9};
   Triangle trian{v1, v2, v3};
 
   // Act
@@ -36,12 +43,12 @@ TEST(Triangle, output)
   EXPECT_STREQ(sst.str().c_str(), "Triangle: {(1, 2, 3), (4, 5, 6), (7, 8, 9)}");
 }
 
-TEST(Triangle, isValid)
+TYPED_TEST(TriangleTest, isValid)
 {
   // Arrange
-  Triangle<double> tr1{{1, 0, 0}, {0, 1, 0}, {0, 0, 0}};
-  Triangle<double> tr2{{1, 0, 0}, {0, 1, 0}, {0, 1, 0}};
-  Triangle<double> tr3{{1, 0, 0}, {1, 0, 0}, {1, 0, 0}};
+  Triangle<TypeParam> tr1{{1, 0, 0}, {0, 1, 0}, {0, 0, 0}};
+  Triangle<TypeParam> tr2{{1, 0, 0}, {0, 1, 0}, {0, 1, 0}};
+  Triangle<TypeParam> tr3{{1, 0, 0}, {1, 0, 0}, {1, 0, 0}};
 
   // Act & Assert
   EXPECT_TRUE(tr1.isValid());
