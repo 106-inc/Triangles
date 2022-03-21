@@ -1,9 +1,7 @@
-#include <gtest/gtest.h>
-
 #include "primitives/vec2.hh"
+#include "test_common.hh"
 
 using namespace geom;
-using FPTypes = testing::Types<float, double, long double>;
 
 template <typename T>
 class Vec2Test : public testing::Test

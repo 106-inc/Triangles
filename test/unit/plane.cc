@@ -1,7 +1,7 @@
 #include <concepts>
 #include <sstream>
 
-#include <gtest/gtest.h>
+#include "test_common.hh"
 
 #include "primitives/primitives.hh"
 

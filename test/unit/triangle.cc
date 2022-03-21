@@ -1,11 +1,9 @@
 #include <sstream>
 
-#include <gtest/gtest.h>
-
 #include "primitives/primitives.hh"
+#include "test_common.hh"
 
 using namespace geom;
-using FPTypes = testing::Types<float, double, long double>;
 
 template <typename T>
 class TriangleTest : public testing::Test

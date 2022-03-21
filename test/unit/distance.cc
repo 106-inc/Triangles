@@ -1,9 +1,7 @@
-#include <gtest/gtest.h>
-
 #include "distance/distance.hh"
+#include "test_common.hh"
 
 using namespace geom;
-using FPTypes = testing::Types<float, double, long double>;
 
 template <typename T>
 class DistanceTest : public testing::Test

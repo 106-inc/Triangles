@@ -1,9 +1,7 @@
-#include <gtest/gtest.h>
-
 #include "intersection/intersection.hh"
+#include "test_common.hh"
 
 using namespace geom;
-using FPTypes = testing::Types<float, double, long double>;
 
 //================================================================================================
 
