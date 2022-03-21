@@ -3,38 +3,45 @@
 #include "primitives/vec2.hh"
 
 using namespace geom;
+using FPTypes = testing::Types<float, double, long double>;
 
-TEST(Vec2, copyCtor)
+template <typename T>
+class Vec2Test : public testing::Test
+{};
+
+TYPED_TEST_SUITE(Vec2Test, FPTypes);
+
+TYPED_TEST(Vec2Test, copyCtor)
 {
   // Arrange
-  Vec2D v1{1, 2};
-  Vec2D v2 = v1;
-  Vec2D v3{v1};
+  Vec2<TypeParam> v1{1, 2};
+  Vec2<TypeParam> v2 = v1;
+  Vec2<TypeParam> v3{v1};
 
   // Act & Arrange
   EXPECT_EQ(v1, v2);
   EXPECT_EQ(v1, v3);
 }
 
-TEST(Vec2, dot)
+TYPED_TEST(Vec2Test, dot)
 {
   // Arrange
-  Vec2D v1{1, 2};
-  Vec2D v2{4, 5};
+  Vec2<TypeParam> v1{1, 2};
+  Vec2<TypeParam> v2{4, 5};
 
   // Act
   auto res = v1.dot(v2);
 
   // Assert
-  EXPECT_DOUBLE_EQ(res, 14);
+  EXPECT_NEAR(res, 14, Vec2<TypeParam>::getThreshold());
 }
 
-TEST(Vec2, isEq)
+TYPED_TEST(Vec2Test, isEq)
 {
   // Arrange
-  Vec2D v1{1.0, 2.0};
-  Vec2D v2{1.0, 2.0};
-  Vec2D v3{4.0, 5.0};
+  Vec2<TypeParam> v1{1.0, 2.0};
+  Vec2<TypeParam> v2{1.0, 2.0};
+  Vec2<TypeParam> v3{4.0, 5.0};
 
   // Act
   /* nothing */
@@ -50,12 +57,12 @@ TEST(Vec2, isEq)
   EXPECT_FALSE(v3.isEqual(v2));
 }
 
-TEST(Vec2, normalize)
+TYPED_TEST(Vec2Test, normalize)
 {
   // Arrange
-  Vec2F v1{3, 4};
-  Vec2F v2{0, 0};
-  Vec2F v3{0, 1};
+  Vec2<TypeParam> v1{3, 4};
+  Vec2<TypeParam> v2{0, 0};
+  Vec2<TypeParam> v3{0, 1};
 
   // Act
   auto res1 = v1.normalized();
@@ -68,13 +75,13 @@ TEST(Vec2, normalize)
   EXPECT_TRUE(res3.isEqual(v3));
 }
 
-TEST(Vec2, isPar)
+TYPED_TEST(Vec2Test, isPar)
 {
   // Arrange
-  Vec2F v1{2, -6};
-  Vec2F v2{8, -24};
-  Vec2F v3{6, 4};
-  Vec2F vz{0};
+  Vec2<TypeParam> v1{2, -6};
+  Vec2<TypeParam> v2{8, -24};
+  Vec2<TypeParam> v3{6, 4};
+  Vec2<TypeParam> vz{0};
 
   // Act & Assert
   EXPECT_TRUE(v1.isPar(v2));
@@ -86,13 +93,13 @@ TEST(Vec2, isPar)
   EXPECT_TRUE(v3.isPar(vz));
 }
 
-TEST(Vec2, isPerp)
+TYPED_TEST(Vec2Test, isPerp)
 {
   // Arrange
-  Vec2F v1{1, 1};
-  Vec2F v2{-1, 1};
-  Vec2F v3{1, 3};
-  Vec2F vz{0};
+  Vec2<TypeParam> v1{1, 1};
+  Vec2<TypeParam> v2{-1, 1};
+  Vec2<TypeParam> v3{1, 3};
+  Vec2<TypeParam> vz{0};
 
   // Act & Assert
   EXPECT_TRUE(v1.isPerp(v2));
@@ -108,10 +115,10 @@ TEST(Vec2, isPerp)
   EXPECT_TRUE(v3.isPerp(vz));
 }
 
-TEST(Vec2, getPerp)
+TYPED_TEST(Vec2Test, getPerp)
 {
   // Arrange
-  Vec2D v1{34, 54};
+  Vec2<TypeParam> v1{34, 54};
 
   // Act
   auto v2 = v1.getPerp();
