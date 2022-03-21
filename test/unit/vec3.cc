@@ -2,42 +2,48 @@
 
 #include "primitives/primitives.hh"
 
-TEST(Vec3, copyCtor)
+using namespace geom;
+using FPTypes = testing::Types<float, double, long double>;
+
+template <typename T>
+class Vec3Test : public testing::Test
+{};
+
+TYPED_TEST_SUITE(Vec3Test, FPTypes);
+
+TYPED_TEST(Vec3Test, copyCtor)
 {
   // Arrange
-  geom::Vec3<double> v1{1, 2, 3};
-  geom::Vec3<double> v2 = v1;
-  geom::Vec3<double> v3{v1};
+  Vec3<TypeParam> v1{1, 2, 3};
+  Vec3<TypeParam> v2 = v1;
+  Vec3<TypeParam> v3{v1};
 
   // Act & Arrange
   EXPECT_EQ(v1, v2);
   EXPECT_EQ(v1, v3);
 }
 
-TEST(Vec3, dot)
+TYPED_TEST(Vec3Test, dot)
 {
   // Arrange
-  geom::Vec3<double> v1{1, 2, 3};
-  geom::Vec3<double> v2{4, 5, 6};
+  Vec3<TypeParam> v1{1, 2, 3};
+  Vec3<TypeParam> v2{4, 5, 6};
 
   // Act
   auto res = v1.dot(v2);
 
   // Assert
-  EXPECT_DOUBLE_EQ(res, 32);
+  EXPECT_NEAR(res, 32, Vec3<TypeParam>::getThreshold());
 }
 
-TEST(Vec3, isEq)
+TYPED_TEST(Vec3Test, isEq)
 {
   // Arrange
-  geom::Vec3<double> v1{1.0, 2.0, 3.0};
-  geom::Vec3<double> v2{1.0, 2.0, 3.0};
-  geom::Vec3<double> v3{4.0, 5.0, 5.0};
+  Vec3<TypeParam> v1{1.0, 2.0, 3.0};
+  Vec3<TypeParam> v2{1.0, 2.0, 3.0};
+  Vec3<TypeParam> v3{4.0, 5.0, 5.0};
 
-  // Act
-  /* nothing */
-
-  // Assert
+  // Act & Assert
   EXPECT_TRUE(v1.isEqual(v2));
   EXPECT_TRUE(v2.isEqual(v1));
 
@@ -48,51 +54,51 @@ TEST(Vec3, isEq)
   EXPECT_FALSE(v3.isEqual(v2));
 }
 
-TEST(Vec3, cross)
+TYPED_TEST(Vec3Test, cross)
 {
   // Arrange
-  geom::Vec3<double> v1{1, 2, 3};
-  geom::Vec3<double> v2{4, 5, 6};
+  Vec3<TypeParam> v1{1, 2, 3};
+  Vec3<TypeParam> v2{4, 5, 6};
 
   // Act
   auto res = v1.cross(v2);
 
   // Assert
-  EXPECT_TRUE(res.isEqual(geom::Vec3<double>{-3, 6, -3}));
+  EXPECT_TRUE(res.isEqual(Vec3<TypeParam>{-3, 6, -3}));
 }
 
-TEST(Vec3, triple)
+TYPED_TEST(Vec3Test, triple)
 {
   // Arrange
-  geom::Vec3<double> v1{1, 2, 3};
-  geom::Vec3<double> v2{4, 5, 6};
-  geom::Vec3<double> v3{7, 8, 9};
+  Vec3<TypeParam> v1{1, 2, 3};
+  Vec3<TypeParam> v2{4, 5, 6};
+  Vec3<TypeParam> v3{7, 8, 9};
 
-  geom::Vec3<double> v4{1, 0, 0};
-  geom::Vec3<double> v5{0, 1, 0};
-  geom::Vec3<double> v6{0, 0, 1};
+  Vec3<TypeParam> v4{1, 0, 0};
+  Vec3<TypeParam> v5{0, 1, 0};
+  Vec3<TypeParam> v6{0, 0, 1};
 
   // Act
-  auto res = geom::triple(v1, v2, v3);
-  auto nres = geom::triple(v2, v1, v3);
+  auto res = triple(v1, v2, v3);
+  auto nres = triple(v2, v1, v3);
 
-  auto res2 = geom::triple(v4, v5, v6);
-  auto nres2 = geom::triple(v6, v5, v4);
+  auto res2 = triple(v4, v5, v6);
+  auto nres2 = triple(v6, v5, v4);
 
   // Assert
-  EXPECT_TRUE(geom::Vec3<double>::isNumEq(res, 0));
-  EXPECT_TRUE(geom::Vec3<double>::isNumEq(nres, 0));
+  EXPECT_TRUE(Vec3<TypeParam>::isNumEq(res, 0));
+  EXPECT_TRUE(Vec3<TypeParam>::isNumEq(nres, 0));
 
-  EXPECT_TRUE(geom::Vec3<double>::isNumEq(res2, 1));
-  EXPECT_TRUE(geom::Vec3<double>::isNumEq(nres2, -1));
+  EXPECT_TRUE(Vec3<TypeParam>::isNumEq(res2, 1));
+  EXPECT_TRUE(Vec3<TypeParam>::isNumEq(nres2, -1));
 }
 
-TEST(Vec3, normalize)
+TYPED_TEST(Vec3Test, normalize)
 {
   // Arrange
-  geom::Vec3<float> v1{2, 6, 9};
-  geom::Vec3<float> v2{0, 0, 0};
-  geom::Vec3<float> v3{0, 0, 1};
+  Vec3<TypeParam> v1{2, 6, 9};
+  Vec3<TypeParam> v2{0, 0, 0};
+  Vec3<TypeParam> v3{0, 0, 1};
 
   // Act
   auto res1 = v1.normalized();
@@ -105,12 +111,12 @@ TEST(Vec3, normalize)
   EXPECT_TRUE(res3.isEqual(v3));
 }
 
-TEST(Vec3, isPar)
+TYPED_TEST(Vec3Test, isPar)
 {
   // Arrange
-  geom::Vec3F v1{2, -6, 9};
-  geom::Vec3F v2{8, -24, 36};
-  geom::Vec3F v3{6, 4, 1};
+  Vec3<TypeParam> v1{2, -6, 9};
+  Vec3<TypeParam> v2{8, -24, 36};
+  Vec3<TypeParam> v3{6, 4, 1};
 
   // Act
   auto res12 = v1.isPar(v2);
@@ -123,14 +129,14 @@ TEST(Vec3, isPar)
   EXPECT_FALSE(res23);
 }
 
-TEST(Vec3, isPerp)
+TYPED_TEST(Vec3Test, isPerp)
 {
   // Arrange
-  geom::Vec3F v1{1, 1, 0};
-  geom::Vec3F v2{-1, 1, 0};
-  geom::Vec3F v3{0, 0, 1};
-  geom::Vec3F v4{1, 1, 1};
-  geom::Vec3F vz{0};
+  Vec3<TypeParam> v1{1, 1, 0};
+  Vec3<TypeParam> v2{-1, 1, 0};
+  Vec3<TypeParam> v3{0, 0, 1};
+  Vec3<TypeParam> v4{1, 1, 1};
+  Vec3<TypeParam> vz{0};
 
   // Act
 
