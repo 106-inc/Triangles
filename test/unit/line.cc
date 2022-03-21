@@ -10,8 +10,8 @@ TEST(Line, copyCtor)
   auto l3 = l1;
 
   // Act & Assert
-  ASSERT_EQ(l1, l2);
-  ASSERT_EQ(l1, l3);
+  EXPECT_EQ(l1, l2);
+  EXPECT_EQ(l1, l3);
 }
 
 TEST(Line, getset)
@@ -26,8 +26,8 @@ TEST(Line, getset)
   auto dir = l.dir();
 
   // Assert
-  ASSERT_EQ(org, v1);
-  ASSERT_EQ(dir, v2);
+  EXPECT_EQ(org, v1);
+  EXPECT_EQ(dir, v2);
 }
 
 TEST(Line, getPoint)
@@ -44,10 +44,10 @@ TEST(Line, getPoint)
   auto point3 = l2.getPoint(1);
 
   // Assert
-  ASSERT_EQ(point, geom::Vec3<double>(1, 20, 0));
-  ASSERT_EQ(point2, l1.org());
+  EXPECT_EQ(point, geom::Vec3<double>(1, 20, 0));
+  EXPECT_EQ(point2, l1.org());
 
-  ASSERT_EQ(point3, geom::Vec3<double>());
+  EXPECT_EQ(point3, geom::Vec3<double>());
 }
 
 TEST(Line, belongs)
@@ -62,8 +62,8 @@ TEST(Line, belongs)
   bool res2 = l.belongs(v2);
 
   // Assert
-  ASSERT_TRUE(res1);
-  ASSERT_FALSE(res2);
+  EXPECT_TRUE(res1);
+  EXPECT_FALSE(res2);
 }
 
 TEST(Line, isEqual)
@@ -78,27 +78,27 @@ TEST(Line, isEqual)
   /* nothing */
 
   // Assert
-  ASSERT_TRUE(l1.isEqual(l2));
-  ASSERT_TRUE(l2.isEqual(l1));
+  EXPECT_TRUE(l1.isEqual(l2));
+  EXPECT_TRUE(l2.isEqual(l1));
 
-  ASSERT_EQ(l1, l2);
-  ASSERT_EQ(l2, l1);
+  EXPECT_EQ(l1, l2);
+  EXPECT_EQ(l2, l1);
 
-  ASSERT_FALSE(l1.isEqual(l3));
-  ASSERT_FALSE(l2.isEqual(l3));
+  EXPECT_FALSE(l1.isEqual(l3));
+  EXPECT_FALSE(l2.isEqual(l3));
 
-  ASSERT_FALSE(l3.isEqual(l1));
-  ASSERT_FALSE(l3.isEqual(l2));
+  EXPECT_FALSE(l3.isEqual(l1));
+  EXPECT_FALSE(l3.isEqual(l2));
 
-  ASSERT_NE(l1, l3);
-  ASSERT_NE(l2, l3);
+  EXPECT_NE(l1, l3);
+  EXPECT_NE(l2, l3);
 
-  ASSERT_NE(l3, l1);
-  ASSERT_NE(l3, l2);
+  EXPECT_NE(l3, l1);
+  EXPECT_NE(l3, l2);
 
-  ASSERT_EQ(l1, l1);
-  ASSERT_EQ(l2, l2);
-  ASSERT_EQ(l3, l3);
+  EXPECT_EQ(l1, l1);
+  EXPECT_EQ(l2, l2);
+  EXPECT_EQ(l3, l3);
 }
 
 TEST(Line, isPar)
@@ -113,11 +113,11 @@ TEST(Line, isPar)
   /* nothing */
 
   // Assert
-  ASSERT_TRUE(l1.isPar(l2));
-  ASSERT_TRUE(l2.isPar(l1));
+  EXPECT_TRUE(l1.isPar(l2));
+  EXPECT_TRUE(l2.isPar(l1));
 
-  ASSERT_FALSE(l2.isPar(l3));
-  ASSERT_FALSE(l1.isPar(l3));
+  EXPECT_FALSE(l2.isPar(l3));
+  EXPECT_FALSE(l1.isPar(l3));
 }
 
 TEST(Line, isSkew)
@@ -133,17 +133,17 @@ TEST(Line, isSkew)
   /* nothing */
 
   // Assert
-  ASSERT_FALSE(l1.isSkew(l2));
-  ASSERT_FALSE(l2.isSkew(l1));
+  EXPECT_FALSE(l1.isSkew(l2));
+  EXPECT_FALSE(l2.isSkew(l1));
 
-  ASSERT_FALSE(l1.isSkew(l3));
-  ASSERT_FALSE(l3.isSkew(l1));
+  EXPECT_FALSE(l1.isSkew(l3));
+  EXPECT_FALSE(l3.isSkew(l1));
 
-  ASSERT_TRUE(l1.isSkew(l4));
-  ASSERT_TRUE(l4.isSkew(l1));
+  EXPECT_TRUE(l1.isSkew(l4));
+  EXPECT_TRUE(l4.isSkew(l1));
 
-  ASSERT_TRUE(l2.isSkew(l4));
-  ASSERT_TRUE(l4.isSkew(l2));
+  EXPECT_TRUE(l2.isSkew(l4));
+  EXPECT_TRUE(l4.isSkew(l2));
 }
 
 TEST(Line, getBy2Points)

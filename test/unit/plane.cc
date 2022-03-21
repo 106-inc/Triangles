@@ -15,8 +15,8 @@ static void checkCtor(const Plane<T> &pl, const Vec3<T> &normExpected, T distExp
   auto dist = pl.dist();
 
   // Assert
-  ASSERT_TRUE(normExpected.isEqual(norm));
-  ASSERT_TRUE(Vec3<T>::isNumEq(distExpected, dist));
+  EXPECT_TRUE(normExpected.isEqual(norm));
+  EXPECT_TRUE(Vec3<T>::isNumEq(distExpected, dist));
 }
 
 TEST(Plane, ctor)
@@ -42,8 +42,8 @@ TEST(Plane, copyCtor)
   auto pl3{pl1};
 
   // Act & Assert
-  ASSERT_EQ(pl1, pl2);
-  ASSERT_EQ(pl1, pl3);
+  EXPECT_EQ(pl1, pl2);
+  EXPECT_EQ(pl1, pl3);
 }
 
 TEST(Plane, belongsPoint)
@@ -60,11 +60,11 @@ TEST(Plane, belongsPoint)
   auto resFalse2 = pl2.belongs(Vec3D{1, 1, 1});
 
   // Assert
-  ASSERT_TRUE(resTrue1);
-  ASSERT_FALSE(resFalse1);
+  EXPECT_TRUE(resTrue1);
+  EXPECT_FALSE(resFalse1);
 
-  ASSERT_TRUE(resTrue2);
-  ASSERT_FALSE(resFalse2);
+  EXPECT_TRUE(resTrue2);
+  EXPECT_FALSE(resFalse2);
 }
 
 TEST(Plane, belongsLine)
@@ -75,8 +75,8 @@ TEST(Plane, belongsLine)
   Line<double> l2{{2, 2, 2}, {1, 2, 1}};
 
   // Act & Assert
-  ASSERT_TRUE(pl.belongs(l1));
-  ASSERT_FALSE(pl.belongs(l2));
+  EXPECT_TRUE(pl.belongs(l1));
+  EXPECT_FALSE(pl.belongs(l2));
 }
 
 TEST(Plane, isEqual)
@@ -88,13 +88,13 @@ TEST(Plane, isEqual)
   auto pl4 = Plane<double>::getNormalDist({-3, -4, -5}, 17);
 
   // Act & Assert
-  ASSERT_EQ(pl1, pl2);
-  ASSERT_EQ(pl3, pl4);
+  EXPECT_EQ(pl1, pl2);
+  EXPECT_EQ(pl3, pl4);
 
-  ASSERT_NE(pl1, pl3);
-  ASSERT_NE(pl1, pl4);
-  ASSERT_NE(pl2, pl3);
-  ASSERT_NE(pl2, pl4);
+  EXPECT_NE(pl1, pl3);
+  EXPECT_NE(pl1, pl4);
+  EXPECT_NE(pl2, pl3);
+  EXPECT_NE(pl2, pl4);
 }
 
 TEST(Plane, output)
@@ -107,7 +107,7 @@ TEST(Plane, output)
   ss << pl;
 
   // Assert
-  ASSERT_EQ(ss.str(), "(1, 0, 0) * X = 17");
+  EXPECT_EQ(ss.str(), "(1, 0, 0) * X = 17");
 }
 
 TEST(Plane, isPar)
@@ -118,17 +118,17 @@ TEST(Plane, isPar)
   auto pl3 = Plane<double>::getBy3Points({1, 1, 1}, {0, 0, 1}, {0, 1, 0});
 
   // Act & Assert
-  ASSERT_TRUE(pl1.isPar(pl2));
-  ASSERT_TRUE(pl2.isPar(pl1));
+  EXPECT_TRUE(pl1.isPar(pl2));
+  EXPECT_TRUE(pl2.isPar(pl1));
 
-  ASSERT_FALSE(pl1.isPar(pl3));
-  ASSERT_FALSE(pl2.isPar(pl3));
-  ASSERT_FALSE(pl3.isPar(pl1));
-  ASSERT_FALSE(pl3.isPar(pl2));
+  EXPECT_FALSE(pl1.isPar(pl3));
+  EXPECT_FALSE(pl2.isPar(pl3));
+  EXPECT_FALSE(pl3.isPar(pl1));
+  EXPECT_FALSE(pl3.isPar(pl2));
 
-  ASSERT_TRUE(pl1.isPar(pl1));
-  ASSERT_TRUE(pl2.isPar(pl2));
-  ASSERT_TRUE(pl3.isPar(pl3));
+  EXPECT_TRUE(pl1.isPar(pl1));
+  EXPECT_TRUE(pl2.isPar(pl2));
+  EXPECT_TRUE(pl3.isPar(pl3));
 }
 
 int main(int argc, char **argv)

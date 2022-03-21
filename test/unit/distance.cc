@@ -14,7 +14,7 @@ TEST(distance, PlanePoint1)
   auto dist = distance(pl, pt);
 
   // Assert
-  ASSERT_DOUBLE_EQ(dist, 1);
+  EXPECT_DOUBLE_EQ(dist, 1);
 }
 
 TEST(distance, PlanePoint2)
@@ -27,7 +27,7 @@ TEST(distance, PlanePoint2)
   auto dist = distance(pl, pt);
 
   // Assert
-  ASSERT_DOUBLE_EQ(dist, -7);
+  EXPECT_DOUBLE_EQ(dist, -7);
 }
 
 int main(int argc, char **argv)

@@ -10,8 +10,8 @@ TEST(Vec3, copyCtor)
   geom::Vec3<double> v3{v1};
 
   // Act & Arrange
-  ASSERT_EQ(v1, v2);
-  ASSERT_EQ(v1, v3);
+  EXPECT_EQ(v1, v2);
+  EXPECT_EQ(v1, v3);
 }
 
 TEST(Vec3, dot)
@@ -24,7 +24,7 @@ TEST(Vec3, dot)
   auto res = v1.dot(v2);
 
   // Assert
-  ASSERT_DOUBLE_EQ(res, 32);
+  EXPECT_DOUBLE_EQ(res, 32);
 }
 
 TEST(Vec3, isEq)
@@ -38,14 +38,14 @@ TEST(Vec3, isEq)
   /* nothing */
 
   // Assert
-  ASSERT_TRUE(v1.isEqual(v2));
-  ASSERT_TRUE(v2.isEqual(v1));
+  EXPECT_TRUE(v1.isEqual(v2));
+  EXPECT_TRUE(v2.isEqual(v1));
 
-  ASSERT_FALSE(v1.isEqual(v3));
-  ASSERT_FALSE(v2.isEqual(v3));
+  EXPECT_FALSE(v1.isEqual(v3));
+  EXPECT_FALSE(v2.isEqual(v3));
 
-  ASSERT_FALSE(v3.isEqual(v1));
-  ASSERT_FALSE(v3.isEqual(v2));
+  EXPECT_FALSE(v3.isEqual(v1));
+  EXPECT_FALSE(v3.isEqual(v2));
 }
 
 TEST(Vec3, cross)
@@ -58,7 +58,7 @@ TEST(Vec3, cross)
   auto res = v1.cross(v2);
 
   // Assert
-  ASSERT_TRUE(res.isEqual(geom::Vec3<double>{-3, 6, -3}));
+  EXPECT_TRUE(res.isEqual(geom::Vec3<double>{-3, 6, -3}));
 }
 
 TEST(Vec3, triple)
@@ -80,11 +80,11 @@ TEST(Vec3, triple)
   auto nres2 = geom::triple(v6, v5, v4);
 
   // Assert
-  ASSERT_TRUE(geom::Vec3<double>::isNumEq(res, 0));
-  ASSERT_TRUE(geom::Vec3<double>::isNumEq(nres, 0));
+  EXPECT_TRUE(geom::Vec3<double>::isNumEq(res, 0));
+  EXPECT_TRUE(geom::Vec3<double>::isNumEq(nres, 0));
 
-  ASSERT_TRUE(geom::Vec3<double>::isNumEq(res2, 1));
-  ASSERT_TRUE(geom::Vec3<double>::isNumEq(nres2, -1));
+  EXPECT_TRUE(geom::Vec3<double>::isNumEq(res2, 1));
+  EXPECT_TRUE(geom::Vec3<double>::isNumEq(nres2, -1));
 }
 
 TEST(Vec3, normalize)
@@ -100,9 +100,9 @@ TEST(Vec3, normalize)
   auto res3 = v3.normalized();
 
   // Assert
-  ASSERT_TRUE(res1.isEqual(v1 / 11));
-  ASSERT_TRUE(res2.isEqual(v2));
-  ASSERT_TRUE(res3.isEqual(v3));
+  EXPECT_TRUE(res1.isEqual(v1 / 11));
+  EXPECT_TRUE(res2.isEqual(v2));
+  EXPECT_TRUE(res3.isEqual(v3));
 }
 
 TEST(Vec3, isPar)
@@ -118,9 +118,9 @@ TEST(Vec3, isPar)
   auto res23 = v3.isPar(v2);
 
   // Assert
-  ASSERT_TRUE(res12);
-  ASSERT_FALSE(res13);
-  ASSERT_FALSE(res23);
+  EXPECT_TRUE(res12);
+  EXPECT_FALSE(res13);
+  EXPECT_FALSE(res23);
 }
 
 TEST(Vec3, isPerp)
@@ -135,27 +135,27 @@ TEST(Vec3, isPerp)
   // Act
 
   // Assert
-  ASSERT_TRUE(v1.isPerp(v2));
-  ASSERT_TRUE(v2.isPerp(v1));
+  EXPECT_TRUE(v1.isPerp(v2));
+  EXPECT_TRUE(v2.isPerp(v1));
 
-  ASSERT_TRUE(v1.isPerp(v3));
-  ASSERT_TRUE(v2.isPerp(v3));
+  EXPECT_TRUE(v1.isPerp(v3));
+  EXPECT_TRUE(v2.isPerp(v3));
 
-  ASSERT_TRUE(v3.isPerp(v1));
-  ASSERT_TRUE(v3.isPerp(v2));
+  EXPECT_TRUE(v3.isPerp(v1));
+  EXPECT_TRUE(v3.isPerp(v2));
 
-  ASSERT_TRUE(v2.isPerp(v4));
-  ASSERT_TRUE(v4.isPerp(v2));
+  EXPECT_TRUE(v2.isPerp(v4));
+  EXPECT_TRUE(v4.isPerp(v2));
 
-  ASSERT_TRUE(vz.isPerp(v1));
+  EXPECT_TRUE(vz.isPerp(v1));
 
-  ASSERT_FALSE(v1.isPerp(v4));
-  ASSERT_FALSE(v3.isPerp(v4));
+  EXPECT_FALSE(v1.isPerp(v4));
+  EXPECT_FALSE(v3.isPerp(v4));
 
-  ASSERT_FALSE(v4.isPerp(v1));
-  ASSERT_FALSE(v4.isPerp(v3));
+  EXPECT_FALSE(v4.isPerp(v1));
+  EXPECT_FALSE(v4.isPerp(v3));
 
-  ASSERT_FALSE(v4.isPerp(v4));
+  EXPECT_FALSE(v4.isPerp(v4));
 }
 
 int main(int argc, char **argv)
