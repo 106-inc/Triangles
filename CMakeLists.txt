@@ -63,7 +63,9 @@ enable_testing()
 # Unit tests
 foreach(TEST ${TESTLIST})
   add_test(NAME ${TEST} COMMAND ${TEST} --gtest_color=yes)
+  set_property(TEST ${TEST} PROPERTY LABELS unit)
 endforeach()
 
 # End to end tests
 add_test(NAME e2e COMMAND python3 ${LIT_RUN_CMD})
+set_property(TEST e2e PROPERTY LABELS e2e)

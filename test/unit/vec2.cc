@@ -1,61 +1,66 @@
-#include <gtest/gtest.h>
-
 #include "primitives/vec2.hh"
+#include "test_common.hh"
 
 using namespace geom;
 
-TEST(Vec2, copyCtor)
+template <typename T>
+class Vec2Test : public testing::Test
+{};
+
+TYPED_TEST_SUITE(Vec2Test, FPTypes);
+
+TYPED_TEST(Vec2Test, copyCtor)
 {
   // Arrange
-  Vec2D v1{1, 2};
-  Vec2D v2 = v1;
-  Vec2D v3{v1};
+  Vec2<TypeParam> v1{1, 2};
+  Vec2<TypeParam> v2 = v1;
+  Vec2<TypeParam> v3{v1};
 
   // Act & Arrange
-  ASSERT_EQ(v1, v2);
-  ASSERT_EQ(v1, v3);
+  EXPECT_EQ(v1, v2);
+  EXPECT_EQ(v1, v3);
 }
 
-TEST(Vec2, dot)
+TYPED_TEST(Vec2Test, dot)
 {
   // Arrange
-  Vec2D v1{1, 2};
-  Vec2D v2{4, 5};
+  Vec2<TypeParam> v1{1, 2};
+  Vec2<TypeParam> v2{4, 5};
 
   // Act
   auto res = v1.dot(v2);
 
   // Assert
-  ASSERT_DOUBLE_EQ(res, 14);
+  EXPECT_NEAR(res, 14, Vec2<TypeParam>::getThreshold());
 }
 
-TEST(Vec2, isEq)
+TYPED_TEST(Vec2Test, isEq)
 {
   // Arrange
-  Vec2D v1{1.0, 2.0};
-  Vec2D v2{1.0, 2.0};
-  Vec2D v3{4.0, 5.0};
+  Vec2<TypeParam> v1{1.0, 2.0};
+  Vec2<TypeParam> v2{1.0, 2.0};
+  Vec2<TypeParam> v3{4.0, 5.0};
 
   // Act
   /* nothing */
 
   // Assert
-  ASSERT_TRUE(v1.isEqual(v2));
-  ASSERT_TRUE(v2.isEqual(v1));
+  EXPECT_TRUE(v1.isEqual(v2));
+  EXPECT_TRUE(v2.isEqual(v1));
 
-  ASSERT_FALSE(v1.isEqual(v3));
-  ASSERT_FALSE(v2.isEqual(v3));
+  EXPECT_FALSE(v1.isEqual(v3));
+  EXPECT_FALSE(v2.isEqual(v3));
 
-  ASSERT_FALSE(v3.isEqual(v1));
-  ASSERT_FALSE(v3.isEqual(v2));
+  EXPECT_FALSE(v3.isEqual(v1));
+  EXPECT_FALSE(v3.isEqual(v2));
 }
 
-TEST(Vec2, normalize)
+TYPED_TEST(Vec2Test, normalize)
 {
   // Arrange
-  Vec2F v1{3, 4};
-  Vec2F v2{0, 0};
-  Vec2F v3{0, 1};
+  Vec2<TypeParam> v1{3, 4};
+  Vec2<TypeParam> v2{0, 0};
+  Vec2<TypeParam> v3{0, 1};
 
   // Act
   auto res1 = v1.normalized();
@@ -63,69 +68,69 @@ TEST(Vec2, normalize)
   auto res3 = v3.normalized();
 
   // Assert
-  ASSERT_TRUE(res1.isEqual(v1 / 5));
-  ASSERT_TRUE(res2.isEqual(v2));
-  ASSERT_TRUE(res3.isEqual(v3));
+  EXPECT_TRUE(res1.isEqual(v1 / 5));
+  EXPECT_TRUE(res2.isEqual(v2));
+  EXPECT_TRUE(res3.isEqual(v3));
 }
 
-TEST(Vec2, isPar)
+TYPED_TEST(Vec2Test, isPar)
 {
   // Arrange
-  Vec2F v1{2, -6};
-  Vec2F v2{8, -24};
-  Vec2F v3{6, 4};
-  Vec2F vz{0};
+  Vec2<TypeParam> v1{2, -6};
+  Vec2<TypeParam> v2{8, -24};
+  Vec2<TypeParam> v3{6, 4};
+  Vec2<TypeParam> vz{0};
 
   // Act & Assert
-  ASSERT_TRUE(v1.isPar(v2));
-  ASSERT_FALSE(v1.isPar(v3));
-  ASSERT_FALSE(v3.isPar(v2));
+  EXPECT_TRUE(v1.isPar(v2));
+  EXPECT_FALSE(v1.isPar(v3));
+  EXPECT_FALSE(v3.isPar(v2));
 
-  ASSERT_TRUE(v1.isPar(vz));
-  ASSERT_TRUE(v2.isPar(vz));
-  ASSERT_TRUE(v3.isPar(vz));
+  EXPECT_TRUE(v1.isPar(vz));
+  EXPECT_TRUE(v2.isPar(vz));
+  EXPECT_TRUE(v3.isPar(vz));
 }
 
-TEST(Vec2, isPerp)
+TYPED_TEST(Vec2Test, isPerp)
 {
   // Arrange
-  Vec2F v1{1, 1};
-  Vec2F v2{-1, 1};
-  Vec2F v3{1, 3};
-  Vec2F vz{0};
+  Vec2<TypeParam> v1{1, 1};
+  Vec2<TypeParam> v2{-1, 1};
+  Vec2<TypeParam> v3{1, 3};
+  Vec2<TypeParam> vz{0};
 
   // Act & Assert
-  ASSERT_TRUE(v1.isPerp(v2));
-  ASSERT_TRUE(v2.isPerp(v1));
+  EXPECT_TRUE(v1.isPerp(v2));
+  EXPECT_TRUE(v2.isPerp(v1));
 
-  ASSERT_FALSE(v1.isPerp(v3));
-  ASSERT_FALSE(v3.isPerp(v1));
-  ASSERT_FALSE(v2.isPerp(v3));
-  ASSERT_FALSE(v3.isPerp(v2));
+  EXPECT_FALSE(v1.isPerp(v3));
+  EXPECT_FALSE(v3.isPerp(v1));
+  EXPECT_FALSE(v2.isPerp(v3));
+  EXPECT_FALSE(v3.isPerp(v2));
 
-  ASSERT_TRUE(v1.isPerp(vz));
-  ASSERT_TRUE(v2.isPerp(vz));
-  ASSERT_TRUE(v3.isPerp(vz));
+  EXPECT_TRUE(v1.isPerp(vz));
+  EXPECT_TRUE(v2.isPerp(vz));
+  EXPECT_TRUE(v3.isPerp(vz));
 }
 
-TEST(Vec2, getPerp)
+TYPED_TEST(Vec2Test, getPerp)
 {
   // Arrange
-  Vec2D v1{34, 54};
+  Vec2<TypeParam> v1{34, 54};
 
   // Act
   auto v2 = v1.getPerp();
   auto v3 = v2.getPerp();
 
   // Assert
-  ASSERT_TRUE(v1.isPerp(v2));
-  ASSERT_TRUE(v2.isPerp(v1));
+  EXPECT_TRUE(v1.isPerp(v2));
+  EXPECT_TRUE(v2.isPerp(v1));
 
-  ASSERT_TRUE(v3.isPerp(v2));
-  ASSERT_TRUE(v2.isPerp(v3));
+  EXPECT_TRUE(v3.isPerp(v2));
+  EXPECT_TRUE(v2.isPerp(v3));
 
-  ASSERT_TRUE(v1.isPar(v3));
-  ASSERT_TRUE(v3.isPar(v1));
+  EXPECT_TRUE(v1.isPar(v3));
+  EXPECT_TRUE(v3.isPar(v1));
 }
 
 int main(int argc, char **argv)

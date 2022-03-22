@@ -1,42 +1,49 @@
-#include <gtest/gtest.h>
-
 #include "primitives/primitives.hh"
+#include "test_common.hh"
 
-TEST(Line, copyCtor)
+using namespace geom;
+
+template <typename T>
+class LineTest : public testing::Test
+{};
+
+TYPED_TEST_SUITE(LineTest, FPTypes);
+
+TYPED_TEST(LineTest, copyCtor)
 {
   // Arrange
-  geom::Line<double> l1{{1, 1, 1}, {2, 2, 2}};
+  Line<TypeParam> l1{{1, 1, 1}, {2, 2, 2}};
   auto l2{l1};
   auto l3 = l1;
 
   // Act & Assert
-  ASSERT_EQ(l1, l2);
-  ASSERT_EQ(l1, l3);
+  EXPECT_EQ(l1, l2);
+  EXPECT_EQ(l1, l3);
 }
 
-TEST(Line, getset)
+TYPED_TEST(LineTest, getset)
 {
   // Arrange
-  geom::Vec3<double> v1{1, 0, 0};
-  geom::Vec3<double> v2{0, 1, 0};
-  geom::Line<double> l{v1, v2};
+  Vec3<TypeParam> v1{1, 0, 0};
+  Vec3<TypeParam> v2{0, 1, 0};
+  Line<TypeParam> l{v1, v2};
 
   // Act
   auto org = l.org();
   auto dir = l.dir();
 
   // Assert
-  ASSERT_EQ(org, v1);
-  ASSERT_EQ(dir, v2);
+  EXPECT_EQ(org, v1);
+  EXPECT_EQ(dir, v2);
 }
 
-TEST(Line, getPoint)
+TYPED_TEST(LineTest, getPoint)
 {
   // Arrange
-  geom::Vec3<double> v1{1, 0, 0};
-  geom::Vec3<double> v2{0, 1, 0};
-  geom::Line<double> l1{v1, v2};
-  geom::Line<double> l2{{456, 30, -68}, {-456, -30, 68}};
+  Vec3<TypeParam> v1{1, 0, 0};
+  Vec3<TypeParam> v2{0, 1, 0};
+  Line<TypeParam> l1{v1, v2};
+  Line<TypeParam> l2{{456, 30, -68}, {-456, -30, 68}};
 
   // Act
   auto point = l1.getPoint(20);
@@ -44,116 +51,104 @@ TEST(Line, getPoint)
   auto point3 = l2.getPoint(1);
 
   // Assert
-  ASSERT_EQ(point, geom::Vec3<double>(1, 20, 0));
-  ASSERT_EQ(point2, l1.org());
+  EXPECT_EQ(point, Vec3<TypeParam>(1, 20, 0));
+  EXPECT_EQ(point2, l1.org());
 
-  ASSERT_EQ(point3, geom::Vec3<double>());
+  EXPECT_EQ(point3, Vec3<TypeParam>());
 }
 
-TEST(Line, belongs)
+TYPED_TEST(LineTest, belongs)
 {
   // Arrange
-  geom::Vec3<double> v1{1, 1, 2};
-  geom::Vec3<double> v2{1, 1, 3};
-  geom::Line<double> l{{0, 0, 1}, {1, 1, 1}};
+  Vec3<TypeParam> v1{1, 1, 2};
+  Vec3<TypeParam> v2{1, 1, 3};
+  Line<TypeParam> l{{0, 0, 1}, {1, 1, 1}};
 
   // Act
   bool res1 = l.belongs(v1);
   bool res2 = l.belongs(v2);
 
   // Assert
-  ASSERT_TRUE(res1);
-  ASSERT_FALSE(res2);
+  EXPECT_TRUE(res1);
+  EXPECT_FALSE(res2);
 }
 
-TEST(Line, isEqual)
+TYPED_TEST(LineTest, isEqual)
 {
   // Arrange
-  geom::Line<double> l1{{0, 0, 1}, {1, 1, 1}};
-  geom::Line<double> l2{{1, 1, 2}, {6, 6, 6}};
-  geom::Line<double> l3{{-1, 1, 2}, {6, 6, 6}};
+  Line<TypeParam> l1{{0, 0, 1}, {1, 1, 1}};
+  Line<TypeParam> l2{{1, 1, 2}, {6, 6, 6}};
+  Line<TypeParam> l3{{-1, 1, 2}, {6, 6, 6}};
 
-  // Act
+  // Act & Assert
+  EXPECT_TRUE(l1.isEqual(l2));
+  EXPECT_TRUE(l2.isEqual(l1));
 
-  /* nothing */
+  EXPECT_EQ(l1, l2);
+  EXPECT_EQ(l2, l1);
 
-  // Assert
-  ASSERT_TRUE(l1.isEqual(l2));
-  ASSERT_TRUE(l2.isEqual(l1));
+  EXPECT_FALSE(l1.isEqual(l3));
+  EXPECT_FALSE(l2.isEqual(l3));
 
-  ASSERT_EQ(l1, l2);
-  ASSERT_EQ(l2, l1);
+  EXPECT_FALSE(l3.isEqual(l1));
+  EXPECT_FALSE(l3.isEqual(l2));
 
-  ASSERT_FALSE(l1.isEqual(l3));
-  ASSERT_FALSE(l2.isEqual(l3));
+  EXPECT_NE(l1, l3);
+  EXPECT_NE(l2, l3);
 
-  ASSERT_FALSE(l3.isEqual(l1));
-  ASSERT_FALSE(l3.isEqual(l2));
+  EXPECT_NE(l3, l1);
+  EXPECT_NE(l3, l2);
 
-  ASSERT_NE(l1, l3);
-  ASSERT_NE(l2, l3);
-
-  ASSERT_NE(l3, l1);
-  ASSERT_NE(l3, l2);
-
-  ASSERT_EQ(l1, l1);
-  ASSERT_EQ(l2, l2);
-  ASSERT_EQ(l3, l3);
+  EXPECT_EQ(l1, l1);
+  EXPECT_EQ(l2, l2);
+  EXPECT_EQ(l3, l3);
 }
 
-TEST(Line, isPar)
+TYPED_TEST(LineTest, isPar)
 {
   // Arrange
-  geom::Line<double> l1{{0, 0, 1}, {1, 1, 1}};
-  geom::Line<double> l2{{5, 3, 2}, {-1, -1, -1}};
-  geom::Line<double> l3{{0, 0, 0}, {1, 0, 0}};
+  Line<TypeParam> l1{{0, 0, 1}, {1, 1, 1}};
+  Line<TypeParam> l2{{5, 3, 2}, {-1, -1, -1}};
+  Line<TypeParam> l3{{0, 0, 0}, {1, 0, 0}};
 
-  // Act
+  // Act & Assert
+  EXPECT_TRUE(l1.isPar(l2));
+  EXPECT_TRUE(l2.isPar(l1));
 
-  /* nothing */
-
-  // Assert
-  ASSERT_TRUE(l1.isPar(l2));
-  ASSERT_TRUE(l2.isPar(l1));
-
-  ASSERT_FALSE(l2.isPar(l3));
-  ASSERT_FALSE(l1.isPar(l3));
+  EXPECT_FALSE(l2.isPar(l3));
+  EXPECT_FALSE(l1.isPar(l3));
 }
 
-TEST(Line, isSkew)
+TYPED_TEST(LineTest, isSkew)
 {
   // Arrange
-  geom::Line<double> l1{{0, 0, 1}, {1, 1, 1}};
-  geom::Line<double> l2{{253, 253, 254}, {-6, -6, -6}};
-  geom::Line<double> l3{{5, 3, 2}, {-3, -1, 1}};
-  geom::Line<double> l4{{0, 0, 0}, {1, 0, 0}};
+  Line<TypeParam> l1{{0, 0, 1}, {1, 1, 1}};
+  Line<TypeParam> l2{{253, 253, 254}, {-6, -6, -6}};
+  Line<TypeParam> l3{{5, 3, 2}, {-3, -1, 1}};
+  Line<TypeParam> l4{{0, 0, 0}, {1, 0, 0}};
 
-  // Act
+  // Act & Assert
+  EXPECT_FALSE(l1.isSkew(l2));
+  EXPECT_FALSE(l2.isSkew(l1));
 
-  /* nothing */
+  EXPECT_FALSE(l1.isSkew(l3));
+  EXPECT_FALSE(l3.isSkew(l1));
 
-  // Assert
-  ASSERT_FALSE(l1.isSkew(l2));
-  ASSERT_FALSE(l2.isSkew(l1));
+  EXPECT_TRUE(l1.isSkew(l4));
+  EXPECT_TRUE(l4.isSkew(l1));
 
-  ASSERT_FALSE(l1.isSkew(l3));
-  ASSERT_FALSE(l3.isSkew(l1));
-
-  ASSERT_TRUE(l1.isSkew(l4));
-  ASSERT_TRUE(l4.isSkew(l1));
-
-  ASSERT_TRUE(l2.isSkew(l4));
-  ASSERT_TRUE(l4.isSkew(l2));
+  EXPECT_TRUE(l2.isSkew(l4));
+  EXPECT_TRUE(l4.isSkew(l2));
 }
 
-TEST(Line, getBy2Points)
+TYPED_TEST(LineTest, getBy2Points)
 {
   // Arrange
-  geom::Vec3<double> p1{1, 0, 0};
-  geom::Vec3<double> p2{0, 1, 0};
+  Vec3<TypeParam> p1{1, 0, 0};
+  Vec3<TypeParam> p2{0, 1, 0};
 
   // Act
-  auto l = geom::Line<double>::getBy2Points(p1, p2);
+  auto l = Line<TypeParam>::getBy2Points(p1, p2);
 
   // Assert
   EXPECT_TRUE(l.belongs(p1));

@@ -1,11 +1,17 @@
 #include <concepts>
 #include <sstream>
 
-#include <gtest/gtest.h>
+#include "test_common.hh"
 
 #include "primitives/primitives.hh"
 
 using namespace geom;
+
+template <typename T>
+class PlaneTest : public testing::Test
+{};
+
+TYPED_TEST_SUITE(PlaneTest, FPTypes);
 
 template <std::floating_point T>
 static void checkCtor(const Plane<T> &pl, const Vec3<T> &normExpected, T distExpected)
@@ -15,120 +21,120 @@ static void checkCtor(const Plane<T> &pl, const Vec3<T> &normExpected, T distExp
   auto dist = pl.dist();
 
   // Assert
-  ASSERT_TRUE(normExpected.isEqual(norm));
-  ASSERT_TRUE(Vec3<T>::isNumEq(distExpected, dist));
+  EXPECT_TRUE(normExpected.isEqual(norm));
+  EXPECT_TRUE(Vec3<T>::isNumEq(distExpected, dist));
 }
 
-TEST(Plane, ctor)
+TYPED_TEST(PlaneTest, ctor)
 {
   // Arrange
-  auto pl1 = Plane<double>::getNormalDist({7, 0, 0}, 4);
-  auto pl2 = Plane<double>::getParametric({0, 0, 1}, {1, 0, 0}, {0, 1, 0});
-  auto pl3 = Plane<double>::getNormalPoint({0, 0, 1}, {1, 1, 1});
-  auto pl4 = Plane<double>::getBy3Points({0, 0, 1}, {1, 1, 1}, {5, 2, 1});
+  auto pl1 = Plane<TypeParam>::getNormalDist({7, 0, 0}, 4);
+  auto pl2 = Plane<TypeParam>::getParametric({0, 0, 1}, {1, 0, 0}, {0, 1, 0});
+  auto pl3 = Plane<TypeParam>::getNormalPoint({0, 0, 1}, {1, 1, 1});
+  auto pl4 = Plane<TypeParam>::getBy3Points({0, 0, 1}, {1, 1, 1}, {5, 2, 1});
 
   // Act & Assert
-  checkCtor<double>(pl1, {1, 0, 0}, 4);
-  checkCtor<double>(pl2, {0, 0, 1}, 1);
-  checkCtor<double>(pl3, {0, 0, 1}, 1);
-  checkCtor<double>(pl4, {0, 0, -1}, -1);
+  checkCtor<TypeParam>(pl1, {1, 0, 0}, 4);
+  checkCtor<TypeParam>(pl2, {0, 0, 1}, 1);
+  checkCtor<TypeParam>(pl3, {0, 0, 1}, 1);
+  checkCtor<TypeParam>(pl4, {0, 0, -1}, -1);
 }
 
-TEST(Plane, copyCtor)
+TYPED_TEST(PlaneTest, copyCtor)
 {
   // Arrange
-  auto pl1 = Plane<double>::getNormalDist({7, 0, 0}, 4);
+  auto pl1 = Plane<TypeParam>::getNormalDist({7, 0, 0}, 4);
   auto pl2 = pl1;
   auto pl3{pl1};
 
   // Act & Assert
-  ASSERT_EQ(pl1, pl2);
-  ASSERT_EQ(pl1, pl3);
+  EXPECT_EQ(pl1, pl2);
+  EXPECT_EQ(pl1, pl3);
 }
 
-TEST(Plane, belongsPoint)
+TYPED_TEST(PlaneTest, belongsPoint)
 {
   // Arrange
-  auto pl1 = Plane<double>::getParametric({1, 0, 0}, {-1, 0, 1}, {-1, -1, 0});
-  auto pl2 = Plane<double>::getNormalPoint({-1, -1, -1}, {0, 0, 0});
+  auto pl1 = Plane<TypeParam>::getParametric({1, 0, 0}, {-1, 0, 1}, {-1, -1, 0});
+  auto pl2 = Plane<TypeParam>::getNormalPoint({-1, -1, -1}, {0, 0, 0});
 
   // Act
-  auto resTrue1 = pl1.belongs(Vec3D{0, 0, 1});
-  auto resFalse1 = pl1.belongs(Vec3D{0, 0, 2});
+  auto resTrue1 = pl1.belongs(Vec3<TypeParam>{0, 0, 1});
+  auto resFalse1 = pl1.belongs(Vec3<TypeParam>{0, 0, 2});
 
-  auto resTrue2 = pl2.belongs(Vec3D{1, 1, -2});
-  auto resFalse2 = pl2.belongs(Vec3D{1, 1, 1});
+  auto resTrue2 = pl2.belongs(Vec3<TypeParam>{1, 1, -2});
+  auto resFalse2 = pl2.belongs(Vec3<TypeParam>{1, 1, 1});
 
   // Assert
-  ASSERT_TRUE(resTrue1);
-  ASSERT_FALSE(resFalse1);
+  EXPECT_TRUE(resTrue1);
+  EXPECT_FALSE(resFalse1);
 
-  ASSERT_TRUE(resTrue2);
-  ASSERT_FALSE(resFalse2);
+  EXPECT_TRUE(resTrue2);
+  EXPECT_FALSE(resFalse2);
 }
 
-TEST(Plane, belongsLine)
+TYPED_TEST(PlaneTest, belongsLine)
 {
   // Arrange
-  auto pl = Plane<double>::getParametric({1, 1, 1}, {1, 2, 1}, {2, 1, 1});
-  Line<double> l1{{1, 1, 1}, {1, 2, 1}};
-  Line<double> l2{{2, 2, 2}, {1, 2, 1}};
+  auto pl = Plane<TypeParam>::getParametric({1, 1, 1}, {1, 2, 1}, {2, 1, 1});
+  Line<TypeParam> l1{{1, 1, 1}, {1, 2, 1}};
+  Line<TypeParam> l2{{2, 2, 2}, {1, 2, 1}};
 
   // Act & Assert
-  ASSERT_TRUE(pl.belongs(l1));
-  ASSERT_FALSE(pl.belongs(l2));
+  EXPECT_TRUE(pl.belongs(l1));
+  EXPECT_FALSE(pl.belongs(l2));
 }
 
-TEST(Plane, isEqual)
+TYPED_TEST(PlaneTest, isEqual)
 {
   // Arrange
-  auto pl1 = Plane<double>::getNormalDist({3, 4, 5}, 17);
-  auto pl2 = Plane<double>::getNormalDist({-3, -4, -5}, -17);
-  auto pl3 = Plane<double>::getNormalDist({3, 4, 5}, -17);
-  auto pl4 = Plane<double>::getNormalDist({-3, -4, -5}, 17);
+  auto pl1 = Plane<TypeParam>::getNormalDist({3, 4, 5}, 17);
+  auto pl2 = Plane<TypeParam>::getNormalDist({-3, -4, -5}, -17);
+  auto pl3 = Plane<TypeParam>::getNormalDist({3, 4, 5}, -17);
+  auto pl4 = Plane<TypeParam>::getNormalDist({-3, -4, -5}, 17);
 
   // Act & Assert
-  ASSERT_EQ(pl1, pl2);
-  ASSERT_EQ(pl3, pl4);
+  EXPECT_EQ(pl1, pl2);
+  EXPECT_EQ(pl3, pl4);
 
-  ASSERT_NE(pl1, pl3);
-  ASSERT_NE(pl1, pl4);
-  ASSERT_NE(pl2, pl3);
-  ASSERT_NE(pl2, pl4);
+  EXPECT_NE(pl1, pl3);
+  EXPECT_NE(pl1, pl4);
+  EXPECT_NE(pl2, pl3);
+  EXPECT_NE(pl2, pl4);
 }
 
-TEST(Plane, output)
+TYPED_TEST(PlaneTest, output)
 {
   // Arrange
-  auto pl = Plane<double>::getNormalDist({2, 0, 0}, 17);
+  auto pl = Plane<TypeParam>::getNormalDist({2, 0, 0}, 17);
 
   // Act
   std::stringstream ss{};
   ss << pl;
 
   // Assert
-  ASSERT_EQ(ss.str(), "(1, 0, 0) * X = 17");
+  EXPECT_EQ(ss.str(), "(1, 0, 0) * X = 17");
 }
 
-TEST(Plane, isPar)
+TYPED_TEST(PlaneTest, isPar)
 {
   // Arrange
-  auto pl1 = Plane<double>::getBy3Points({0, 0, 0}, {0, 0, 1}, {0, 1, 0});
-  auto pl2 = Plane<double>::getBy3Points({1, 0, 0}, {1, 0, 1}, {1, 1, 0});
-  auto pl3 = Plane<double>::getBy3Points({1, 1, 1}, {0, 0, 1}, {0, 1, 0});
+  auto pl1 = Plane<TypeParam>::getBy3Points({0, 0, 0}, {0, 0, 1}, {0, 1, 0});
+  auto pl2 = Plane<TypeParam>::getBy3Points({1, 0, 0}, {1, 0, 1}, {1, 1, 0});
+  auto pl3 = Plane<TypeParam>::getBy3Points({1, 1, 1}, {0, 0, 1}, {0, 1, 0});
 
   // Act & Assert
-  ASSERT_TRUE(pl1.isPar(pl2));
-  ASSERT_TRUE(pl2.isPar(pl1));
+  EXPECT_TRUE(pl1.isPar(pl2));
+  EXPECT_TRUE(pl2.isPar(pl1));
 
-  ASSERT_FALSE(pl1.isPar(pl3));
-  ASSERT_FALSE(pl2.isPar(pl3));
-  ASSERT_FALSE(pl3.isPar(pl1));
-  ASSERT_FALSE(pl3.isPar(pl2));
+  EXPECT_FALSE(pl1.isPar(pl3));
+  EXPECT_FALSE(pl2.isPar(pl3));
+  EXPECT_FALSE(pl3.isPar(pl1));
+  EXPECT_FALSE(pl3.isPar(pl2));
 
-  ASSERT_TRUE(pl1.isPar(pl1));
-  ASSERT_TRUE(pl2.isPar(pl2));
-  ASSERT_TRUE(pl3.isPar(pl3));
+  EXPECT_TRUE(pl1.isPar(pl1));
+  EXPECT_TRUE(pl2.isPar(pl2));
+  EXPECT_TRUE(pl3.isPar(pl3));
 }
 
 int main(int argc, char **argv)

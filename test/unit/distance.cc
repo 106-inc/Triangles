@@ -1,33 +1,38 @@
-#include <gtest/gtest.h>
-
 #include "distance/distance.hh"
+#include "test_common.hh"
 
 using namespace geom;
 
-TEST(distance, PlanePoint1)
+template <typename T>
+class DistanceTest : public testing::Test
+{};
+
+TYPED_TEST_SUITE(DistanceTest, FPTypes);
+
+TYPED_TEST(DistanceTest, PlanePoint1)
 {
   // Arrange
-  auto pl = Plane<double>::getNormalDist({0, 0, 1}, 0);
-  Vec3<double> pt{0, 0, 1};
+  auto pl = Plane<TypeParam>::getNormalDist({0, 0, 1}, 0);
+  Vec3<TypeParam> pt{0, 0, 1};
 
   // Act
   auto dist = distance(pl, pt);
 
   // Assert
-  ASSERT_DOUBLE_EQ(dist, 1);
+  EXPECT_NEAR(dist, 1, Vec3<TypeParam>::getThreshold());
 }
 
-TEST(distance, PlanePoint2)
+TYPED_TEST(DistanceTest, PlanePoint2)
 {
   // Arrange
-  auto pl = Plane<double>::getNormalDist({5, 67, 3}, 7);
-  Vec3<double> pt{0, 0, 0};
+  auto pl = Plane<TypeParam>::getNormalDist({5, 67, 3}, 7);
+  Vec3<TypeParam> pt{0, 0, 0};
 
   // Act
   auto dist = distance(pl, pt);
 
   // Assert
-  ASSERT_DOUBLE_EQ(dist, -7);
+  EXPECT_NEAR(dist, -7, Vec3<TypeParam>::getThreshold());
 }
 
 int main(int argc, char **argv)
