@@ -206,25 +206,25 @@ TYPED_TEST(IntersectionLines, Common)
 
 //================================================================================================
 
-// template <typename T>
-// class IntersectionDetail : public ::testing::Test
-// {};
+template <typename T>
+class IntersectionDetail : public ::testing::Test
+{};
 
-// TYPED_TEST_SUITE(IntersectionDetail, FPTypes);
+TYPED_TEST_SUITE(IntersectionDetail, FPTypes);
 
-TEST(IntersectionDetail, intervalOverlap)
+TYPED_TEST(IntersectionDetail, intervalOverlap)
 {
   // Arrange
-  std::pair<double, double> interv1{-10, 10};
+  std::pair<TypeParam, TypeParam> interv1{-10, 10};
 
-  std::pair<double, double> interv2{-5, 5};
-  std::pair<double, double> interv3{-11, 11};
+  std::pair<TypeParam, TypeParam> interv2{-5, 5};
+  std::pair<TypeParam, TypeParam> interv3{-11, 11};
 
-  std::pair<double, double> interv4{0, 11};
-  std::pair<double, double> interv5{-11, 0};
+  std::pair<TypeParam, TypeParam> interv4{0, 11};
+  std::pair<TypeParam, TypeParam> interv5{-11, 0};
 
-  std::pair<double, double> interv6{11, 12};
-  std::pair<double, double> interv7{-12, -11};
+  std::pair<TypeParam, TypeParam> interv6{11, 12};
+  std::pair<TypeParam, TypeParam> interv7{-12, -11};
 
   // Act & Assert
   EXPECT_TRUE(detail::isOverlap(interv1, interv2));
@@ -243,12 +243,12 @@ TEST(IntersectionDetail, intervalOverlap)
   EXPECT_FALSE(detail::isOverlap(interv7, interv1));
 }
 
-TEST(IntersectionDetail, isSameSign)
+TYPED_TEST(IntersectionDetail, isSameSign)
 {
   // Arrange
-  std::vector<double> arr1{1.0, 34.0, 5.0, 2.0};
-  std::vector<double> arr2{-1.0, 34.0, 5.0, 2.0};
-  std::vector<double> arr3{0.0, 34.0, 5.0, 2.0};
+  std::vector<TypeParam> arr1{1.0, 34.0, 5.0, 2.0};
+  std::vector<TypeParam> arr2{-1.0, 34.0, 5.0, 2.0};
+  std::vector<TypeParam> arr3{0.0, 34.0, 5.0, 2.0};
 
   // Act & Assert
   EXPECT_TRUE(detail::isSameSign(arr1.begin(), arr1.end()));
@@ -256,14 +256,14 @@ TEST(IntersectionDetail, isSameSign)
   EXPECT_FALSE(detail::isSameSign(arr3.begin(), arr3.end()));
 }
 
-TEST(IntersectionDetail, isOnOneSide)
+TYPED_TEST(IntersectionDetail, isOnOneSide)
 {
   // Arrange
-  auto pl = Plane<double>::getNormalDist({0, 0, 1}, 0);
+  auto pl = Plane<TypeParam>::getNormalDist({0, 0, 1}, 0);
 
-  Triangle<double> t1{{0, 0, 1}, {1, 0, 1}, {0, 1, 1}};
-  Triangle<double> t2{{0, 0, 0}, {1, 0, 1}, {0, 1, 1}};
-  Triangle<double> t3{{0, 0, -1}, {1, 0, 1}, {0, 1, 1}};
+  Triangle<TypeParam> t1{{0, 0, 1}, {1, 0, 1}, {0, 1, 1}};
+  Triangle<TypeParam> t2{{0, 0, 0}, {1, 0, 1}, {0, 1, 1}};
+  Triangle<TypeParam> t3{{0, 0, -1}, {1, 0, 1}, {0, 1, 1}};
 
   // Act & Assert
   EXPECT_TRUE(detail::isOnOneSide(pl, t1));
@@ -271,19 +271,19 @@ TEST(IntersectionDetail, isOnOneSide)
   EXPECT_FALSE(detail::isOnOneSide(pl, t3));
 }
 
-TEST(IntersectionDetail, isCounterClockwise)
+TYPED_TEST(IntersectionDetail, isCounterClockwise)
 {
   // Arrange
-  detail::Trian2<double> tr1;
+  detail::Trian2<TypeParam> tr1;
   tr1[0] = {1.0, 0.0}, tr1[1] = {0.0, 1.0}, tr1[2] = {0, -1.0};
 
-  detail::Trian2<double> tr2;
+  detail::Trian2<TypeParam> tr2;
   tr2[0] = {1.0, 0.0}, tr2[1] = {0.0, -1.0}, tr2[2] = {0, 1.0};
 
-  detail::Trian2<double> tr3;
+  detail::Trian2<TypeParam> tr3;
   tr3[0] = {0.0, 1.0}, tr3[1] = {0.0, 0.0}, tr3[2] = {1.0, 0.0};
 
-  detail::Trian2<double> tr4;
+  detail::Trian2<TypeParam> tr4;
   tr4[0] = {0.0, 0.0}, tr4[1] = {0.0, 1.0}, tr4[2] = {1.0, 0.0};
 
   // Act & Assert
@@ -293,12 +293,12 @@ TEST(IntersectionDetail, isCounterClockwise)
   EXPECT_FALSE(detail::isCounterClockwise(tr4));
 }
 
-TEST(IntersectionDetail, isIntersect2D)
+TYPED_TEST(IntersectionDetail, isIntersect2D)
 {
   // Arrange
-  Triangle<double> t1{{1, 0, 0}, {0, 1, 0}, {0, 0, 0}};
-  Triangle<double> t2{{3, 0, 0}, {0, 3, 0}, {2, 2, 0}};
-  Triangle<double> t3{{3, 0, 0}, {0, 3, 0}, {0, 0, 0}};
+  Triangle<TypeParam> t1{{1, 0, 0}, {0, 1, 0}, {0, 0, 0}};
+  Triangle<TypeParam> t2{{3, 0, 0}, {0, 3, 0}, {2, 2, 0}};
+  Triangle<TypeParam> t3{{3, 0, 0}, {0, 3, 0}, {0, 0, 0}};
 
   // Act & Assert
   EXPECT_FALSE(detail::isIntersect2D(t1, t2));
@@ -311,12 +311,12 @@ TEST(IntersectionDetail, isIntersect2D)
   EXPECT_TRUE(detail::isIntersect2D(t3, t2));
 }
 
-TEST(IntersectionDetail, getTrian2CounterClockwise)
+TYPED_TEST(IntersectionDetail, getTrian2CounterClockwise)
 {
   // Arrange
-  auto pl = Plane<double>::getNormalDist({0, 1, 1e-3}, 0);
-  Triangle<double> t{{0, 2, 0}, {1, 0, 0}, {0, -1, 1}};
-  detail::Trian2<double> res1;
+  auto pl = Plane<TypeParam>::getNormalDist({0, 1, 1e-3}, 0);
+  Triangle<TypeParam> t{{0, 2, 0}, {1, 0, 0}, {0, -1, 1}};
+  detail::Trian2<TypeParam> res1;
   res1[0] = {0, 0}, res1[1] = {1, 0}, res1[2] = {0, 1};
 
   // Act
@@ -328,12 +328,12 @@ TEST(IntersectionDetail, getTrian2CounterClockwise)
   EXPECT_EQ(res1[2], res2[2]);
 }
 
-TEST(IntersectionDetail, getTrian2Clockwise)
+TYPED_TEST(IntersectionDetail, getTrian2Clockwise)
 {
   // Arrange
-  auto pl = Plane<double>::getNormalDist({1, 1e-3, 0}, 0);
-  Triangle<double> t{{0, 0, 0}, {2, 0, 1}, {-1, 1, 0}};
-  detail::Trian2<double> res1;
+  auto pl = Plane<TypeParam>::getNormalDist({1, 1e-3, 0}, 0);
+  Triangle<TypeParam> t{{0, 0, 0}, {2, 0, 1}, {-1, 1, 0}};
+  detail::Trian2<TypeParam> res1;
   res1[0] = {0, 1}, res1[1] = {0, 0}, res1[2] = {1, 0};
 
   // Act
@@ -345,10 +345,10 @@ TEST(IntersectionDetail, getTrian2Clockwise)
   EXPECT_EQ(res1[2], res2[2]);
 }
 
-TEST(IntersectionDetail, isIntersectPointTriangle)
+TYPED_TEST(IntersectionDetail, isIntersectPointTriangle)
 {
   // Arrange
-  Triangle<double> tr{{0, 0, 0}, {1, 0, 0}, {0, 1, 0}};
+  Triangle<TypeParam> tr{{0, 0, 0}, {1, 0, 0}, {0, 1, 0}};
 
   // Act & Assert
   EXPECT_TRUE(detail::isIntersectPointTriangle({0, 0, 0}, tr));
@@ -365,10 +365,10 @@ TEST(IntersectionDetail, isIntersectPointTriangle)
   EXPECT_FALSE(detail::isIntersectPointTriangle({-1, -1, 0}, tr));
 }
 
-TEST(IntersectionDetail, isIntersectValidInvalid_Segment1)
+TYPED_TEST(IntersectionDetail, isIntersectValidInvalid_Segment1)
 {
   // Arrange
-  Triangle<double> tr{{0, 0, 0}, {1, 0, 0}, {0, 1, 0}};
+  Triangle<TypeParam> tr{{0, 0, 0}, {1, 0, 0}, {0, 1, 0}};
 
   // Act & Assert
   EXPECT_TRUE(detail::isIntersectValidInvalid(tr, {{0, 0, 0}, {0, 0, 0}, {0, 0, -1}}));
@@ -395,10 +395,10 @@ TEST(IntersectionDetail, isIntersectValidInvalid_Segment1)
     detail::isIntersectValidInvalid(tr, {{0.25, 0.25, 1}, {0.25, 0.25, 1}, {0.25, 0.25, -1}}));
 }
 
-TEST(IntersectionDetail, isIntersectValidInvalid_Segment2)
+TYPED_TEST(IntersectionDetail, isIntersectValidInvalid_Segment2)
 {
   // Arrange
-  Triangle<double> tr{{0, 0, 0}, {1, 0, 0}, {0, 1, 0}};
+  Triangle<TypeParam> tr{{0, 0, 0}, {1, 0, 0}, {0, 1, 0}};
 
   // Act & Assert
   EXPECT_FALSE(detail::isIntersectValidInvalid(tr, {{5, 5, 0}, {5, 5, 0}, {5, 5, -1}}));
@@ -422,10 +422,10 @@ TEST(IntersectionDetail, isIntersectValidInvalid_Segment2)
   EXPECT_FALSE(detail::isIntersectValidInvalid(tr, {{0, -1, 1}, {0, -1, 1}, {0, -1, -1}}));
 }
 
-TEST(IntersectionDetail, isIntersectPointSegment)
+TYPED_TEST(IntersectionDetail, isIntersectPointSegment)
 {
   // Arrange
-  detail::Segment3D<double> segm{{1, 0, 1}, {0, 1, 1}};
+  detail::Segment3D<TypeParam> segm{{1, 0, 1}, {0, 1, 1}};
 
   // Act & Assert
   EXPECT_FALSE(detail::isIntersectPointSegment({-1, 2, 1}, segm));
@@ -437,23 +437,23 @@ TEST(IntersectionDetail, isIntersectPointSegment)
   EXPECT_TRUE(detail::isIntersectPointSegment({0, 1, 1}, segm));
 }
 
-TEST(IntersectionDetail, isIntersectSegmentSegment1)
+TYPED_TEST(IntersectionDetail, isIntersectSegmentSegment1)
 {
   // Arrange
-  detail::Segment3D<double> segm1{{-1, 0, 0}, {1, 0, 0}};
-  detail::Segment3D<double> segm2{{1, 0, 0}, {-1, 0, 0}};
+  detail::Segment3D<TypeParam> segm1{{-1, 0, 0}, {1, 0, 0}};
+  detail::Segment3D<TypeParam> segm2{{1, 0, 0}, {-1, 0, 0}};
 
-  detail::Segment3D<double> segm3{{0, 0, 0}, {2, 0, 0}};
-  detail::Segment3D<double> segm4{{-2, 0, 0}, {0, 0, 0}};
+  detail::Segment3D<TypeParam> segm3{{0, 0, 0}, {2, 0, 0}};
+  detail::Segment3D<TypeParam> segm4{{-2, 0, 0}, {0, 0, 0}};
 
-  detail::Segment3D<double> segm5{{-2, 0, 0}, {2, 0, 0}};
-  detail::Segment3D<double> segm6{{-0.5, 0, 0}, {0.5, 0, 0}};
+  detail::Segment3D<TypeParam> segm5{{-2, 0, 0}, {2, 0, 0}};
+  detail::Segment3D<TypeParam> segm6{{-0.5, 0, 0}, {0.5, 0, 0}};
 
-  detail::Segment3D<double> segm7{{1, 0, 0}, {2, 0, 0}};
-  detail::Segment3D<double> segm8{{-2, 0, 0}, {-1, 0, 0}};
+  detail::Segment3D<TypeParam> segm7{{1, 0, 0}, {2, 0, 0}};
+  detail::Segment3D<TypeParam> segm8{{-2, 0, 0}, {-1, 0, 0}};
 
-  detail::Segment3D<double> segm9{{2, 0, 0}, {3, 0, 0}};
-  detail::Segment3D<double> segm10{{-3, 0, 0}, {-2, 0, 0}};
+  detail::Segment3D<TypeParam> segm9{{2, 0, 0}, {3, 0, 0}};
+  detail::Segment3D<TypeParam> segm10{{-3, 0, 0}, {-2, 0, 0}};
 
   // Act & Assert
   EXPECT_TRUE(detail::isIntersectSegmentSegment(segm1, segm1));
@@ -486,16 +486,16 @@ TEST(IntersectionDetail, isIntersectSegmentSegment1)
   EXPECT_FALSE(detail::isIntersectSegmentSegment(segm10, segm1));
 }
 
-TEST(IntersectionDetail, isIntersectSegmentSegment2)
+TYPED_TEST(IntersectionDetail, isIntersectSegmentSegment2)
 {
   // Arrange
-  detail::Segment3D<double> segm1{{-1, 0, 0}, {1, 0, 0}};
-  detail::Segment3D<double> segm2{{0, -1, 0}, {0, 1, 0}};
-  detail::Segment3D<double> segm3{{0, -1, 0}, {0, 0, 0}};
-  detail::Segment3D<double> segm4{{0, 0, 0}, {0, 1, 0}};
-  detail::Segment3D<double> segm5{{0, 1, 0}, {0, 2, 0}};
-  detail::Segment3D<double> segm6{{0, -2, 0}, {0, -1, 0}};
-  detail::Segment3D<double> segm7{{-1, 2, 0}, {1, 2, 0}};
+  detail::Segment3D<TypeParam> segm1{{-1, 0, 0}, {1, 0, 0}};
+  detail::Segment3D<TypeParam> segm2{{0, -1, 0}, {0, 1, 0}};
+  detail::Segment3D<TypeParam> segm3{{0, -1, 0}, {0, 0, 0}};
+  detail::Segment3D<TypeParam> segm4{{0, 0, 0}, {0, 1, 0}};
+  detail::Segment3D<TypeParam> segm5{{0, 1, 0}, {0, 2, 0}};
+  detail::Segment3D<TypeParam> segm6{{0, -2, 0}, {0, -1, 0}};
+  detail::Segment3D<TypeParam> segm7{{-1, 2, 0}, {1, 2, 0}};
 
   // Act & Assert
   EXPECT_TRUE(detail::isIntersectSegmentSegment(segm1, segm2));
@@ -517,29 +517,29 @@ TEST(IntersectionDetail, isIntersectSegmentSegment2)
   EXPECT_FALSE(detail::isIntersectSegmentSegment(segm7, segm1));
 }
 
-TEST(IntersectionDetail, isIntersectIntersectionTrianglesegment2D)
+TYPED_TEST(IntersectionDetail, isIntersectIntersectionTrianglesegment2D)
 {
   // Arrange
-  Triangle<double> tr{{1, 0, 0}, {0, 1, 0}, {0, 0, 0}};
+  Triangle<TypeParam> tr{{1, 0, 0}, {0, 1, 0}, {0, 0, 0}};
   // Act & Assert
-  EXPECT_TRUE(detail::isIntersect2D<double>(tr, {{-1, -1, -1}, {1, 1, 1}, {0, 0, 0}}));
-  EXPECT_TRUE(detail::isIntersect2D<double>(tr, {{-1, -1, -1}, {0, 0, 0}, {0, 0, 0}}));
-  EXPECT_TRUE(detail::isIntersect2D<double>(tr, {{1, 1, 1}, {0, 0, 0}, {0, 0, 0}}));
+  EXPECT_TRUE(detail::isIntersect2D<TypeParam>(tr, {{-1, -1, -1}, {1, 1, 1}, {0, 0, 0}}));
+  EXPECT_TRUE(detail::isIntersect2D<TypeParam>(tr, {{-1, -1, -1}, {0, 0, 0}, {0, 0, 0}}));
+  EXPECT_TRUE(detail::isIntersect2D<TypeParam>(tr, {{1, 1, 1}, {0, 0, 0}, {0, 0, 0}}));
 
-  EXPECT_FALSE(detail::isIntersect2D<double>(tr, {{1, 1, 1}, {2, 2, 2}, {2, 2, 2}}));
-  EXPECT_FALSE(detail::isIntersect2D<double>(tr, {{-1, -1, -1}, {-2, -2, -2}, {-2, -2, -2}}));
+  EXPECT_FALSE(detail::isIntersect2D<TypeParam>(tr, {{1, 1, 1}, {2, 2, 2}, {2, 2, 2}}));
+  EXPECT_FALSE(detail::isIntersect2D<TypeParam>(tr, {{-1, -1, -1}, {-2, -2, -2}, {-2, -2, -2}}));
 
-  EXPECT_TRUE(detail::isIntersect2D<double>(tr, {{1, 0, 0}, {2, 0, 0}, {2, 0, 0}}));
-  EXPECT_TRUE(detail::isIntersect2D<double>(tr, {{-1, 0, 0}, {0, 0, 0}, {0, 0, 0}}));
+  EXPECT_TRUE(detail::isIntersect2D<TypeParam>(tr, {{1, 0, 0}, {2, 0, 0}, {2, 0, 0}}));
+  EXPECT_TRUE(detail::isIntersect2D<TypeParam>(tr, {{-1, 0, 0}, {0, 0, 0}, {0, 0, 0}}));
 
-  EXPECT_FALSE(detail::isIntersect2D<double>(tr, {{2, 0, 0}, {3, 0, 0}, {2.5, 0, 0}}));
-  EXPECT_FALSE(detail::isIntersect2D<double>(tr, {{-2, 0, 0}, {-1, 0, 0}, {-2, 0, 0}}));
+  EXPECT_FALSE(detail::isIntersect2D<TypeParam>(tr, {{2, 0, 0}, {3, 0, 0}, {2.5, 0, 0}}));
+  EXPECT_FALSE(detail::isIntersect2D<TypeParam>(tr, {{-2, 0, 0}, {-1, 0, 0}, {-2, 0, 0}}));
 
-  EXPECT_TRUE(detail::isIntersect2D<double>(tr, {{0, 1, 0}, {0, 2, 0}, {0, 2, 0}}));
-  EXPECT_TRUE(detail::isIntersect2D<double>(tr, {{0, -1, 0}, {0, 0, 0}, {0, 0, 0}}));
+  EXPECT_TRUE(detail::isIntersect2D<TypeParam>(tr, {{0, 1, 0}, {0, 2, 0}, {0, 2, 0}}));
+  EXPECT_TRUE(detail::isIntersect2D<TypeParam>(tr, {{0, -1, 0}, {0, 0, 0}, {0, 0, 0}}));
 
-  EXPECT_FALSE(detail::isIntersect2D<double>(tr, {{0, 2, 0}, {0, 3, 0}, {0, 2.5, 0}}));
-  EXPECT_FALSE(detail::isIntersect2D<double>(tr, {{0, -2, 0}, {0, -1, 0}, {0, -2, 0}}));
+  EXPECT_FALSE(detail::isIntersect2D<TypeParam>(tr, {{0, 2, 0}, {0, 3, 0}, {0, 2.5, 0}}));
+  EXPECT_FALSE(detail::isIntersect2D<TypeParam>(tr, {{0, -2, 0}, {0, -1, 0}, {0, -2, 0}}));
 }
 
 int main(int argc, char **argv)

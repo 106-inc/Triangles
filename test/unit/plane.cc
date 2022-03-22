@@ -6,7 +6,6 @@
 #include "primitives/primitives.hh"
 
 using namespace geom;
-using FPTypes = testing::Types<float, double, long double>;
 
 template <typename T>
 class PlaneTest : public testing::Test
