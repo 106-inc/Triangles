@@ -1,0 +1,5 @@
+#ifndef __INCLUDE_OCTREE_OCTREE_HH__
+#define __INCLUDE_OCTREE_OCTREE_HH__
+
+
+#endif // __INCLUDE_OCTREE_OCTREE_HH__
