@@ -1,3 +1,4 @@
+#include "kdtree/kdtree.hh"
 #include "test_common.hh"
 
 int main(int argc, char **argv)
