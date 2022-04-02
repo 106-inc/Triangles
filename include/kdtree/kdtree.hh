@@ -1,8 +1,9 @@
 #ifndef __INCLUDE_KDTREE_KDTREE_HH__
 #define __INCLUDE_KDTREE_KDTREE_HH__
 
-#include <vector>
+#include <initializer_list>
 #include <memory>
+#include <vector>
 
 #include "primitives/primitives.hh"
 
@@ -23,21 +24,22 @@ private:
   std::vector<Triangle<T>> triangles_;
 
 public:
-  KdTree(/* args */);
+  KdTree();
+  KdTree(std::initializer_list<Triangle<T>> il);
   ~KdTree();
 
-  Iterator insert(const Triangle<T> &tr);
+  // Iterators
   Iterator begin();
   Iterator end();
+
+  // Modifiers
+  Iterator insert(const Triangle<T> &tr);
+  void clear();
+
+  // Capacity
+  bool empty();
+  size_t size();
 };
-
-template <std::floating_point T>
-KdTree<T>::KdTree(/* args */)
-{}
-
-template <std::floating_point T>
-KdTree<T>::~KdTree()
-{}
 
 } // namespace kdtree
 } // namespace geom
