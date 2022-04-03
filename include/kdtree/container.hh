@@ -29,8 +29,8 @@ public:
   Container &operator=(Container &&cont) = default;
 
   class ConstIterator;
-  ConstIterator сbegin() const;
-  ConstIterator сend() const;
+  ConstIterator cbegin() const;
+  ConstIterator cend() const;
 
   BoundBox<T> boundBox() const;
 
@@ -73,13 +73,13 @@ public:
 //============================================================================================
 
 template <std::floating_point T>
-typename Container<T>::ConstIterator Container<T>::сbegin() const
+typename Container<T>::ConstIterator Container<T>::cbegin() const
 {
   return ConstIterator(this);
 }
 
 template <std::floating_point T>
-typename Container<T>::ConstIterator Container<T>::сend() const
+typename Container<T>::ConstIterator Container<T>::cend() const
 {
   return ConstIterator(this, /* isEnd = */ true);
 }
