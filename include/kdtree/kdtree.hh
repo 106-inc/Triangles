@@ -7,12 +7,11 @@
 
 #include "primitives/primitives.hh"
 
+#include "container.hh"
 #include "node.hh"
 
 namespace geom::kdtree
 {
-
-using Iterator = void;
 
 template <std::floating_point T>
 class KdTree
@@ -26,49 +25,51 @@ public:
   KdTree(std::initializer_list<Triangle<T>> il);
   ~KdTree();
 
-  // Iterators
-  Iterator begin();
-  Iterator end();
+  class ConstIterator;
+
+  // ConstIterators
+  ConstIterator cbegin() const;
+  ConstIterator cend() const;
 
   // Modifiers
-  Iterator insert(const Triangle<T> &tr);
+  ConstIterator insert(const Triangle<T> &tr);
   void clear();
 
   // Capacity
-  bool empty();
-  size_t size();
+  bool empty() const;
+  size_t size() const;
 
-  class Iterator final
+  class ConstIterator final
   {
   public:
     using iterator_category = std::forward_iterator_tag;
     using difference_type = std::size_t;
     using value_type = Container<T>;
     using reference = Container<T> &;
-    using pointer = Container<T> *; // ???
+    using pointer = Container<T> *;
 
   private:
     KdTree<T> *tree_;
     Node<T> *node_;
 
   public:
-    Iterator(const Node<T> *node);
-    Iterator(const Iterator &iter);
-    Iterator(Iterator &&iter);
+    ConstIterator(const Node<T> *node);
+    ConstIterator(const ConstIterator &iter);
+    ConstIterator(ConstIterator &&iter);
 
-    Iterator &operator=(const Iterator &cont);
-    Iterator &operator=(Iterator &&cont);
+    ConstIterator &operator=(const ConstIterator &cont);
+    ConstIterator &operator=(ConstIterator &&cont);
 
-    ~Iterator();
+    ~ConstIterator();
 
     void operator++();
-    Iterator operator++(int);
+    ConstIterator operator++(int);
 
     reference operator*() const;
     pointer operator->() const;
 
-    bool operator==(const Iterator &lhs);
-    bool operator!=(const Iterator &lhs);
+    bool operator==(const ConstIterator &lhs);
+    bool operator!=(const ConstIterator &lhs);
   };
 };
 

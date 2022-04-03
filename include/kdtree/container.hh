@@ -1,20 +1,13 @@
 #ifndef __INCLUDE_KDTREE_CONTAINER_HH__
 #define __INCLUDE_KDTREE_CONTAINER_HH__
 
-#include <concept>
+#include <concepts>
 #include <exception>
-#include <iterator>
 
 #include "node.hh"
 
 namespace geom::kdtree
 {
-
-enum class IterType
-{
-  BEGIN,
-  END
-};
 
 template <std::floating_point T>
 class KdTree;
@@ -28,19 +21,20 @@ private:
 
 public:
   Container(const KdTree<T> *tree, const Node<T> *node);
-  Container(const Container &cont);
-  Container(Container &&cont);
+  Container(const Container &cont) = default;
+  Container(Container &&cont) = default;
   ~Container() = default;
 
-  Container &operator=(const Container &cont);
-  Container &operator=(Container &&cont);
+  Container &operator=(const Container &cont) = default;
+  Container &operator=(Container &&cont) = default;
 
-  Iterator begin() const;
-  Iterator end() const;
+  class ConstIterator;
+  ConstIterator сbegin() const;
+  ConstIterator сend() const;
 
-  BoundBox boundBox() const;
+  BoundBox<T> boundBox() const;
 
-  class Iterator final
+  class ConstIterator final
   {
   public:
     using iterator_category = std::forward_iterator_tag;
@@ -54,23 +48,23 @@ public:
     std::vector<Index>::iterator curIdxIt_;
 
   public:
-    Iterator(const Container *cont, IterType it = IterType::BEGIN);
-    Iterator(const Iterator &iter);
-    Iterator(Iterator &&iter);
+    ConstIterator(const Container *cont, bool isEnd = false);
+    ConstIterator(const ConstIterator &iter) = default;
+    ConstIterator(ConstIterator &&iter) = default;
 
-    Iterator &operator=(const Iterator &cont);
-    Iterator &operator=(Iterator &&cont);
+    ConstIterator &operator=(const ConstIterator &cont) = default;
+    ConstIterator &operator=(ConstIterator &&cont) = default;
 
-    ~Iterator() = default;
+    ~ConstIterator() = default;
 
-    void operator++();
-    Iterator operator++(int);
+    ConstIterator operator++();
+    ConstIterator operator++(int);
 
     reference operator*() const;
     pointer operator->() const;
 
-    bool operator==(const Iterator &lhs);
-    bool operator!=(const Iterator &lhs);
+    bool operator==(const ConstIterator &lhs);
+    bool operator!=(const ConstIterator &lhs);
   };
 };
 
@@ -79,131 +73,71 @@ public:
 //============================================================================================
 
 template <std::floating_point T>
-Container<T>::Container(const KdTree<T> *tree, const Node<T> *node) : tree_(tree), node_(node)
-{}
-
-template <std::floating_point T>
-Container<T>::Container(const Container &cont) : tree_(cont.tree_), node_(cont.node_)
-{}
-
-template <std::floating_point T>
-Container<T>::Container(Container &&cont) : tree_(cont.tree_), node_(cont.node_)
-{}
-
-template <std::floating_point T>
-Container<T> &Container<T>::operator=(const Container &cont)
+typename Container<T>::ConstIterator Container<T>::сbegin() const
 {
-  node_ = cont.node_;
-  tree_ = cont.tree_;
-  return *this;
+  return ConstIterator(this);
 }
 
 template <std::floating_point T>
-Container<T> &Container<T>::operator=(Container &&cont)
+typename Container<T>::ConstIterator Container<T>::сend() const
 {
-  node_ = cont.node_;
-  tree_ = cont.tree_;
-  return *this;
+  return ConstIterator(this, /* isEnd = */ true);
 }
 
 template <std::floating_point T>
-Container<T>::Iterator Container<T>::begin() const
-{
-  return Iterator(this);
-}
-
-template <std::floating_point T>
-Container<T>::Iterator Container<T>::end() const
-{
-  return Iterator(this, IterType::END);
-}
-
-template <std::floating_point T>
-BoundBox Container<T>::boundBox() const
+BoundBox<T> Container<T>::boundBox() const
 {
   return node_->boundBox_;
 }
 
 //============================================================================================
-//                                Container::Iterator definitions
+//                                Container::ConstIterator definitions
 //============================================================================================
 
 template <std::floating_point T>
-Containter<T>::Iterator::Iterator(const Container<T> *cont, IterType it) : cont_(cont)
+Container<T>::ConstIterator::ConstIterator(const Container<T> *cont, bool isEnd) : cont_(cont)
 {
   if (nullptr == cont_)
     throw std::invalid_argument("Tried to create iterator with invalid Container pointer");
 
-  switch (it)
-  {
-  case IterType::BEGIN:
-    curIdxIt_ = cont_->begin();
-    break;
-  case IterType::END:
+  if (isEnd)
     curIdxIt_ = cont->end();
-    break;
-  default:
-    throw std::invalid_argument("Tried to create iterator with invalid Container pointer");
-    break;
-  }
+  else
+    curIdxIt_ = cont_->begin();
 }
 
 template <std::floating_point T>
-Containter<T>::Iterator::Iterator(const Container<T>::Iterator &iter)
-  : cont_(iter.cont_), curIdxIt_(iter.curIdxIt_)
-{}
-
-template <std::floating_point T>
-Containter<T>::Iterator::Iterator(Container<T>::Iterator &&iter)
-  : cont_(iter.cont_), curIdxIt_(iter.curIdxIt_)
-{}
-
-template <std::floating_point T>
-Containter<T>::Iterator::Iterator &operator=(const Container<T>::Iterator &iter)
+typename Container<T>::ConstIterator Container<T>::ConstIterator::operator++()
 {
-  cont_ = iter.cont_;
-  curIdxIt_ = iter.curIdxIt_;
+  return ++curIdxIt_;
 }
 
 template <std::floating_point T>
-Containter<T>::Iterator::Iterator &operator=(Container<T>::Iterator &&iter)
-{
-  cont_ = iter.cont_;
-  curIdxIt_ = iter.curIdxIt_;
-}
-
-template <std::floating_point T>
-void Containter<T>::Iterator::operator++()
-{
-  ++curIdxIt_;
-}
-
-template <std::floating_point T>
-Containter<T>::Iterator Containter<T>::Iterator::operator++(int)
+typename Container<T>::ConstIterator Container<T>::ConstIterator::operator++(int)
 {
   return curIdxIt_++;
 }
 
 template <std::floating_point T>
-Containter<T>::Iterator::reference Containter<T>::Iterator::operator*() const
+typename Container<T>::ConstIterator::reference Container<T>::ConstIterator::operator*() const
 {
   return cont_->tree_->triangles_[*curIdxIt_];
 }
 
 template <std::floating_point T>
-Containter<T>::Iterator::pointer Containter<T>::Iterator::operator->() const
+typename Container<T>::ConstIterator::pointer Container<T>::ConstIterator::operator->() const
 {
   return &cont_->tree_->triangles_[*curIdxIt_];
 }
 
 template <std::floating_point T>
-bool Containter<T>::Iterator::operator==(const Container<T>::Iterator &lhs)
+bool Container<T>::ConstIterator::operator==(const typename Container<T>::ConstIterator &lhs)
 {
   return (cont_ == lhs.cont_) && (curIdxIt_ == lhs.curIdxIt_);
 }
 
 template <std::floating_point T>
-bool Containter<T>::Iterator::operator!=(const Container<T>::Iterator &lhs)
+bool Container<T>::ConstIterator::operator!=(const typename Container<T>::ConstIterator &lhs)
 {
   return !(operator==(lhs));
 }
