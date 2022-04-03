@@ -7,9 +7,7 @@
 #include "primitives/boundbox.hh"
 #include "primitives/primitives.hh"
 
-namespace geom
-{
-namespace kdtree
+namespace geom::kdtree
 {
 
 enum class Axis : int8_t
@@ -18,13 +16,12 @@ enum class Axis : int8_t
   y = 1,
   z = 2,
   none
-
 };
 
 using Index = size_t;
 
 template <std::floating_point T>
-struct Node
+struct Node final
 {
   T sepCoord{};             // separator's coordinate on separation axis
   Axis sepAxis{Axis::none}; // separation axis
@@ -35,7 +32,6 @@ struct Node
   std::unique_ptr<Node> right;
 };
 
-} // namespace kdtree
-} // namespace geom
+} // namespace geom::kdtree
 
 #endif // __INCLUDE_KDTREE_NODE_HH__
