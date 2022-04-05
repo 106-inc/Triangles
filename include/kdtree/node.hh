@@ -23,7 +23,7 @@ using Index = size_t;
 template <std::floating_point T>
 struct Node final
 {
-  T sepCoord{};             // separator's coordinate on separation axis
+  T separator{};            // separator's coordinate on separation axis
   Axis sepAxis{Axis::none}; // separation axis
   BoundBox<T> boundBox{};
   std::vector<Index> indicies{};

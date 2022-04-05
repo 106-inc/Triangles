@@ -32,7 +32,12 @@ public:
   ConstIterator cbegin() const;
   ConstIterator cend() const;
 
+  T separator() const;
+  Axis sepAxis() const;
   BoundBox<T> boundBox() const;
+
+  Container left() const;
+  Container right() const;
 
   class ConstIterator final
   {
@@ -63,8 +68,8 @@ public:
     reference operator*() const;
     pointer operator->() const;
 
-    bool operator==(const ConstIterator &lhs);
-    bool operator!=(const ConstIterator &lhs);
+    bool operator==(const ConstIterator &lhs) const;
+    bool operator!=(const ConstIterator &lhs) const;
   };
 };
 
@@ -85,9 +90,33 @@ typename Container<T>::ConstIterator Container<T>::cend() const
 }
 
 template <std::floating_point T>
+T Container<T>::separator() const
+{
+  return node_->separator;
+}
+
+template <std::floating_point T>
+Axis Container<T>::sepAxis() const
+{
+  return node_->sepAxis;
+}
+
+template <std::floating_point T>
 BoundBox<T> Container<T>::boundBox() const
 {
   return node_->boundBox_;
+}
+
+template <std::floating_point T>
+Container<T> Container<T>::left() const
+{
+  return Container<T>{tree_, node_->left.get()};
+}
+
+template <std::floating_point T>
+Container<T> Container<T>::right() const
+{
+  return Container<T>{tree_, node_->left.right()};
 }
 
 //============================================================================================
@@ -131,15 +160,15 @@ typename Container<T>::ConstIterator::pointer Container<T>::ConstIterator::opera
 }
 
 template <std::floating_point T>
-bool Container<T>::ConstIterator::operator==(const typename Container<T>::ConstIterator &lhs)
+bool Container<T>::ConstIterator::operator==(const Container<T>::ConstIterator &lhs) const
 {
   return (cont_ == lhs.cont_) && (curIdxIt_ == lhs.curIdxIt_);
 }
 
 template <std::floating_point T>
-bool Container<T>::ConstIterator::operator!=(const typename Container<T>::ConstIterator &lhs)
+bool Container<T>::ConstIterator::operator!=(const Container<T>::ConstIterator &lhs) const
 {
-  return !(operator==(lhs));
+  return !operator==(lhs);
 }
 
 } // namespace geom::kdtree
