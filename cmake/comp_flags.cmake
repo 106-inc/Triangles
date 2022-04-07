@@ -11,7 +11,7 @@ set(SANITIZERS
 -fsanitize=leak
 -fsanitize=nonnull-attribute
 -fsanitize=null
--fsanitize=object-size
+# -fsanitize=object-size
 -fsanitize=return
 -fsanitize=returns-nonnull-attribute
 -fsanitize=shift
