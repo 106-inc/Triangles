@@ -1,8 +1,4 @@
 #include "kdtree/kdtree.hh"
-#include "test_common.hh"
+#include "test_header.hh"
 
-int main(int argc, char **argv)
-{
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+#include "test_footer.hh"

@@ -1,5 +1,5 @@
 #include "primitives/primitives.hh"
-#include "test_common.hh"
+#include "test_header.hh"
 
 using namespace geom;
 
@@ -162,8 +162,4 @@ TYPED_TEST(Vec3Test, isPerp)
   EXPECT_FALSE(v4.isPerp(v4));
 }
 
-int main(int argc, char **argv)
-{
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+#include "test_footer.hh"

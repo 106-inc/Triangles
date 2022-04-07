@@ -1,5 +1,5 @@
 #include "primitives/vec2.hh"
-#include "test_common.hh"
+#include "test_header.hh"
 
 using namespace geom;
 
@@ -133,8 +133,4 @@ TYPED_TEST(Vec2Test, getPerp)
   EXPECT_TRUE(v3.isPar(v1));
 }
 
-int main(int argc, char **argv)
-{
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+#include "test_footer.hh"

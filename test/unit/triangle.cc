@@ -1,7 +1,7 @@
 #include <sstream>
 
 #include "primitives/primitives.hh"
-#include "test_common.hh"
+#include "test_header.hh"
 
 using namespace geom;
 
@@ -54,8 +54,4 @@ TYPED_TEST(TriangleTest, isValid)
   EXPECT_FALSE(tr3.isValid());
 }
 
-int main(int argc, char **argv)
-{
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+#include "test_footer.hh"

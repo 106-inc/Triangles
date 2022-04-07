@@ -1,5 +1,5 @@
 #include "primitives/primitives.hh"
-#include "test_common.hh"
+#include "test_header.hh"
 
 using namespace geom;
 
@@ -158,8 +158,4 @@ TYPED_TEST(LineTest, getBy2Points)
   EXPECT_TRUE(l.dir().isPar(p2 - p1));
 }
 
-int main(int argc, char **argv)
-{
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+#include "test_footer.hh"

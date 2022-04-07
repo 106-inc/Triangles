@@ -1,5 +1,5 @@
 #include "intersection/intersection.hh"
-#include "test_common.hh"
+#include "test_header.hh"
 
 using namespace geom;
 
@@ -542,8 +542,4 @@ TYPED_TEST(IntersectionDetail, isIntersectIntersectionTrianglesegment2D)
   EXPECT_FALSE(detail::isIntersect2D<TypeParam>(tr, {{0, -2, 0}, {0, -1, 0}, {0, -2, 0}}));
 }
 
-int main(int argc, char **argv)
-{
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+#include "test_footer.hh"
