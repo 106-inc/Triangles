@@ -91,7 +91,7 @@ public:
    * @return true if Triangle belongs to BoundBox
    * @return false if Triangle doesn't belong to BoundBox
    */
-  bool belongsTo(const BoundBox<T> & bb);
+  bool belongsTo(const BoundBox<T> & bb) const;
 };
 
 /**
@@ -171,7 +171,7 @@ BoundBox<T> Triangle<T>::boundBox() const
 }
 
 template <std::floating_point T>
-bool belongsTo(const BoundBox<T> & bb)
+bool belongsTo(const BoundBox<T> & bb) const
 {
   return boundBox().belongsTo(bb);
 }
