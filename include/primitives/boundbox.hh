@@ -1,8 +1,7 @@
 #ifndef __INCLUDE_PRIMITIVES_BOUNDBOX_HH__
 #define __INCLUDE_PRIMITIVES_BOUNDBOX_HH__
 
-#include <concepts>
-
+#include "common.hh"
 #include "vec3.hh"
 
 namespace geom
@@ -19,7 +18,16 @@ struct BoundBox
 
   T minZ{};
   T maxZ{};
+
+  bool belongsTo(const BoundBox<T> &bb);
 };
+
+template <std::floating_point T>
+bool BoundBox<T>::belongsTo(const BoundBox<T> &bb)
+{
+  return (minX >= bb.minX) && (minY >= bb.minY) && (minZ >= bb.minZ) && (maxX <= bb.maxX) &&
+         (maxY <= bb.maxY) && (maxZ <= bb.maxZ);
+}
 
 template <std::floating_point T>
 bool operator==(const BoundBox<T> &lhs, const BoundBox<T> &rhs)

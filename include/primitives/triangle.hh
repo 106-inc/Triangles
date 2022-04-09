@@ -83,6 +83,15 @@ public:
    * @return BoundBox<T>
    */
   BoundBox<T> boundBox() const;
+
+  /**
+   * @brief Checks if this Triangle belongs to BoundBox
+   *
+   * @param[in] bb BoundBox
+   * @return true if Triangle belongs to BoundBox
+   * @return false if Triangle doesn't belong to BoundBox
+   */
+  bool belongsTo(const BoundBox<T> & bb);
 };
 
 /**
@@ -159,6 +168,12 @@ BoundBox<T> Triangle<T>::boundBox() const
   return {minMaxX.first - Vec3<T>::getThreshold(), minMaxX.second + Vec3<T>::getThreshold(),
           minMaxY.first - Vec3<T>::getThreshold(), minMaxY.second + Vec3<T>::getThreshold(),
           minMaxZ.first - Vec3<T>::getThreshold(), minMaxZ.second + Vec3<T>::getThreshold()};
+}
+
+template <std::floating_point T>
+bool belongsTo(const BoundBox<T> & bb)
+{
+  return boundBox().belongsTo(bb);
 }
 
 } // namespace geom
