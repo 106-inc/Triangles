@@ -54,4 +54,16 @@ TYPED_TEST(TriangleTest, isValid)
   EXPECT_FALSE(tr3.isValid());
 }
 
+TYPED_TEST(TriangleTest, boundBox)
+{
+  // Arrange
+  Triangle<TypeParam> tr{{-3, 4, 0}, {1, 1, -5}, {6, 0, 5}};
+  BoundBox<TypeParam> bb{-3 - Vec3<TypeParam>::getThreshold(), 6 + Vec3<TypeParam>::getThreshold(),
+                         0 - Vec3<TypeParam>::getThreshold(),  4 + Vec3<TypeParam>::getThreshold(),
+                         -5 - Vec3<TypeParam>::getThreshold(), 5 + Vec3<TypeParam>::getThreshold()};
+
+  // Act & Assert
+  EXPECT_EQ(tr.boundBox(), bb);
+}
+
 #include "test_footer.hh"

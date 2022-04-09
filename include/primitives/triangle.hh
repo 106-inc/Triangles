@@ -1,8 +1,10 @@
 #ifndef __INCLUDE_PRIMITIVES_TRIANGLE_HH__
 #define __INCLUDE_PRIMITIVES_TRIANGLE_HH__
 
+#include <algorithm>
 #include <array>
 
+#include "boundbox.hh"
 #include "plane.hh"
 #include "vec3.hh"
 
@@ -74,6 +76,13 @@ public:
    * @return false if triangle is invalid
    */
   bool isValid() const;
+
+  /**
+   * @brief Returns triangle's bound box
+   *
+   * @return BoundBox<T>
+   */
+  BoundBox<T> boundBox() const;
 };
 
 /**
@@ -138,6 +147,18 @@ bool Triangle<T>::isValid() const
 
   auto cross12 = cross(edge1, edge2);
   return (cross12 != Vec3<T>{});
+}
+
+template <std::floating_point T>
+BoundBox<T> Triangle<T>::boundBox() const
+{
+  auto minMaxX = std::minmax({vertices_[0].x, vertices_[1].x, vertices_[2].x});
+  auto minMaxY = std::minmax({vertices_[0].y, vertices_[1].y, vertices_[2].y});
+  auto minMaxZ = std::minmax({vertices_[0].z, vertices_[1].z, vertices_[2].z});
+
+  return {minMaxX.first - Vec3<T>::getThreshold(), minMaxX.second + Vec3<T>::getThreshold(),
+          minMaxY.first - Vec3<T>::getThreshold(), minMaxY.second + Vec3<T>::getThreshold(),
+          minMaxZ.first - Vec3<T>::getThreshold(), minMaxZ.second + Vec3<T>::getThreshold()};
 }
 
 } // namespace geom
