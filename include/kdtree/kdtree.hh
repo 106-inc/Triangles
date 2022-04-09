@@ -22,9 +22,14 @@ private:
   std::vector<Triangle<T>> triangles_;
 
 public:
-  KdTree();
   KdTree(std::initializer_list<Triangle<T>> il);
+  KdTree(const KdTree &tree);
+  KdTree(KdTree &&tree) = default;
+  KdTree() = default;
   ~KdTree();
+
+  KdTree &operator=(const KdTree &tree);
+  KdTree &operator=(KdTree &&tree) = default;
 
   class ConstIterator;
 
@@ -77,6 +82,74 @@ public:
 //============================================================================================
 //                                    KdTree definitions
 //============================================================================================
+
+template <std::floating_point T>
+KdTree<T>::KdTree(std::initializer_list<Triangle<T>> il)
+{
+  for (const auto &tr : il)
+    insert(tr);
+}
+
+template <std::floating_point T>
+KdTree<T>::KdTree(const KdTree<T> &tree)
+{
+  // temporary solution
+  for (const auto &tr : tree.triangles_)
+    insert(tr);
+}
+
+template <std::floating_point T>
+KdTree<T>::~KdTree()
+{
+  clear();
+}
+
+template <std::floating_point T>
+KdTree<T> &KdTree<T>::operator=(const KdTree<T> &tree)
+{
+  KdTree tmp{tree};
+  operator=(std::move(tmp));
+  return *this;
+}
+
+// ConstIterators
+template <std::floating_point T>
+typename KdTree<T>::ConstIterator KdTree<T>::cbegin() const
+{
+  assert(false && "Not implemented yet");
+}
+
+template <std::floating_point T>
+typename KdTree<T>::ConstIterator KdTree<T>::cend() const
+{
+  assert(false && "Not implemented yet");
+}
+
+// Modifiers
+template <std::floating_point T>
+typename KdTree<T>::ConstIterator KdTree<T>::insert(const Triangle<T> &tr)
+{
+  assert(false && "Not implemented yet");
+}
+
+template <std::floating_point T>
+void KdTree<T>::clear()
+{
+  assert(false && "Not implemented yet");
+}
+
+// Capacity
+template <std::floating_point T>
+bool KdTree<T>::empty() const
+{
+  return triangles_.empty();
+}
+
+template <std::floating_point T>
+size_t KdTree<T>::size() const
+{
+  return triangles_.size();
+}
 
 //============================================================================================
 //                             KdTree::ConstIterator definitions
