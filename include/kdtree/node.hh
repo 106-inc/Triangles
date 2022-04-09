@@ -28,8 +28,8 @@ struct Node final
   BoundBox<T> boundBox{};
   std::vector<Index> indicies{};
 
-  std::unique_ptr<Node> left;
-  std::unique_ptr<Node> right;
+  std::unique_ptr<Node> left{nullptr};
+  std::unique_ptr<Node> right{nullptr};
 };
 
 } // namespace geom::kdtree
