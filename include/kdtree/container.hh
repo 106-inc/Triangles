@@ -45,8 +45,8 @@ public:
     using iterator_category = std::forward_iterator_tag;
     using difference_type = std::size_t;
     using value_type = Triangle<T>;
-    using reference = Triangle<T> &;
-    using pointer = Triangle<T> *;
+    using reference = const Triangle<T> &;
+    using pointer = const Triangle<T> *;
 
   private:
     Container *cont_;
