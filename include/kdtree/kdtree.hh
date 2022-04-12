@@ -45,12 +45,16 @@ public:
   bool empty() const;
   size_t size() const;
 
+  void dump() const;
+
 private:
   void expandingInsert(const Triangle<T> &tr);
   void tryExpandRight(Axis axis, const BoundBox<T> &trianBB);
   void tryExpandLeft(Axis axis, const BoundBox<T> &trianBB);
 
   void nonExpandingInsert(const Triangle<T> &tr);
+  bool isOnPosSide(Axis axis, T separator, const Triangle<T> &tr);
+  bool isOnNegSide(Axis axis, T separator, const Triangle<T> &tr);
 
 public:
   class ConstIterator final
@@ -109,7 +113,7 @@ KdTree<T>::KdTree(const KdTree<T> &tree)
 template <std::floating_point T>
 KdTree<T>::~KdTree()
 {
-  clear();
+  // clear();
 }
 
 template <std::floating_point T>
@@ -170,6 +174,15 @@ size_t KdTree<T>::size() const
 }
 
 template <std::floating_point T>
+void KdTree<T>::dump() const
+{
+  std::cout << "digraph kdtree {" << std::endl;
+  if (root_)
+    root_->dump();
+  std::cout << "}" << std::endl;
+}
+
+template <std::floating_point T>
 void KdTree<T>::expandingInsert(const Triangle<T> &tr)
 {
   auto trianBB = tr.boundBox();
@@ -197,7 +210,7 @@ void KdTree<T>::tryExpandRight(Axis axis, const BoundBox<T> &trianBB)
   newRightBB.max(axis) = trianBB.max(axis);
 
   BoundBox<T> newRootBB = rootBB;
-  newRootBB.max(axis) = rootBB.max(axis);
+  newRootBB.max(axis) = newRightBB.max(axis);
 
   std::unique_ptr<Node<T>> newRight{new Node<T>{T{}, Axis::NONE, newRightBB}};
   std::unique_ptr<Node<T>> newRoot{new Node<T>{rootBB.max(axis), axis, newRootBB}};
@@ -220,7 +233,7 @@ void KdTree<T>::tryExpandLeft(Axis axis, const BoundBox<T> &trianBB)
   newLeftBB.min(axis) = trianBB.min(axis);
 
   BoundBox<T> newRootBB = rootBB;
-  newRootBB.min(axis) = rootBB.min(axis);
+  newRootBB.min(axis) = newLeftBB.min(axis);
 
   std::unique_ptr<Node<T>> newLeft{new Node<T>{T{}, Axis::NONE, newLeftBB}};
   std::unique_ptr<Node<T>> newRoot{new Node<T>{rootBB.min(axis), axis, newRootBB}};
@@ -233,7 +246,47 @@ void KdTree<T>::tryExpandLeft(Axis axis, const BoundBox<T> &trianBB)
 
 template <std::floating_point T>
 void KdTree<T>::nonExpandingInsert(const Triangle<T> &tr)
-{}
+{
+  auto curNode = root_.get();
+  while (true)
+  {
+    if (isOnPosSide(curNode->sepAxis, curNode->separator, tr))
+      curNode = curNode->right.get();
+    else if (isOnNegSide(curNode->sepAxis, curNode->separator, tr))
+      curNode = curNode->left.get();
+    else
+      break;
+  }
+
+  auto index = triangles_.size();
+  curNode->indicies.push_back(index);
+
+  triangles_.push_back(tr);
+  // if (isDividable())
+  //   divide();
+}
+
+template <std::floating_point T>
+bool KdTree<T>::isOnPosSide(Axis axis, T separator, const Triangle<T> &tr)
+{
+  auto axisIdx = static_cast<size_t>(axis);
+  for (size_t i = 0; i < 3; ++i)
+    if (tr[i][axisIdx] <= separator)
+      return false;
+
+  return true;
+}
+
+template <std::floating_point T>
+bool KdTree<T>::isOnNegSide(Axis axis, T separator, const Triangle<T> &tr)
+{
+  auto axisIdx = static_cast<size_t>(axis);
+  for (size_t i = 0; i < 3; ++i)
+    if (tr[i][axisIdx] >= separator)
+      return false;
+
+  return true;
+}
 
 //============================================================================================
 //                             KdTree::ConstIterator definitions

@@ -2,6 +2,7 @@
 #define __INCLUDE_PRIMITIVES_BOUNDBOX_HH__
 
 #include <exception>
+#include <iostream>
 
 #include "common.hh"
 #include "vec3.hh"
@@ -107,6 +108,16 @@ bool operator==(const BoundBox<T> &lhs, const BoundBox<T> &rhs)
   return Vec3<T>::isNumEq(lhs.minX, rhs.minX) && Vec3<T>::isNumEq(lhs.maxX, rhs.maxX) &&
          Vec3<T>::isNumEq(lhs.minY, rhs.minY) && Vec3<T>::isNumEq(lhs.maxY, rhs.maxY) &&
          Vec3<T>::isNumEq(lhs.minZ, rhs.minZ) && Vec3<T>::isNumEq(lhs.maxY, rhs.maxY);
+}
+
+template <std::floating_point T>
+std::ostream &operator<<(std::ostream &ost, const BoundBox<T> &bb)
+{
+  ost << "BB: {";
+  ost << "x: (" << bb.minX << "; " << bb.maxX << "),\\n";
+  ost << "y: (" << bb.minY << "; " << bb.maxY << "),\\n";
+  ost << "z: (" << bb.minZ << "; " << bb.maxZ << ")}";
+  return ost;
 }
 
 } // namespace geom
