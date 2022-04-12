@@ -2,6 +2,7 @@
 #define __INCLUDE_PRIMITIVES_PRIMITIVES_HH__
 
 #include "boundbox.hh"
+#include "common.hh"
 #include "line.hh"
 #include "plane.hh"
 #include "triangle.hh"

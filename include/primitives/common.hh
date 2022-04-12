@@ -2,6 +2,7 @@
 #define __INCLUDE_PRIMITIVES_COMMON_HH__
 
 #include <concepts>
+#include <cstdint>
 
 namespace geom
 {
@@ -13,6 +14,14 @@ namespace geom
  */
 template <class T>
 concept Number = std::is_floating_point_v<T> || std::is_integral_v<T>;
+
+enum class Axis : std::int8_t
+{
+  X = 0,
+  Y = 1,
+  Z = 2,
+  NONE
+};
 
 } // namespace geom
 
