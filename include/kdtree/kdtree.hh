@@ -38,13 +38,21 @@ public:
   ConstIterator cend() const;
 
   // Modifiers
-  ConstIterator insert(const Triangle<T> &tr);
+  void insert(const Triangle<T> &tr);
   void clear();
 
   // Capacity
   bool empty() const;
   size_t size() const;
 
+private:
+  void expandingInsert(const Triangle<T> &tr);
+  void tryExpandRight(Axis axis, const BoundBox<T> &trianBB);
+  void tryExpandLeft(Axis axis, const BoundBox<T> &trianBB);
+
+  void nonExpandingInsert(const Triangle<T> &tr);
+
+public:
   class ConstIterator final
   {
   public:
@@ -55,8 +63,8 @@ public:
     using pointer = std::unique_ptr<Container<T>>;
 
   private:
-    KdTree<T> *tree_;
-    Node<T> *node_;
+    const KdTree<T> *tree_;
+    const Node<T> *node_;
 
   public:
     ConstIterator(const KdTree<T> *tree, const Node<T> *node);
@@ -127,9 +135,19 @@ typename KdTree<T>::ConstIterator KdTree<T>::cend() const
 
 // Modifiers
 template <std::floating_point T>
-typename KdTree<T>::ConstIterator KdTree<T>::insert(const Triangle<T> &tr)
+void KdTree<T>::insert(const Triangle<T> &tr)
 {
-  assert(false && "Not implemented yet");
+  if (nullptr == root_)
+  {
+    root_ = std::unique_ptr<Node<T>>{new Node<T>{T{}, Axis::NONE, tr.boundBox(), {0}}};
+    triangles_.push_back(tr);
+    return;
+  }
+
+  if (tr.belongsTo(root_->boundBox))
+    nonExpandingInsert(tr);
+  else
+    expandingInsert(tr);
 }
 
 template <std::floating_point T>
@@ -150,6 +168,72 @@ size_t KdTree<T>::size() const
 {
   return triangles_.size();
 }
+
+template <std::floating_point T>
+void KdTree<T>::expandingInsert(const Triangle<T> &tr)
+{
+  auto trianBB = tr.boundBox();
+  auto index = triangles_.size();
+  triangles_.push_back(tr);
+
+  for (auto axis : {Axis::X, Axis::Y, Axis::Z})
+    tryExpandRight(axis, trianBB);
+
+  for (auto axis : {Axis::X, Axis::Y, Axis::Z})
+    tryExpandLeft(axis, trianBB);
+
+  root_->indicies.push_back(index);
+}
+
+template <std::floating_point T>
+void KdTree<T>::tryExpandRight(Axis axis, const BoundBox<T> &trianBB)
+{
+  const auto &rootBB = root_->boundBox;
+  if (trianBB.max(axis) <= rootBB.max(axis))
+    return;
+
+  BoundBox<T> newRightBB = rootBB;
+  newRightBB.min(axis) = rootBB.max(axis);
+  newRightBB.max(axis) = trianBB.max(axis);
+
+  BoundBox<T> newRootBB = rootBB;
+  newRootBB.max(axis) = rootBB.max(axis);
+
+  std::unique_ptr<Node<T>> newRight{new Node<T>{T{}, Axis::NONE, newRightBB}};
+  std::unique_ptr<Node<T>> newRoot{new Node<T>{rootBB.max(axis), axis, newRootBB}};
+
+  newRoot->right = std::move(newRight);
+  newRoot->left = std::move(root_);
+
+  root_ = std::move(newRoot);
+}
+
+template <std::floating_point T>
+void KdTree<T>::tryExpandLeft(Axis axis, const BoundBox<T> &trianBB)
+{
+  const auto &rootBB = root_->boundBox;
+  if (trianBB.min(axis) >= rootBB.min(axis))
+    return;
+
+  BoundBox<T> newLeftBB = rootBB;
+  newLeftBB.max(axis) = rootBB.min(axis);
+  newLeftBB.min(axis) = trianBB.min(axis);
+
+  BoundBox<T> newRootBB = rootBB;
+  newRootBB.min(axis) = rootBB.min(axis);
+
+  std::unique_ptr<Node<T>> newLeft{new Node<T>{T{}, Axis::NONE, newLeftBB}};
+  std::unique_ptr<Node<T>> newRoot{new Node<T>{rootBB.min(axis), axis, newRootBB}};
+
+  newRoot->left = std::move(newLeft);
+  newRoot->right = std::move(root_);
+
+  root_ = std::move(newRoot);
+}
+
+template <std::floating_point T>
+void KdTree<T>::nonExpandingInsert(const Triangle<T> &tr)
+{}
 
 //============================================================================================
 //                             KdTree::ConstIterator definitions
