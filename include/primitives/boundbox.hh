@@ -29,6 +29,8 @@ struct BoundBox
 
   const T &min(Axis axis) const;
   const T &max(Axis axis) const;
+
+  Axis getMaxDim() const;
 };
 
 template <std::floating_point T>
@@ -103,6 +105,14 @@ const T &BoundBox<T>::max(Axis axis) const
 }
 
 template <std::floating_point T>
+Axis BoundBox<T>::getMaxDim() const
+{
+  return std::max({Axis::X, Axis::Y, Axis::Z}, [this](const auto &lhs, const auto &rhs) {
+    return (this->max(lhs) - this->min(lhs)) < (this->max(rhs) - this->min(rhs));
+  });
+}
+
+template <std::floating_point T>
 bool operator==(const BoundBox<T> &lhs, const BoundBox<T> &rhs)
 {
   return Vec3<T>::isNumEq(lhs.minX, rhs.minX) && Vec3<T>::isNumEq(lhs.maxX, rhs.maxX) &&
@@ -113,10 +123,10 @@ bool operator==(const BoundBox<T> &lhs, const BoundBox<T> &rhs)
 template <std::floating_point T>
 std::ostream &operator<<(std::ostream &ost, const BoundBox<T> &bb)
 {
-  ost << "BB: {";
-  ost << "x: (" << bb.minX << "; " << bb.maxX << "),\\n";
-  ost << "y: (" << bb.minY << "; " << bb.maxY << "),\\n";
-  ost << "z: (" << bb.minZ << "; " << bb.maxZ << ")}";
+  ost << "BB: {\\n";
+  ost << "  x: [" << bb.minX << "; " << bb.maxX << "],\\n";
+  ost << "  y: [" << bb.minY << "; " << bb.maxY << "],\\n";
+  ost << "  z: [" << bb.minZ << "; " << bb.maxZ << "]\\n}";
   return ost;
 }
 

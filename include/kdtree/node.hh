@@ -23,27 +23,30 @@ struct Node final
   std::unique_ptr<Node> left{nullptr};
   std::unique_ptr<Node> right{nullptr};
 
-  void dump() const;
+  void dumpRecursive() const;
 };
 
 template <std::floating_point T>
-void Node<T>::dump() const
+void Node<T>::dumpRecursive() const
 {
-  std::cout << reinterpret_cast<std::uintptr_t>(this) << " [shape=box,label=\"" << boundBox;
-  std::cout << ",\\nvec: {";
+  std::cout << reinterpret_cast<std::uintptr_t>(this)
+            << " [shape=box,label=\"axis: " << static_cast<int>(sepAxis) << ",\\n"
+            << boundBox << ",\\nvec: {";
+
   for (auto elem : indicies)
     std::cout << elem << " ";
+
   std::cout << "}\"];" << std::endl;
 
   if (left)
   {
-    left->dump();
+    left->dumpRecursive();
     std::cout << reinterpret_cast<std::uintptr_t>(this) << " -> "
               << reinterpret_cast<std::uintptr_t>(left.get()) << " [label=\"L\"];" << std::endl;
   }
   if (right)
   {
-    right->dump();
+    right->dumpRecursive();
     std::cout << reinterpret_cast<std::uintptr_t>(this) << " -> "
               << reinterpret_cast<std::uintptr_t>(right.get()) << " [label=\"R\"];" << std::endl;
   }

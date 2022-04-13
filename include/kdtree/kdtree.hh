@@ -20,6 +20,7 @@ class KdTree
 private:
   std::unique_ptr<Node<T>> root_;
   std::vector<Triangle<T>> triangles_;
+  std::size_t maxNodeCap_{1};
 
 public:
   KdTree(std::initializer_list<Triangle<T>> il);
@@ -45,16 +46,18 @@ public:
   bool empty() const;
   size_t size() const;
 
-  void dump() const;
+  void dumpRecursive() const;
 
 private:
   void expandingInsert(const Triangle<T> &tr);
   void tryExpandRight(Axis axis, const BoundBox<T> &trianBB);
   void tryExpandLeft(Axis axis, const BoundBox<T> &trianBB);
 
-  void nonExpandingInsert(const Triangle<T> &tr);
+  void nonExpandingInsert(Node<T> *node, const Triangle<T> &tr, Index index, bool isSubdiv = false);
+  bool isDivisable(const Node<T> *node);
   bool isOnPosSide(Axis axis, T separator, const Triangle<T> &tr);
   bool isOnNegSide(Axis axis, T separator, const Triangle<T> &tr);
+  void subdivide(Node<T> *node);
 
 public:
   class ConstIterator final
@@ -148,10 +151,14 @@ void KdTree<T>::insert(const Triangle<T> &tr)
     return;
   }
 
-  if (tr.belongsTo(root_->boundBox))
-    nonExpandingInsert(tr);
-  else
+  if (!tr.belongsTo(root_->boundBox))
     expandingInsert(tr);
+  else
+  {
+    auto index = triangles_.size();
+    triangles_.push_back(tr);
+    nonExpandingInsert(root_.get(), tr, index);
+  }
 }
 
 template <std::floating_point T>
@@ -174,11 +181,11 @@ size_t KdTree<T>::size() const
 }
 
 template <std::floating_point T>
-void KdTree<T>::dump() const
+void KdTree<T>::dumpRecursive() const
 {
   std::cout << "digraph kdtree {" << std::endl;
   if (root_)
-    root_->dump();
+    root_->dumpRecursive();
   std::cout << "}" << std::endl;
 }
 
@@ -205,11 +212,11 @@ void KdTree<T>::tryExpandRight(Axis axis, const BoundBox<T> &trianBB)
   if (trianBB.max(axis) <= rootBB.max(axis))
     return;
 
-  BoundBox<T> newRightBB = rootBB;
+  auto newRightBB = rootBB;
   newRightBB.min(axis) = rootBB.max(axis);
   newRightBB.max(axis) = trianBB.max(axis);
 
-  BoundBox<T> newRootBB = rootBB;
+  auto newRootBB = rootBB;
   newRootBB.max(axis) = newRightBB.max(axis);
 
   std::unique_ptr<Node<T>> newRight{new Node<T>{T{}, Axis::NONE, newRightBB}};
@@ -245,9 +252,9 @@ void KdTree<T>::tryExpandLeft(Axis axis, const BoundBox<T> &trianBB)
 }
 
 template <std::floating_point T>
-void KdTree<T>::nonExpandingInsert(const Triangle<T> &tr)
+void KdTree<T>::nonExpandingInsert(Node<T> *node, const Triangle<T> &tr, Index index, bool isSubdiv)
 {
-  auto curNode = root_.get();
+  auto curNode = node;
   while (true)
   {
     if (isOnPosSide(curNode->sepAxis, curNode->separator, tr))
@@ -258,12 +265,9 @@ void KdTree<T>::nonExpandingInsert(const Triangle<T> &tr)
       break;
   }
 
-  auto index = triangles_.size();
   curNode->indicies.push_back(index);
-
-  triangles_.push_back(tr);
-  // if (isDividable())
-  //   divide();
+  if (isDivisable(curNode) && (!isSubdiv))
+    subdivide(curNode);
 }
 
 template <std::floating_point T>
@@ -286,6 +290,35 @@ bool KdTree<T>::isOnNegSide(Axis axis, T separator, const Triangle<T> &tr)
       return false;
 
   return true;
+}
+
+template <std::floating_point T>
+bool KdTree<T>::isDivisable(const Node<T> *node)
+{
+  return (node->indicies.size() > maxNodeCap_);
+}
+
+template <std::floating_point T>
+void KdTree<T>::subdivide(Node<T> *node)
+{
+  const auto &nodeBB = node->boundBox;
+  auto axis = node->sepAxis = nodeBB.getMaxDim();
+  auto sep = node->separator = nodeBB.min(axis) + 0.5 * (nodeBB.max(axis) - nodeBB.min(axis));
+
+  auto newRightBB = nodeBB;
+  auto newLeftBB = nodeBB;
+
+  newRightBB.min(axis) = sep;
+  newLeftBB.max(axis) = sep;
+
+  node->right.reset(new Node<T>{T{}, Axis::NONE, newRightBB});
+  node->left.reset(new Node<T>{T{}, Axis::NONE, newLeftBB});
+
+  auto indicies = node->indicies;
+  node->indicies.clear();
+
+  for (auto index : indicies)
+    nonExpandingInsert(node, triangles_[index], index, /* isSubdiv = */ true);
 }
 
 //============================================================================================
