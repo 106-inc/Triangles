@@ -5,7 +5,7 @@
 using namespace geom;
 using namespace geom::kdtree;
 
-int main()
+int oldMain()
 {
   KdTree<float> tree{};
 
@@ -16,4 +16,21 @@ int main()
   tree.dumpRecursive();
 
   return 0;
+}
+
+int main()
+{
+  size_t n = 0;
+  std::cin >> n;
+
+  KdTree<float> tree{};
+  for (size_t i = 0; i < n; ++i)
+  {
+    Triangle<float> tr{};
+    std::cerr << i << std::endl;
+    std::cin >> tr;
+    tree.insert(tr);
+  }
+
+  tree.dumpRecursive();
 }

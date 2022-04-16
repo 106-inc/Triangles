@@ -273,6 +273,9 @@ void KdTree<T>::nonExpandingInsert(Node<T> *node, const Triangle<T> &tr, Index i
 template <std::floating_point T>
 bool KdTree<T>::isOnPosSide(Axis axis, T separator, const Triangle<T> &tr)
 {
+  if (Axis::NONE == axis)
+    return false;
+
   auto axisIdx = static_cast<size_t>(axis);
   for (size_t i = 0; i < 3; ++i)
     if (tr[i][axisIdx] <= separator)
@@ -284,6 +287,9 @@ bool KdTree<T>::isOnPosSide(Axis axis, T separator, const Triangle<T> &tr)
 template <std::floating_point T>
 bool KdTree<T>::isOnNegSide(Axis axis, T separator, const Triangle<T> &tr)
 {
+  if (Axis::NONE == axis)
+    return false;
+
   auto axisIdx = static_cast<size_t>(axis);
   for (size_t i = 0; i < 3; ++i)
     if (tr[i][axisIdx] >= separator)
@@ -295,7 +301,7 @@ bool KdTree<T>::isOnNegSide(Axis axis, T separator, const Triangle<T> &tr)
 template <std::floating_point T>
 bool KdTree<T>::isDivisable(const Node<T> *node)
 {
-  return (node->indicies.size() > maxNodeCap_);
+  return (node->indicies.size() > maxNodeCap_) && (node->sepAxis == Axis::NONE);
 }
 
 template <std::floating_point T>
