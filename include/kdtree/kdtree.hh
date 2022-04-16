@@ -192,7 +192,7 @@ std::size_t KdTree<T>::size() const
 }
 
 template <std::floating_point T>
-std::size_t nodeCapacity()
+std::size_t KdTree<T>::nodeCapacity()
 {
   return nodeCapacity_;
 }
