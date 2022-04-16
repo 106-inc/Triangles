@@ -8,9 +8,7 @@
 #include "primitives/primitives.hh"
 #include "primitives/vec2.hh"
 
-namespace geom
-{
-namespace detail
+namespace geom::detail
 {
 
 template <typename T>
@@ -395,7 +393,6 @@ Segment3D<T> getSegment(const Triangle<T> &tr)
   return {tr[maxIdx], tr[maxIdx + 1]};
 }
 
-} // namespace detail
-} // namespace geom
+} // namespace detail::geom
 
 #endif // __INCLUDE_INTERSECTION_DETAIL_HH__

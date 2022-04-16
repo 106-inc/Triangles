@@ -21,7 +21,7 @@ class KdTree
 private:
   std::unique_ptr<Node<T>> root_;
   std::vector<Triangle<T>> triangles_;
-  std::size_t maxNodeCap_{1};
+  std::size_t nodeCapacity_{1};
 
 public:
   KdTree(std::initializer_list<Triangle<T>> il);
@@ -303,7 +303,7 @@ bool KdTree<T>::isOnSide(Axis axis, T separator, const Triangle<T> &tr,
 template <std::floating_point T>
 bool KdTree<T>::isDivisable(const Node<T> *node)
 {
-  return (node->indicies.size() > maxNodeCap_) && (node->sepAxis == Axis::NONE);
+  return (node->indicies.size() > nodeCapacity_) && (node->sepAxis == Axis::NONE);
 }
 
 template <std::floating_point T>
