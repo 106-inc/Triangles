@@ -42,10 +42,12 @@ public:
   // Modifiers
   void insert(const Triangle<T> &tr);
   void clear();
+  void setNodeCapacity(std::size_t newCap);
 
   // Capacity
   bool empty() const;
-  size_t size() const;
+  std::size_t size() const;
+  std::size_t nodeCapacity() const;
 
   void dumpRecursive() const;
 
@@ -170,6 +172,12 @@ void KdTree<T>::clear()
   assert(false && "Not implemented yet");
 }
 
+template <std::floating_point T>
+void KdTree<T>::setNodeCapacity(std::size_t newCap)
+{
+  nodeCapacity_ = newCap;
+}
+
 // Capacity
 template <std::floating_point T>
 bool KdTree<T>::empty() const
@@ -178,9 +186,15 @@ bool KdTree<T>::empty() const
 }
 
 template <std::floating_point T>
-size_t KdTree<T>::size() const
+std::size_t KdTree<T>::size() const
 {
   return triangles_.size();
+}
+
+template <std::floating_point T>
+std::size_t nodeCapacity()
+{
+  return nodeCapacity_;
 }
 
 template <std::floating_point T>
