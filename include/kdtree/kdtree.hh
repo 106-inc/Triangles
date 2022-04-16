@@ -2,6 +2,7 @@
 #define __INCLUDE_KDTREE_KDTREE_HH__
 
 #include <cassert>
+#include <functional>
 #include <initializer_list>
 #include <memory>
 #include <vector>
@@ -57,6 +58,8 @@ private:
   bool isDivisable(const Node<T> *node);
   bool isOnPosSide(Axis axis, T separator, const Triangle<T> &tr);
   bool isOnNegSide(Axis axis, T separator, const Triangle<T> &tr);
+  bool isOnSide(Axis axis, T separator, const Triangle<T> &tr,
+                std::function<bool(T, T)> comparator);
   void subdivide(Node<T> *node);
 
 public:
@@ -273,26 +276,25 @@ void KdTree<T>::nonExpandingInsert(Node<T> *node, const Triangle<T> &tr, Index i
 template <std::floating_point T>
 bool KdTree<T>::isOnPosSide(Axis axis, T separator, const Triangle<T> &tr)
 {
-  if (Axis::NONE == axis)
-    return false;
-
-  auto axisIdx = static_cast<size_t>(axis);
-  for (size_t i = 0; i < 3; ++i)
-    if (tr[i][axisIdx] <= separator)
-      return false;
-
-  return true;
+  return isOnSide(axis, separator, tr, std::greater<T>{});
 }
 
 template <std::floating_point T>
 bool KdTree<T>::isOnNegSide(Axis axis, T separator, const Triangle<T> &tr)
+{
+  return isOnSide(axis, separator, tr, std::less<T>{});
+}
+
+template <std::floating_point T>
+bool KdTree<T>::isOnSide(Axis axis, T separator, const Triangle<T> &tr,
+                         std::function<bool(T, T)> comparator)
 {
   if (Axis::NONE == axis)
     return false;
 
   auto axisIdx = static_cast<size_t>(axis);
   for (size_t i = 0; i < 3; ++i)
-    if (tr[i][axisIdx] >= separator)
+    if (!comparator(tr[i][axisIdx], separator))
       return false;
 
   return true;
@@ -314,9 +316,7 @@ void KdTree<T>::subdivide(Node<T> *node)
   auto newRightBB = nodeBB;
   auto newLeftBB = nodeBB;
 
-  newRightBB.min(axis) = sep;
-  newLeftBB.max(axis) = sep;
-
+  newRightBB.min(axis) = newLeftBB.max(axis) = sep;
   node->right.reset(new Node<T>{T{}, Axis::NONE, newRightBB});
   node->left.reset(new Node<T>{T{}, Axis::NONE, newLeftBB});
 
