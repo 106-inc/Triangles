@@ -55,11 +55,11 @@ private:
   void tryExpandLeft(Axis axis, const BoundBox<T> &trianBB);
 
   void nonExpandingInsert(Node<T> *node, const Triangle<T> &tr, Index index, bool isSubdiv = false);
-  bool isDivisable(const Node<T> *node);
-  bool isOnPosSide(Axis axis, T separator, const Triangle<T> &tr);
-  bool isOnNegSide(Axis axis, T separator, const Triangle<T> &tr);
-  bool isOnSide(Axis axis, T separator, const Triangle<T> &tr,
+  static bool isOnPosSide(Axis axis, T separator, const Triangle<T> &tr);
+  static bool isOnNegSide(Axis axis, T separator, const Triangle<T> &tr);
+  static bool isOnSide(Axis axis, T separator, const Triangle<T> &tr,
                 std::function<bool(T, T)> comparator);
+  bool isDivisable(const Node<T> *node);
   void subdivide(Node<T> *node);
 
 public:
