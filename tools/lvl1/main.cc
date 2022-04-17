@@ -7,7 +7,8 @@
 using namespace geom;
 using namespace geom::kdtree;
 
-void selfIntersect(const Container<float> &node, std::set<Index> &intInd)
+template <std::floating_point T>
+void selfIntersect(const Container<T> &node, std::set<Index> &intInd)
 {
   auto end = node.end();
   for (auto i = node.begin(); i != end; ++i)
@@ -16,15 +17,37 @@ void selfIntersect(const Container<float> &node, std::set<Index> &intInd)
         intInd.insert(i.getIndex()), intInd.insert(j.getIndex());
 }
 
-void intersect(const Container<float> &node1, const Container<float> &node2,
-               std::set<Index> &intInd)
+template <std::floating_point T>
+void intersectHelper(typename Container<T>::ConstIterator &trIt, std::set<Index> &intInd,
+                     const Container<T> &node)
 {
-  auto end1 = node1.end();
-  auto end2 = node2.end();
-  for (auto i = node1.begin(); i != end1; ++i)
-    for (auto j = node2.begin(); j != end2; ++j)
-      if (isIntersect(*i, *j))
-        intInd.insert(i.getIndex()), intInd.insert(j.getIndex());
+  for (auto i = node.begin(), end = node.end(); i != end; ++i)
+    if (isIntersect(*i, *trIt))
+      intInd.insert(i.getIndex()), intInd.insert(trIt.getIndex());
+
+  if (KdTree<T>::isOnPosSide(node.sepAxis(), node.separator(), *trIt))
+    intersectHelper(trIt, intInd, node.right());
+  else if (KdTree<T>::isOnNegSide(node.sepAxis(), node.separator(), *trIt))
+    intersectHelper(trIt, intInd, node.left());
+  else if (node.sepAxis() != Axis::NONE)
+  {
+    intersectHelper(trIt, intInd, node.right());
+    intersectHelper(trIt, intInd, node.left());
+  }
+}
+
+template <std::floating_point T>
+void intersect(typename Container<T>::ConstIterator &trIt, std::set<Index> &intInd,
+               const Container<T> &node)
+{
+  auto left = node.left();
+  auto right = node.right();
+
+  if (left.isValid())
+    intersectHelper(trIt, intInd, left);
+
+  if (right.isValid())
+    intersectHelper(trIt, intInd, right);
 }
 
 int main()
@@ -41,15 +64,13 @@ int main()
     tree.insert(tr);
   }
 
-  for (auto nodeIt = tree.begin(), nodeEnd = tree.end(); nodeIt != nodeEnd; ++nodeIt)
+  for (auto cont : tree)
   {
-    selfIntersect(*nodeIt, intersectIndicies);
-    for (auto it = std::next(tree.beginFrom(nodeIt)); it != nodeEnd; ++it)
-      intersect(*nodeIt, *it, intersectIndicies);
+    selfIntersect(cont, intersectIndicies);
+    for (auto trIt = cont.begin(), trEnd = cont.end(); trIt != trEnd; ++trIt)
+      intersect<float>(trIt, intersectIndicies, cont);
   }
 
   for (auto elem : intersectIndicies)
     std::cout << elem << std::endl;
-
-  // tree.dumpRecursive();
 }

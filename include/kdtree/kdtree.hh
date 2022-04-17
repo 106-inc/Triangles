@@ -57,7 +57,12 @@ public:
 
   const Triangle<T> &triangleByIndex(Index index) const;
 
-  void dumpRecursive(std::ostream &ost) const;
+  void dumpRecursive(std::ostream &ost = std::cout) const;
+
+  static bool isOnPosSide(Axis axis, T separator, const Triangle<T> &tr);
+  static bool isOnNegSide(Axis axis, T separator, const Triangle<T> &tr);
+  static bool isOnSide(Axis axis, T separator, const Triangle<T> &tr,
+                       std::function<bool(T, T)> comparator);
 
 private:
   void expandingInsert(const Triangle<T> &tr);
@@ -65,10 +70,6 @@ private:
   void tryExpandLeft(Axis axis, const BoundBox<T> &trianBB);
 
   void nonExpandingInsert(Node<T> *node, const Triangle<T> &tr, Index index, bool isSubdiv = false);
-  static bool isOnPosSide(Axis axis, T separator, const Triangle<T> &tr);
-  static bool isOnNegSide(Axis axis, T separator, const Triangle<T> &tr);
-  static bool isOnSide(Axis axis, T separator, const Triangle<T> &tr,
-                       std::function<bool(T, T)> comparator);
   bool isDivisable(const Node<T> *node);
   void subdivide(Node<T> *node);
 
@@ -101,7 +102,7 @@ public:
     ConstIterator operator++(int);
 
     reference operator*() const;
-    pointer operator->() const;
+    // pointer operator->() const;
 
     bool operator==(const ConstIterator &lhs) const;
     bool operator!=(const ConstIterator &lhs) const;
@@ -244,6 +245,33 @@ void KdTree<T>::dumpRecursive(std::ostream &ost) const
 }
 
 template <std::floating_point T>
+bool KdTree<T>::isOnPosSide(Axis axis, T separator, const Triangle<T> &tr)
+{
+  return isOnSide(axis, separator, tr, std::greater<T>{});
+}
+
+template <std::floating_point T>
+bool KdTree<T>::isOnNegSide(Axis axis, T separator, const Triangle<T> &tr)
+{
+  return isOnSide(axis, separator, tr, std::less<T>{});
+}
+
+template <std::floating_point T>
+bool KdTree<T>::isOnSide(Axis axis, T separator, const Triangle<T> &tr,
+                         std::function<bool(T, T)> comparator)
+{
+  if (Axis::NONE == axis)
+    return false;
+
+  auto axisIdx = static_cast<size_t>(axis);
+  for (size_t i = 0; i < 3; ++i)
+    if (!comparator(tr[i][axisIdx], separator))
+      return false;
+
+  return true;
+}
+
+template <std::floating_point T>
 void KdTree<T>::expandingInsert(const Triangle<T> &tr)
 {
   auto trianBB = tr.boundBox();
@@ -325,33 +353,6 @@ void KdTree<T>::nonExpandingInsert(Node<T> *node, const Triangle<T> &tr, Index i
 }
 
 template <std::floating_point T>
-bool KdTree<T>::isOnPosSide(Axis axis, T separator, const Triangle<T> &tr)
-{
-  return isOnSide(axis, separator, tr, std::greater<T>{});
-}
-
-template <std::floating_point T>
-bool KdTree<T>::isOnNegSide(Axis axis, T separator, const Triangle<T> &tr)
-{
-  return isOnSide(axis, separator, tr, std::less<T>{});
-}
-
-template <std::floating_point T>
-bool KdTree<T>::isOnSide(Axis axis, T separator, const Triangle<T> &tr,
-                         std::function<bool(T, T)> comparator)
-{
-  if (Axis::NONE == axis)
-    return false;
-
-  auto axisIdx = static_cast<size_t>(axis);
-  for (size_t i = 0; i < 3; ++i)
-    if (!comparator(tr[i][axisIdx], separator))
-      return false;
-
-  return true;
-}
-
-template <std::floating_point T>
 bool KdTree<T>::isDivisable(const Node<T> *node)
 {
   return (node->indicies.size() > nodeCapacity_) && (node->sepAxis == Axis::NONE);
@@ -422,11 +423,11 @@ typename KdTree<T>::ConstIterator::reference KdTree<T>::ConstIterator::operator*
   return Container<T>{tree_, node_};
 }
 
-template <std::floating_point T>
-typename KdTree<T>::ConstIterator::pointer KdTree<T>::ConstIterator::operator->() const
-{
-  return std::make_unique<Container<T>>(tree_, node_);
-}
+// template <std::floating_point T>
+// typename KdTree<T>::ConstIterator::pointer KdTree<T>::ConstIterator::operator->() const
+// {
+//   return std::make_unique<Container<T>>(tree_, node_);
+// }
 
 template <std::floating_point T>
 bool KdTree<T>::ConstIterator::operator==(const KdTree<T>::ConstIterator &lhs) const

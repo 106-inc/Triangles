@@ -46,6 +46,8 @@ public:
   Container left() const;
   Container right() const;
 
+  bool isValid() const;
+
   class ConstIterator final
   {
   public:
@@ -159,7 +161,13 @@ Container<T> Container<T>::left() const
 template <std::floating_point T>
 Container<T> Container<T>::right() const
 {
-  return Container<T>{tree_, node_->left.right()};
+  return Container<T>{tree_, node_->right.get()};
+}
+
+template <std::floating_point T>
+bool Container<T>::isValid() const
+{
+  return (tree_ != nullptr) && (node_ != nullptr);
 }
 
 //============================================================================================
