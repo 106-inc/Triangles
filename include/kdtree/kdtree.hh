@@ -81,7 +81,8 @@ public:
     using difference_type = std::size_t;
     using value_type = Container<T>;
     using reference = Container<T>;
-    using pointer = std::unique_ptr<Container<T>>;
+    using pointer = void;
+    // using pointer = std::unique_ptr<Container<T>>;
 
   private:
     const KdTree<T> *tree_;
