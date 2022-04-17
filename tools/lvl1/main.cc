@@ -41,6 +41,10 @@ int main()
     std::cerr << "axis:" << static_cast<int>(cont.sepAxis()) << "; " << cont.boundBox()
               << std::endl;
 
+  for (const auto &cont : tree)
+    for (const auto &tr : cont)
+      std::cerr << tr << std::endl;
+
   // for (auto it = tree.begin(); it != tree.end(); ++it)
   //   std::cerr << "axis:" << static_cast<int>(it->sepAxis()) << "; " << it->boundBox() <<
   //   std::endl;

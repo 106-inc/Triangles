@@ -35,9 +35,13 @@ public:
   ConstIterator begin() const;
   ConstIterator end() const;
 
+  typename Node<T>::IndexConstIterator indexBegin() const;
+  typename Node<T>::IndexConstIterator indexEnd() const;
+
   T separator() const;
   Axis sepAxis() const;
   BoundBox<T> boundBox() const;
+  const Triangle<T> &triangleByIndex(Index index) const;
 
   Container left() const;
   Container right() const;
@@ -52,8 +56,8 @@ public:
     using pointer = const Triangle<T> *;
 
   private:
-    Container *cont_;
-    std::vector<Index>::iterator curIdxIt_;
+    const Container *cont_;
+    std::vector<Index>::const_iterator curIdxIt_;
 
   public:
     ConstIterator(const Container *cont, bool isEnd = false);
@@ -87,14 +91,15 @@ Container<T>::Container(const KdTree<T> *tree, const Node<T> *node) : tree_(tree
 template <std::floating_point T>
 typename Container<T>::ConstIterator Container<T>::cbegin() const
 {
-  return ConstIterator(this);
+  return ConstIterator{this};
 }
 
 template <std::floating_point T>
 typename Container<T>::ConstIterator Container<T>::cend() const
 {
-  return ConstIterator(this, /* isEnd = */ true);
+  return ConstIterator{this, /* isEnd = */ true};
 }
+
 template <std::floating_point T>
 typename Container<T>::ConstIterator Container<T>::begin() const
 {
@@ -105,6 +110,18 @@ template <std::floating_point T>
 typename Container<T>::ConstIterator Container<T>::end() const
 {
   return cend();
+}
+
+template <std::floating_point T>
+typename Node<T>::IndexConstIterator Container<T>::indexBegin() const
+{
+  return node_->indicies.begin();
+}
+
+template <std::floating_point T>
+typename Node<T>::IndexConstIterator Container<T>::indexEnd() const
+{
+  return node_->indicies.end();
 }
 
 template <std::floating_point T>
@@ -123,6 +140,12 @@ template <std::floating_point T>
 BoundBox<T> Container<T>::boundBox() const
 {
   return node_->boundBox;
+}
+
+template <std::floating_point T>
+const Triangle<T> &Container<T>::triangleByIndex(Index index) const
+{
+  return tree_->triangleByIndex(index);
 }
 
 template <std::floating_point T>
@@ -148,33 +171,38 @@ Container<T>::ConstIterator::ConstIterator(const Container<T> *cont, bool isEnd)
     throw std::invalid_argument("Tried to create iterator with invalid Container pointer");
 
   if (isEnd)
-    curIdxIt_ = cont->end();
+    curIdxIt_ = cont_->indexEnd();
   else
-    curIdxIt_ = cont_->begin();
+    curIdxIt_ = cont_->indexBegin();
 }
 
 template <std::floating_point T>
 typename Container<T>::ConstIterator Container<T>::ConstIterator::operator++()
 {
-  return ++curIdxIt_;
+  ++curIdxIt_;
+  return *this;
 }
 
 template <std::floating_point T>
 typename Container<T>::ConstIterator Container<T>::ConstIterator::operator++(int)
 {
-  return curIdxIt_++;
+  auto tmp = *this;
+  operator++();
+  return tmp;
 }
 
 template <std::floating_point T>
 typename Container<T>::ConstIterator::reference Container<T>::ConstIterator::operator*() const
 {
-  return cont_->tree_->triangles_[*curIdxIt_];
+  // return cont_->triangleByIndex(*curIdxIt_);
+  return cont_->triangleByIndex(*curIdxIt_);
 }
 
 template <std::floating_point T>
 typename Container<T>::ConstIterator::pointer Container<T>::ConstIterator::operator->() const
 {
-  return &cont_->tree_->triangles_[*curIdxIt_];
+  // return cont_->triangleByIndex(*curIdxIt_);
+  return &cont_->triangleByIndex(*curIdxIt_);
 }
 
 template <std::floating_point T>

@@ -37,6 +37,9 @@ public:
   class ConstIterator;
 
   // ConstIterators
+  ConstIterator cbegin() const;
+  ConstIterator cend() const;
+
   ConstIterator begin() const;
   ConstIterator end() const;
 
@@ -49,6 +52,8 @@ public:
   bool empty() const;
   std::size_t size() const;
   std::size_t nodeCapacity() const;
+
+  const Triangle<T> &triangleByIndex(Index index) const;
 
   void dumpRecursive() const;
 
@@ -136,15 +141,27 @@ KdTree<T> &KdTree<T>::operator=(const KdTree<T> &tree)
 
 // ConstIterators
 template <std::floating_point T>
-typename KdTree<T>::ConstIterator KdTree<T>::begin() const
+typename KdTree<T>::ConstIterator KdTree<T>::cbegin() const
 {
   return ConstIterator{this, root_.get()};
 }
 
 template <std::floating_point T>
-typename KdTree<T>::ConstIterator KdTree<T>::end() const
+typename KdTree<T>::ConstIterator KdTree<T>::cend() const
 {
   return ConstIterator{this, nullptr};
+}
+
+template <std::floating_point T>
+typename KdTree<T>::ConstIterator KdTree<T>::begin() const
+{
+  return cbegin();
+}
+
+template <std::floating_point T>
+typename KdTree<T>::ConstIterator KdTree<T>::end() const
+{
+  return cend();
 }
 
 // Modifiers
@@ -198,6 +215,12 @@ template <std::floating_point T>
 std::size_t KdTree<T>::nodeCapacity() const
 {
   return nodeCapacity_;
+}
+
+template <std::floating_point T>
+const Triangle<T> &KdTree<T>::triangleByIndex(Index index) const
+{
+  return triangles_[index];
 }
 
 template <std::floating_point T>

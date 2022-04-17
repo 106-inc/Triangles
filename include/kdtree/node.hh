@@ -23,6 +23,9 @@ struct Node final
   std::unique_ptr<Node> left{nullptr};
   std::unique_ptr<Node> right{nullptr};
 
+  using IndexIterator = std::vector<Index>::iterator;
+  using IndexConstIterator = std::vector<Index>::const_iterator;
+
   void dumpRecursive() const;
 };
 
