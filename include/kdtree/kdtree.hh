@@ -57,7 +57,7 @@ public:
 
   const Triangle<T> &triangleByIndex(Index index) const;
 
-  void dumpRecursive() const;
+  void dumpRecursive(std::ostream &ost) const;
 
 private:
   void expandingInsert(const Triangle<T> &tr);
@@ -235,12 +235,12 @@ const Triangle<T> &KdTree<T>::triangleByIndex(Index index) const
 }
 
 template <std::floating_point T>
-void KdTree<T>::dumpRecursive() const
+void KdTree<T>::dumpRecursive(std::ostream &ost) const
 {
-  std::cout << "digraph kdtree {" << std::endl;
+  ost << "digraph kdtree {" << std::endl;
   if (root_)
-    root_->dumpRecursive();
-  std::cout << "}" << std::endl;
+    root_->dumpRecursive(ost);
+  ost << "}" << std::endl;
 }
 
 template <std::floating_point T>

@@ -26,32 +26,32 @@ struct Node final
   using IndexIterator = std::vector<Index>::iterator;
   using IndexConstIterator = std::vector<Index>::const_iterator;
 
-  void dumpRecursive() const;
+  void dumpRecursive(std::ostream &ost) const;
 };
 
 template <std::floating_point T>
-void Node<T>::dumpRecursive() const
+void Node<T>::dumpRecursive(std::ostream &ost) const
 {
-  std::cout << reinterpret_cast<std::uintptr_t>(this)
-            << " [shape=box,label=\"axis: " << static_cast<int>(sepAxis) << ",\\n"
-            << boundBox << ",\\nvec: {";
+  ost << reinterpret_cast<std::uintptr_t>(this)
+      << " [shape=box,label=\"axis: " << static_cast<int>(sepAxis) << ",\\n"
+      << boundBox << ",\\nvec: {";
 
   for (auto elem : indicies)
-    std::cout << elem << " ";
+    ost << elem << " ";
 
-  std::cout << "}\"];" << std::endl;
+  ost << "}\"];" << std::endl;
 
   if (left)
   {
-    left->dumpRecursive();
-    std::cout << reinterpret_cast<std::uintptr_t>(this) << " -> "
-              << reinterpret_cast<std::uintptr_t>(left.get()) << " [label=\"L\"];" << std::endl;
+    left->dumpRecursive(ost);
+    ost << reinterpret_cast<std::uintptr_t>(this) << " -> "
+        << reinterpret_cast<std::uintptr_t>(left.get()) << " [label=\"L\"];" << std::endl;
   }
   if (right)
   {
-    right->dumpRecursive();
-    std::cout << reinterpret_cast<std::uintptr_t>(this) << " -> "
-              << reinterpret_cast<std::uintptr_t>(right.get()) << " [label=\"R\"];" << std::endl;
+    right->dumpRecursive(ost);
+    ost << reinterpret_cast<std::uintptr_t>(this) << " -> "
+        << reinterpret_cast<std::uintptr_t>(right.get()) << " [label=\"R\"];" << std::endl;
   }
 }
 
