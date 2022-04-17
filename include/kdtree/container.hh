@@ -69,6 +69,8 @@ public:
 
     ~ConstIterator() = default;
 
+    Index getIndex();
+
     ConstIterator operator++();
     ConstIterator operator++(int);
 
@@ -174,6 +176,12 @@ Container<T>::ConstIterator::ConstIterator(const Container<T> *cont, bool isEnd)
     curIdxIt_ = cont_->indexEnd();
   else
     curIdxIt_ = cont_->indexBegin();
+}
+
+template <std::floating_point T>
+Index Container<T>::ConstIterator::getIndex()
+{
+  return *curIdxIt_;
 }
 
 template <std::floating_point T>

@@ -43,6 +43,8 @@ public:
   ConstIterator begin() const;
   ConstIterator end() const;
 
+  ConstIterator beginFrom(const ConstIterator &iter) const;
+
   // Modifiers
   void insert(const Triangle<T> &tr);
   void clear();
@@ -103,6 +105,8 @@ public:
 
     bool operator==(const ConstIterator &lhs) const;
     bool operator!=(const ConstIterator &lhs) const;
+
+    static ConstIterator beginFrom(const ConstIterator &iter);
   };
 };
 
@@ -162,6 +166,13 @@ template <std::floating_point T>
 typename KdTree<T>::ConstIterator KdTree<T>::end() const
 {
   return cend();
+}
+
+template <std::floating_point T>
+typename KdTree<T>::ConstIterator KdTree<T>::beginFrom(
+  const typename KdTree<T>::ConstIterator &iter) const
+{
+  return KdTree<T>::ConstIterator::beginFrom(iter);
 }
 
 // Modifiers
@@ -427,6 +438,13 @@ template <std::floating_point T>
 bool KdTree<T>::ConstIterator::operator!=(const KdTree<T>::ConstIterator &lhs) const
 {
   return !operator==(lhs);
+}
+
+template <std::floating_point T>
+typename KdTree<T>::ConstIterator KdTree<T>::ConstIterator::beginFrom(
+  const typename KdTree<T>::ConstIterator &iter)
+{
+  return ConstIterator{iter.tree_, iter.node_};
 }
 
 } // namespace geom::kdtree
