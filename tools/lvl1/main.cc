@@ -32,5 +32,18 @@ int main()
     tree.insert(tr);
   }
 
+  // std::for_each(tree.begin(), tree.end(), [](const auto &cont) {
+  //   std::cerr << "axis:" << static_cast<int>(cont.sepAxis()) << "; " << cont.boundBox()
+  //             << std::endl;
+  // });
+
+  for (const auto &cont : tree)
+    std::cerr << "axis:" << static_cast<int>(cont.sepAxis()) << "; " << cont.boundBox()
+              << std::endl;
+
+  // for (auto it = tree.begin(); it != tree.end(); ++it)
+  //   std::cerr << "axis:" << static_cast<int>(it->sepAxis()) << "; " << it->boundBox() <<
+  //   std::endl;
+
   tree.dumpRecursive();
 }

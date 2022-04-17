@@ -16,8 +16,8 @@ template <std::floating_point T>
 class Container final
 {
 private:
-  KdTree<T> *tree_;
-  Node<T> *node_;
+  const KdTree<T> *tree_;
+  const Node<T> *node_;
 
 public:
   Container(const KdTree<T> *tree, const Node<T> *node);
@@ -31,6 +31,9 @@ public:
   class ConstIterator;
   ConstIterator cbegin() const;
   ConstIterator cend() const;
+
+  ConstIterator begin() const;
+  ConstIterator end() const;
 
   T separator() const;
   Axis sepAxis() const;
@@ -78,6 +81,10 @@ public:
 //============================================================================================
 
 template <std::floating_point T>
+Container<T>::Container(const KdTree<T> *tree, const Node<T> *node) : tree_(tree), node_(node)
+{}
+
+template <std::floating_point T>
 typename Container<T>::ConstIterator Container<T>::cbegin() const
 {
   return ConstIterator(this);
@@ -87,6 +94,17 @@ template <std::floating_point T>
 typename Container<T>::ConstIterator Container<T>::cend() const
 {
   return ConstIterator(this, /* isEnd = */ true);
+}
+template <std::floating_point T>
+typename Container<T>::ConstIterator Container<T>::begin() const
+{
+  return cbegin();
+}
+
+template <std::floating_point T>
+typename Container<T>::ConstIterator Container<T>::end() const
+{
+  return cend();
 }
 
 template <std::floating_point T>
@@ -104,7 +122,7 @@ Axis Container<T>::sepAxis() const
 template <std::floating_point T>
 BoundBox<T> Container<T>::boundBox() const
 {
-  return node_->boundBox_;
+  return node_->boundBox;
 }
 
 template <std::floating_point T>

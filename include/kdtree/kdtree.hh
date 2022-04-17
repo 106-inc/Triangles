@@ -5,6 +5,7 @@
 #include <functional>
 #include <initializer_list>
 #include <memory>
+#include <queue>
 #include <vector>
 
 #include "primitives/primitives.hh"
@@ -36,8 +37,8 @@ public:
   class ConstIterator;
 
   // ConstIterators
-  ConstIterator cbegin() const;
-  ConstIterator cend() const;
+  ConstIterator begin() const;
+  ConstIterator end() const;
 
   // Modifiers
   void insert(const Triangle<T> &tr);
@@ -60,7 +61,7 @@ private:
   static bool isOnPosSide(Axis axis, T separator, const Triangle<T> &tr);
   static bool isOnNegSide(Axis axis, T separator, const Triangle<T> &tr);
   static bool isOnSide(Axis axis, T separator, const Triangle<T> &tr,
-                std::function<bool(T, T)> comparator);
+                       std::function<bool(T, T)> comparator);
   bool isDivisable(const Node<T> *node);
   void subdivide(Node<T> *node);
 
@@ -77,6 +78,7 @@ public:
   private:
     const KdTree<T> *tree_;
     const Node<T> *node_;
+    std::queue<const Node<T> *> fifo_;
 
   public:
     ConstIterator(const KdTree<T> *tree, const Node<T> *node);
@@ -88,7 +90,7 @@ public:
 
     ~ConstIterator() = default;
 
-    ConstIterator operator++();
+    ConstIterator &operator++();
     ConstIterator operator++(int);
 
     reference operator*() const;
@@ -121,7 +123,7 @@ KdTree<T>::KdTree(const KdTree<T> &tree)
 template <std::floating_point T>
 KdTree<T>::~KdTree()
 {
-  // clear();
+  clear();
 }
 
 template <std::floating_point T>
@@ -134,15 +136,15 @@ KdTree<T> &KdTree<T>::operator=(const KdTree<T> &tree)
 
 // ConstIterators
 template <std::floating_point T>
-typename KdTree<T>::ConstIterator KdTree<T>::cbegin() const
+typename KdTree<T>::ConstIterator KdTree<T>::begin() const
 {
-  assert(false && "Not implemented yet");
+  return ConstIterator{this, root_.get()};
 }
 
 template <std::floating_point T>
-typename KdTree<T>::ConstIterator KdTree<T>::cend() const
+typename KdTree<T>::ConstIterator KdTree<T>::end() const
 {
-  assert(false && "Not implemented yet");
+  return ConstIterator{this, nullptr};
 }
 
 // Modifiers
@@ -169,7 +171,8 @@ void KdTree<T>::insert(const Triangle<T> &tr)
 template <std::floating_point T>
 void KdTree<T>::clear()
 {
-  assert(false && "Not implemented yet");
+  // Temporary recursive solution
+  root_.reset();
 }
 
 template <std::floating_point T>
@@ -347,19 +350,36 @@ void KdTree<T>::subdivide(Node<T> *node)
 
 template <std::floating_point T>
 KdTree<T>::ConstIterator::ConstIterator(const KdTree<T> *tree, const Node<T> *node)
-  : tree_(tree), node_(node)
+  : tree_(tree), node_(node), fifo_({node})
 {}
 
 template <std::floating_point T>
-typename KdTree<T>::ConstIterator KdTree<T>::ConstIterator::operator++()
+typename KdTree<T>::ConstIterator &KdTree<T>::ConstIterator::operator++()
 {
-  assert(false && "Not implemented yet");
+  if (0 == fifo_.size())
+    return *this;
+
+  auto fifoEntry = fifo_.front();
+  fifo_.pop();
+
+  if (Axis::NONE != fifoEntry->sepAxis)
+  {
+    if (nullptr != fifoEntry->left)
+      fifo_.push(fifoEntry->left.get());
+    if (nullptr != fifoEntry->right)
+      fifo_.push(fifoEntry->right.get());
+  }
+
+  node_ = (0 == fifo_.size()) ? nullptr : fifo_.front();
+  return *this;
 }
 
 template <std::floating_point T>
 typename KdTree<T>::ConstIterator KdTree<T>::ConstIterator::operator++(int)
 {
-  assert(false && "Not implemented yet");
+  auto tmp = *this;
+  operator++();
+  return tmp;
 }
 
 template <std::floating_point T>
@@ -371,7 +391,7 @@ typename KdTree<T>::ConstIterator::reference KdTree<T>::ConstIterator::operator*
 template <std::floating_point T>
 typename KdTree<T>::ConstIterator::pointer KdTree<T>::ConstIterator::operator->() const
 {
-  return std::make_unique(tree_, node_);
+  return std::make_unique<Container<T>>(tree_, node_);
 }
 
 template <std::floating_point T>

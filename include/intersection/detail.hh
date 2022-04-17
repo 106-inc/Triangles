@@ -393,6 +393,6 @@ Segment3D<T> getSegment(const Triangle<T> &tr)
   return {tr[maxIdx], tr[maxIdx + 1]};
 }
 
-} // namespace detail::geom
+} // namespace geom::detail
 
 #endif // __INCLUDE_INTERSECTION_DETAIL_HH__
