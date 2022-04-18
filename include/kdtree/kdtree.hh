@@ -74,6 +74,12 @@ private:
   void subdivide(Node<T> *node);
 
 public:
+  struct ContainerPtr final
+  {
+    Container<T> cont;
+    const Container<T> *operator->() const;
+  };
+
   class ConstIterator final
   {
   public:
@@ -81,8 +87,7 @@ public:
     using difference_type = std::size_t;
     using value_type = Container<T>;
     using reference = Container<T>;
-    using pointer = void;
-    // using pointer = std::unique_ptr<Container<T>>;
+    using pointer = ContainerPtr;
 
   private:
     const KdTree<T> *tree_;
@@ -103,7 +108,7 @@ public:
     ConstIterator operator++(int);
 
     reference operator*() const;
-    // pointer operator->() const;
+    pointer operator->() const;
 
     bool operator==(const ConstIterator &lhs) const;
     bool operator!=(const ConstIterator &lhs) const;
@@ -381,6 +386,16 @@ void KdTree<T>::subdivide(Node<T> *node)
 }
 
 //============================================================================================
+//                             KdTree::ContainerPtr definitions
+//============================================================================================
+
+template <std::floating_point T>
+const Container<T> *KdTree<T>::ContainerPtr::operator->() const
+{
+  return &cont;
+}
+
+//============================================================================================
 //                             KdTree::ConstIterator definitions
 //============================================================================================
 
@@ -424,11 +439,11 @@ typename KdTree<T>::ConstIterator::reference KdTree<T>::ConstIterator::operator*
   return Container<T>{tree_, node_};
 }
 
-// template <std::floating_point T>
-// typename KdTree<T>::ConstIterator::pointer KdTree<T>::ConstIterator::operator->() const
-// {
-//   return std::make_unique<Container<T>>(tree_, node_);
-// }
+template <std::floating_point T>
+typename KdTree<T>::ConstIterator::pointer KdTree<T>::ConstIterator::operator->() const
+{
+  return ContainerPtr{{tree_, node_}};
+}
 
 template <std::floating_point T>
 bool KdTree<T>::ConstIterator::operator==(const KdTree<T>::ConstIterator &lhs) const
