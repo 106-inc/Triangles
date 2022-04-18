@@ -1,5 +1,6 @@
 #include <iostream>
 #include <set>
+#include <stack>
 
 #include "intersection/intersection.hh"
 #include "kdtree/kdtree.hh"
@@ -18,36 +19,39 @@ void selfIntersect(const Container<T> &node, std::set<Index> &intInd)
 }
 
 template <std::floating_point T>
-void intersectHelper(typename Container<T>::ConstIterator &trIt, std::set<Index> &intInd,
-                     const Container<T> &node)
-{
-  for (auto i = node.begin(), end = node.end(); i != end; ++i)
-    if (isIntersect(*i, *trIt))
-      intInd.insert(i.getIndex()), intInd.insert(trIt.getIndex());
-
-  if (KdTree<T>::isOnPosSide(node.sepAxis(), node.separator(), *trIt))
-    intersectHelper(trIt, intInd, node.right());
-  else if (KdTree<T>::isOnNegSide(node.sepAxis(), node.separator(), *trIt))
-    intersectHelper(trIt, intInd, node.left());
-  else if (node.sepAxis() != Axis::NONE)
-  {
-    intersectHelper(trIt, intInd, node.right());
-    intersectHelper(trIt, intInd, node.left());
-  }
-}
-
-template <std::floating_point T>
 void intersect(typename Container<T>::ConstIterator &trIt, std::set<Index> &intInd,
                const Container<T> &node)
 {
   auto left = node.left();
   auto right = node.right();
 
+  std::stack<Container<T>> stack{};
+
   if (left.isValid())
-    intersectHelper(trIt, intInd, left);
+    stack.push(left);
 
   if (right.isValid())
-    intersectHelper(trIt, intInd, right);
+    stack.push(right);
+
+  while (!stack.empty())
+  {
+    auto curNode = stack.top();
+    stack.pop();
+
+    for (auto i = curNode.begin(), end = curNode.end(); i != end; ++i)
+      if (isIntersect(*i, *trIt))
+        intInd.insert(i.getIndex()), intInd.insert(trIt.getIndex());
+
+    if (KdTree<T>::isOnPosSide(curNode.sepAxis(), curNode.separator(), *trIt))
+      stack.push(curNode.right());
+    else if (KdTree<T>::isOnNegSide(curNode.sepAxis(), curNode.separator(), *trIt))
+      stack.push(curNode.left());
+    else if (curNode.sepAxis() != Axis::NONE)
+    {
+      stack.push(curNode.left());
+      stack.push(curNode.right());
+    }
+  }
 }
 
 int main()
