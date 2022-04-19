@@ -1,5 +1,5 @@
 #include "distance/distance.hh"
-#include "test_common.hh"
+#include "test_header.hh"
 
 using namespace geom;
 
@@ -35,8 +35,4 @@ TYPED_TEST(DistanceTest, PlanePoint2)
   EXPECT_NEAR(dist, -7, Vec3<TypeParam>::getThreshold());
 }
 
-int main(int argc, char **argv)
-{
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+#include "test_footer.hh"

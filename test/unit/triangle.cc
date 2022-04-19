@@ -1,7 +1,7 @@
 #include <sstream>
 
 #include "primitives/primitives.hh"
-#include "test_common.hh"
+#include "test_header.hh"
 
 using namespace geom;
 
@@ -54,8 +54,16 @@ TYPED_TEST(TriangleTest, isValid)
   EXPECT_FALSE(tr3.isValid());
 }
 
-int main(int argc, char **argv)
+TYPED_TEST(TriangleTest, boundBox)
 {
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+  // Arrange
+  Triangle<TypeParam> tr{{-3, 4, 0}, {1, 1, -5}, {6, 0, 5}};
+  BoundBox<TypeParam> bb{-3 - Vec3<TypeParam>::getThreshold(), 6 + Vec3<TypeParam>::getThreshold(),
+                         0 - Vec3<TypeParam>::getThreshold(),  4 + Vec3<TypeParam>::getThreshold(),
+                         -5 - Vec3<TypeParam>::getThreshold(), 5 + Vec3<TypeParam>::getThreshold()};
+
+  // Act & Assert
+  EXPECT_EQ(tr.boundBox(), bb);
 }
+
+#include "test_footer.hh"

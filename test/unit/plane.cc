@@ -1,7 +1,7 @@
 #include <concepts>
 #include <sstream>
 
-#include "test_common.hh"
+#include "test_header.hh"
 
 #include "primitives/primitives.hh"
 
@@ -137,8 +137,4 @@ TYPED_TEST(PlaneTest, isPar)
   EXPECT_TRUE(pl3.isPar(pl3));
 }
 
-int main(int argc, char **argv)
-{
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+#include "test_footer.hh"
