@@ -6,6 +6,7 @@
 #include <initializer_list>
 #include <memory>
 #include <queue>
+#include <stack>
 #include <vector>
 
 #include "primitives/primitives.hh"
@@ -206,8 +207,28 @@ void KdTree<T>::insert(const Triangle<T> &tr)
 template <std::floating_point T>
 void KdTree<T>::clear()
 {
-  // Temporary recursive solution
-  root_.reset();
+  if (nullptr == root_)
+    return;
+
+  std::stack<std::unique_ptr<Node<T>> *> stack{};
+  stack.push(&root_);
+
+  while (!stack.empty())
+  {
+    auto *curNode = stack.top();
+    auto *right = &curNode->get()->right;
+    auto *left = &curNode->get()->left;
+
+    if ((nullptr == *right) && (nullptr == *left))
+    {
+      curNode->reset();
+      stack.pop();
+      continue;
+    }
+
+    stack.push(right);
+    stack.push(left);
+  }
 }
 
 template <std::floating_point T>
