@@ -140,7 +140,7 @@ public:
    *
    * @return Vec2& reference to instance
    */
-  Vec2 &normalize();
+  Vec2 &normalize() &;
 
   /**
    * @brief Overloaded operator [] (non-const version)
@@ -150,7 +150,7 @@ public:
    *
    * @note Coordinates calculated by mod 2
    */
-  T &operator[](size_t i);
+  T &operator[](size_t i) &;
 
   /**
    * @brief Overloaded operator [] (const version)
@@ -160,7 +160,7 @@ public:
    *
    * @note Coordinates calculated by mod 2
    */
-  T operator[](size_t i) const;
+  T operator[](size_t i) const &;
 
   /**
    * @brief Check if vector is parallel to another
@@ -444,7 +444,7 @@ Vec2<T> Vec2<T>::normalized() const
 }
 
 template <std::floating_point T>
-Vec2<T> &Vec2<T>::normalize()
+Vec2<T> &Vec2<T>::normalize() &
 {
   T len2 = length2();
   if (isNumEq(len2, 0) || isNumEq(len2, 1))
@@ -453,7 +453,7 @@ Vec2<T> &Vec2<T>::normalize()
 }
 
 template <std::floating_point T>
-T &Vec2<T>::operator[](size_t i)
+T &Vec2<T>::operator[](size_t i) &
 {
   switch (i % 2)
   {
@@ -467,7 +467,7 @@ T &Vec2<T>::operator[](size_t i)
 }
 
 template <std::floating_point T>
-T Vec2<T>::operator[](size_t i) const
+T Vec2<T>::operator[](size_t i) const &
 {
   switch (i % 2)
   {

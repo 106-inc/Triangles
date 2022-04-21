@@ -53,7 +53,7 @@ public:
    *
    * @return const Vec3<T>& const reference to normal vector
    */
-  const Vec3<T> &norm() const;
+  const Vec3<T> &norm() const &;
 
   /**
    * @brief Checks if point belongs to plane
@@ -174,7 +174,7 @@ T Plane<T>::dist() const
 }
 
 template <std::floating_point T>
-const Vec3<T> &Plane<T>::norm() const
+const Vec3<T> &Plane<T>::norm() const &
 {
   return norm_;
 }

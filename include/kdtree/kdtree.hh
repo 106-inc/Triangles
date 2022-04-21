@@ -38,13 +38,13 @@ public:
   class ConstIterator;
 
   // ConstIterators
-  ConstIterator cbegin() const;
-  ConstIterator cend() const;
+  ConstIterator cbegin() const &;
+  ConstIterator cend() const &;
 
-  ConstIterator begin() const;
-  ConstIterator end() const;
+  ConstIterator begin() const &;
+  ConstIterator end() const &;
 
-  ConstIterator beginFrom(const ConstIterator &iter) const;
+  ConstIterator beginFrom(const ConstIterator &iter) const &;
 
   // Modifiers
   void insert(const Triangle<T> &tr);
@@ -56,7 +56,7 @@ public:
   std::size_t size() const;
   std::size_t nodeCapacity() const;
 
-  const Triangle<T> &triangleByIndex(Index index) const;
+  const Triangle<T> &triangleByIndex(Index index) const &;
 
   void dumpRecursive(std::ostream &ost = std::cout) const;
 
@@ -153,32 +153,32 @@ KdTree<T> &KdTree<T>::operator=(const KdTree<T> &tree)
 
 // ConstIterators
 template <std::floating_point T>
-typename KdTree<T>::ConstIterator KdTree<T>::cbegin() const
+typename KdTree<T>::ConstIterator KdTree<T>::cbegin() const &
 {
   return ConstIterator{this, root_.get()};
 }
 
 template <std::floating_point T>
-typename KdTree<T>::ConstIterator KdTree<T>::cend() const
+typename KdTree<T>::ConstIterator KdTree<T>::cend() const &
 {
   return ConstIterator{this, nullptr};
 }
 
 template <std::floating_point T>
-typename KdTree<T>::ConstIterator KdTree<T>::begin() const
+typename KdTree<T>::ConstIterator KdTree<T>::begin() const &
 {
   return cbegin();
 }
 
 template <std::floating_point T>
-typename KdTree<T>::ConstIterator KdTree<T>::end() const
+typename KdTree<T>::ConstIterator KdTree<T>::end() const &
 {
   return cend();
 }
 
 template <std::floating_point T>
 typename KdTree<T>::ConstIterator KdTree<T>::beginFrom(
-  const typename KdTree<T>::ConstIterator &iter) const
+  const typename KdTree<T>::ConstIterator &iter) const &
 {
   return KdTree<T>::ConstIterator::beginFrom(iter);
 }
@@ -257,7 +257,7 @@ std::size_t KdTree<T>::nodeCapacity() const
 }
 
 template <std::floating_point T>
-const Triangle<T> &KdTree<T>::triangleByIndex(Index index) const
+const Triangle<T> &KdTree<T>::triangleByIndex(Index index) const &
 {
   return triangles_[index];
 }

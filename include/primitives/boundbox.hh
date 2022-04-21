@@ -24,11 +24,11 @@ struct BoundBox
 
   bool belongsTo(const BoundBox<T> &bb);
 
-  T &min(Axis axis);
-  T &max(Axis axis);
+  T &min(Axis axis) &;
+  T &max(Axis axis) &;
 
-  const T &min(Axis axis) const;
-  const T &max(Axis axis) const;
+  const T &min(Axis axis) const &;
+  const T &max(Axis axis) const &;
 
   Axis getMaxDim() const;
 };
@@ -41,7 +41,7 @@ bool BoundBox<T>::belongsTo(const BoundBox<T> &bb)
 }
 
 template <std::floating_point T>
-T &BoundBox<T>::min(Axis axis)
+T &BoundBox<T>::min(Axis axis) &
 {
   switch (axis)
   {
@@ -57,7 +57,7 @@ T &BoundBox<T>::min(Axis axis)
 }
 
 template <std::floating_point T>
-T &BoundBox<T>::max(Axis axis)
+T &BoundBox<T>::max(Axis axis) &
 {
   switch (axis)
   {
@@ -73,7 +73,7 @@ T &BoundBox<T>::max(Axis axis)
 }
 
 template <std::floating_point T>
-const T &BoundBox<T>::min(Axis axis) const
+const T &BoundBox<T>::min(Axis axis) const &
 {
   switch (axis)
   {
@@ -89,7 +89,7 @@ const T &BoundBox<T>::min(Axis axis) const
 }
 
 template <std::floating_point T>
-const T &BoundBox<T>::max(Axis axis) const
+const T &BoundBox<T>::max(Axis axis) const &
 {
   switch (axis)
   {

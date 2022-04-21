@@ -40,14 +40,14 @@ public:
    *
    * @return const Vec3<T>& const reference to origin vector
    */
-  const Vec3<T> &org() const;
+  const Vec3<T> &org() const &;
 
   /**
    * @brief Getter for direction vector
    *
    * @return const Vec3<T>& const reference to direction vector
    */
-  const Vec3<T> &dir() const;
+  const Vec3<T> &dir() const &;
 
   /**
    * @brief Get point on line by parameter t
@@ -143,13 +143,13 @@ Line<T>::Line(const Vec3<T> &org, const Vec3<T> &dir) : org_{org}, dir_{dir}
 }
 
 template <std::floating_point T>
-const Vec3<T> &Line<T>::org() const
+const Vec3<T> &Line<T>::org() const &
 {
   return org_;
 }
 
 template <std::floating_point T>
-const Vec3<T> &Line<T>::dir() const
+const Vec3<T> &Line<T>::dir() const &
 {
   return dir_;
 }

@@ -52,7 +52,7 @@ public:
    * @param[in] idx index of vertex
    * @return const Vec3<T>& const reference to vertex
    */
-  const Vec3<T> &operator[](std::size_t idx) const;
+  const Vec3<T> &operator[](std::size_t idx) const &;
 
   /**
    * @brief Overloaded operator[] to get access to vertices
@@ -60,7 +60,7 @@ public:
    * @param[in] idx index of vertex
    * @return Vec3<T>& reference to vertex
    */
-  Vec3<T> &operator[](std::size_t idx);
+  Vec3<T> &operator[](std::size_t idx) &;
 
   /**
    * @brief Get triangle's plane
@@ -131,13 +131,13 @@ Triangle<T>::Triangle(const Vec3<T> &p1, const Vec3<T> &p2, const Vec3<T> &p3)
 {}
 
 template <std::floating_point T>
-const Vec3<T> &Triangle<T>::operator[](std::size_t idx) const
+const Vec3<T> &Triangle<T>::operator[](std::size_t idx) const &
 {
   return vertices_[idx % 3];
 }
 
 template <std::floating_point T>
-Vec3<T> &Triangle<T>::operator[](std::size_t idx)
+Vec3<T> &Triangle<T>::operator[](std::size_t idx) &
 {
   return vertices_[idx % 3];
 }
