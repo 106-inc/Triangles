@@ -54,14 +54,14 @@ public:
    *
    * @return Vec3<T>&& reference to origin vector
    */
-  Vec3<T> &&org() const &&;
+  Vec3<T> &&org() &&;
 
   /**
    * @brief Getter for direction vector
    *
    * @return Vec3<T>&& reference to direction vector
    */
-  Vec3<T> &&dir() const &&;
+  Vec3<T> &&dir() &&;
 
   /**
    * @brief Get point on line by parameter t
@@ -169,13 +169,13 @@ const Vec3<T> &Line<T>::dir() const &
 }
 
 template <std::floating_point T>
-Vec3<T> &&Line<T>::org() const &&
+Vec3<T> &&Line<T>::org() &&
 {
   return std::move(org_);
 }
 
 template <std::floating_point T>
-Vec3<T> &&Line<T>::dir() const &&
+Vec3<T> &&Line<T>::dir() &&
 {
   return std::move(dir_);
 }

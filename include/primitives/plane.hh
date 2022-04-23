@@ -60,7 +60,7 @@ public:
    *
    * @return Vec3<T>&& reference to normal vector
    */
-  Vec3<T> &&norm() const &&;
+  Vec3<T> &&norm() &&;
 
   /**
    * @brief Checks if point belongs to plane
@@ -187,7 +187,7 @@ const Vec3<T> &Plane<T>::norm() const &
 }
 
 template <std::floating_point T>
-Vec3<T> &&Plane<T>::norm() const &&
+Vec3<T> &&Plane<T>::norm() &&
 {
   return std::move(norm_);
 }

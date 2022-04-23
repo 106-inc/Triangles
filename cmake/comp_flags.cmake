@@ -27,6 +27,7 @@ set(COMMON_WARNINGS
 -Wall
 -Wextra
 -Wpedantic
+-Wno-gnu-zero-variadic-macro-arguments
 )
 
 set(GCC_WARNINGS

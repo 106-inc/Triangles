@@ -32,8 +32,8 @@ private:
   std::array<Vec3<T>, 3> vertices_;
 
 public:
-  using Iterator = std::array<Vec3<T>, 3>::iterator;
-  using ConstIterator = std::array<Vec3<T>, 3>::const_iterator;
+  using Iterator = typename std::array<Vec3<T>, 3>::iterator;
+  using ConstIterator = typename std::array<Vec3<T>, 3>::const_iterator;
 
   /**
    * @brief Construct a new Triangle object
@@ -63,7 +63,7 @@ public:
    * @param[in] idx index of vertex
    * @return Vec3<T>&& reference to vertex
    */
-  Vec3<T> &&operator[](std::size_t idx) const &&;
+  Vec3<T> &&operator[](std::size_t idx) &&;
 
   /**
    * @brief Overloaded operator[] to get access to vertices
@@ -172,7 +172,7 @@ const Vec3<T> &Triangle<T>::operator[](std::size_t idx) const &
 }
 
 template <std::floating_point T>
-Vec3<T> &&Triangle<T>::operator[](std::size_t idx) const &&
+Vec3<T> &&Triangle<T>::operator[](std::size_t idx) &&
 {
   return std::move(vertices_[idx % 3]);
 }
@@ -184,25 +184,25 @@ Vec3<T> &Triangle<T>::operator[](std::size_t idx) &
 }
 
 template <std::floating_point T>
-Triangle<T>::Iterator Triangle<T>::begin() &
+typename Triangle<T>::Iterator Triangle<T>::begin() &
 {
   return vertices_.begin();
 }
 
 template <std::floating_point T>
-Triangle<T>::Iterator Triangle<T>::end() &
+typename Triangle<T>::Iterator Triangle<T>::end() &
 {
   return vertices_.end();
 }
 
 template <std::floating_point T>
-Triangle<T>::ConstIterator Triangle<T>::begin() const &
+typename Triangle<T>::ConstIterator Triangle<T>::begin() const &
 {
   return vertices_.begin();
 }
 
 template <std::floating_point T>
-Triangle<T>::ConstIterator Triangle<T>::end() const &
+typename Triangle<T>::ConstIterator Triangle<T>::end() const &
 {
   return vertices_.end();
 }
