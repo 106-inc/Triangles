@@ -50,6 +50,20 @@ public:
   const Vec3<T> &dir() const &;
 
   /**
+   * @brief Getter for origin vector
+   *
+   * @return Vec3<T>&& reference to origin vector
+   */
+  Vec3<T> &&org() const &&;
+
+  /**
+   * @brief Getter for direction vector
+   *
+   * @return Vec3<T>&& reference to direction vector
+   */
+  Vec3<T> &&dir() const &&;
+
+  /**
    * @brief Get point on line by parameter t
    *
    * @tparam nType numeric type
@@ -152,6 +166,18 @@ template <std::floating_point T>
 const Vec3<T> &Line<T>::dir() const &
 {
   return dir_;
+}
+
+template <std::floating_point T>
+Vec3<T> &&Line<T>::org() const &&
+{
+  return std::move(org_);
+}
+
+template <std::floating_point T>
+Vec3<T> &&Line<T>::dir() const &&
+{
+  return std::move(dir_);
 }
 
 template <std::floating_point T>

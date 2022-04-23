@@ -56,6 +56,13 @@ public:
   const Vec3<T> &norm() const &;
 
   /**
+   * @brief Getter for normal vector
+   *
+   * @return Vec3<T>&& reference to normal vector
+   */
+  Vec3<T> &&norm() const &&;
+
+  /**
    * @brief Checks if point belongs to plane
    *
    * @param[in] point const referene to point vector
@@ -177,6 +184,12 @@ template <std::floating_point T>
 const Vec3<T> &Plane<T>::norm() const &
 {
   return norm_;
+}
+
+template <std::floating_point T>
+Vec3<T> &&Plane<T>::norm() const &&
+{
+  return std::move(norm_);
 }
 
 template <std::floating_point T>

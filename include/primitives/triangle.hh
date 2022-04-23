@@ -61,6 +61,14 @@ public:
    * @brief Overloaded operator[] to get access to vertices
    *
    * @param[in] idx index of vertex
+   * @return Vec3<T>&& reference to vertex
+   */
+  Vec3<T> &&operator[](std::size_t idx) const &&;
+
+  /**
+   * @brief Overloaded operator[] to get access to vertices
+   *
+   * @param[in] idx index of vertex
    * @return Vec3<T>& reference to vertex
    */
   Vec3<T> &operator[](std::size_t idx) &;
@@ -161,6 +169,12 @@ template <std::floating_point T>
 const Vec3<T> &Triangle<T>::operator[](std::size_t idx) const &
 {
   return vertices_[idx % 3];
+}
+
+template <std::floating_point T>
+Vec3<T> &&Triangle<T>::operator[](std::size_t idx) const &&
+{
+  return std::move(vertices_[idx % 3]);
 }
 
 template <std::floating_point T>
