@@ -7,6 +7,4 @@ int main(int argc, char **argv)
   return RUN_ALL_TESTS();
 }
 
-#pragma GCC diagnostic pop
-
 #endif // __TEST_UNIT_TEST_FOOTER_HH__

@@ -152,7 +152,7 @@ public:
    *
    * @note Coordinates calculated by mod 3
    */
-  T &operator[](size_t i) &;
+  T &operator[](std::size_t i) &;
 
   /**
    * @brief Overloaded operator [] (const version)
@@ -162,7 +162,7 @@ public:
    *
    * @note Coordinates calculated by mod 3
    */
-  T operator[](size_t i) const &;
+  T operator[](std::size_t i) const &;
 
   /**
    * @brief Check if vector is parallel to another
@@ -443,9 +443,10 @@ template <std::floating_point T>
 template <Number nType>
 Vec3<T> &Vec3<T>::operator*=(nType val)
 {
-  x *= val;
-  y *= val;
-  z *= val;
+  auto fval = static_cast<T>(val);
+  x *= fval;
+  y *= fval;
+  z *= fval;
 
   return *this;
 }
@@ -454,9 +455,10 @@ template <std::floating_point T>
 template <Number nType>
 Vec3<T> &Vec3<T>::operator/=(nType val)
 {
-  x /= static_cast<T>(val);
-  y /= static_cast<T>(val);
-  z /= static_cast<T>(val);
+  auto fval = static_cast<T>(val);
+  x /= fval;
+  y /= fval;
+  z /= fval;
 
   return *this;
 }
@@ -503,7 +505,7 @@ Vec3<T> &Vec3<T>::normalize() &
 }
 
 template <std::floating_point T>
-T &Vec3<T>::operator[](size_t i) &
+T &Vec3<T>::operator[](std::size_t i) &
 {
   switch (i % 3)
   {
@@ -519,7 +521,7 @@ T &Vec3<T>::operator[](size_t i) &
 }
 
 template <std::floating_point T>
-T Vec3<T>::operator[](size_t i) const &
+T Vec3<T>::operator[](std::size_t i) const &
 {
   switch (i % 3)
   {

@@ -83,7 +83,7 @@ bool isIntersect2D(const Triangle<T> &tr1, const Triangle<T> &tr2)
 
   for (auto trian : {trian1, trian2})
   {
-    for (size_t i0 = 0, i1 = 2; i0 < 3; i1 = i0, ++i0)
+    for (std::size_t i0 = 0, i1 = 2; i0 < 3; i1 = i0, ++i0)
     {
       auto d = (trian[i0] - trian[i1]).getPerp();
 
@@ -117,28 +117,28 @@ Segment2D<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const
 {
   /* Project the triangle vertices onto line */
   std::array<T, 3> vert{};
-  for (size_t i = 0; i < 3; ++i)
-    vert[i] = dot(l.dir(), tr[i] - l.org());
+  std::transform(tr.begin(), tr.end(), vert.begin(),
+                 [dir = l.dir(), org = l.org()](auto &&v) { return dot(dir, v - org); });
 
   std::array<T, 3> sdist{};
-  for (size_t i = 0; i < 3; ++i)
-    sdist[i] = distance(pl, tr[i]);
+  std::transform(tr.begin(), tr.end(), sdist.begin(), std::bind_front(distance<T>, pl));
 
   std::array<bool, 3> isOneSide{};
-  for (size_t i = 0; i < 3; ++i)
+  for (std::size_t i = 0; i < 3; ++i)
     isOneSide[i] = isAllPosNeg(sdist[i], sdist[(i + 1) % 3]);
 
   /* Looking for vertex which is alone on it's side */
-  size_t rogue = 0;
+  std::size_t rogue = 0;
   if (std::all_of(isOneSide.begin(), isOneSide.end(), [](const auto &elem) { return !elem; }))
   {
-    for (size_t i = 0; i < 3; ++i)
-      if (!Vec3<T>::isNumEq(0, sdist[i]))
-        rogue = i;
+    auto rogueIt =
+      std::find_if_not(sdist.rbegin(), sdist.rend(), std::bind_front(Vec3<T>::isNumEq, T{}));
+    if (rogueIt != sdist.rend())
+      rogue = std::distance(rogueIt, sdist.rend()) - 1;
   }
   else
   {
-    for (size_t i = 0; i < 3; ++i)
+    for (std::size_t i = 0; i < 3; ++i)
       if (isOneSide[i])
         rogue = (i + 2) % 3;
   }
@@ -146,7 +146,7 @@ Segment2D<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const
   std::vector<T> segm{};
   std::array<size_t, 2> arr{(rogue + 1) % 3, (rogue + 2) % 3};
 
-  for (size_t i : arr)
+  for (std::size_t i : arr)
     segm.push_back(vert[i] + (vert[rogue] - vert[i]) * sdist[i] / (sdist[i] - sdist[rogue]));
 
   /* Sort segment's ends */
@@ -290,20 +290,16 @@ bool isAllPosNeg(It begin, It end)
 template <std::floating_point T>
 bool isAllPosNeg(T num1, T num2)
 {
-  return (num1 * num2 > Vec3<T>::getThreshold());
+  auto thres = Vec3<T>::getThreshold();
+  return (num1 > thres && num2 > thres) || (num1 < -thres && num2 < -thres);
 }
 
 template <std::floating_point T>
 bool isOnOneSide(const Plane<T> &pl, const Triangle<T> &tr)
 {
   std::array<T, 3> sdist{};
-  for (size_t i = 0; i < 3; ++i)
-    sdist[i] = distance(pl, tr[i]);
-
-  if (detail::isAllPosNeg(sdist.begin(), sdist.end()))
-    return true;
-
-  return false;
+  std::transform(tr.begin(), tr.end(), sdist.begin(), std::bind_front(distance<T>, pl));
+  return detail::isAllPosNeg(sdist.begin(), sdist.end());
 }
 
 template <std::floating_point T>
@@ -322,11 +318,11 @@ Trian2<T> getTrian2(const Plane<T> &pl, const Triangle<T> &tr)
                  [&norm](const auto &axis) { return std::abs(dot(axis, norm)); });
 
   auto maxIt = std::max_element(xyzDot.begin(), xyzDot.end());
-  auto maxIdx = static_cast<size_t>(maxIt - xyzDot.begin());
+  auto maxIdx = static_cast<std::size_t>(std::distance(xyzDot.begin(), maxIt));
 
   Trian2<T> res;
-  for (size_t i = 0; i < 3; ++i)
-    for (size_t j = 0, k = 0; j < 2; ++j, ++k)
+  for (std::size_t i = 0; i < 3; ++i)
+    for (std::size_t j = 0, k = 0; j < 2; ++j, ++k)
     {
       if (k == maxIdx)
         ++k;
@@ -367,7 +363,7 @@ Segment2D<T> computeInterval(const Trian2<T> &tr, const Vec2<T> &d)
   auto min = init;
   auto max = init;
 
-  for (size_t i = 1; i < 3; ++i)
+  for (std::size_t i = 1; i < 3; ++i)
     if (auto val = dot(d, tr[i]); val < min)
       min = val;
     else if (val > max)
@@ -380,11 +376,11 @@ template <std::floating_point T>
 Segment3D<T> getSegment(const Triangle<T> &tr)
 {
   std::array<T, 3> lenArr{};
-  for (size_t i = 0; i < 3; ++i)
+  for (std::size_t i = 0; i < 3; ++i)
     lenArr[i] = (tr[i] - tr[i + 1]).length2();
 
   auto maxIt = std::max_element(lenArr.begin(), lenArr.end());
-  auto maxIdx = static_cast<size_t>(maxIt - lenArr.begin());
+  auto maxIdx = static_cast<std::size_t>(std::distance(lenArr.begin(), maxIt));
 
   return {tr[maxIdx], tr[maxIdx + 1]};
 }

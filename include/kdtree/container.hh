@@ -59,7 +59,7 @@ public:
 
   private:
     const Container *cont_;
-    std::vector<Index>::const_iterator curIdxIt_;
+    std::vector<Index>::const_iterator curIdxIt_{};
 
   public:
     ConstIterator(const Container *cont, bool isEnd = false);
@@ -73,7 +73,7 @@ public:
 
     Index getIndex();
 
-    ConstIterator operator++();
+    ConstIterator &operator++();
     ConstIterator operator++(int);
 
     reference operator*() const;
@@ -193,7 +193,7 @@ Index Container<T>::ConstIterator::getIndex()
 }
 
 template <std::floating_point T>
-typename Container<T>::ConstIterator Container<T>::ConstIterator::operator++()
+typename Container<T>::ConstIterator &Container<T>::ConstIterator::operator++()
 {
   ++curIdxIt_;
   return *this;

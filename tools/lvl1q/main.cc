@@ -6,7 +6,7 @@
 
 int main()
 {
-  size_t n = 0;
+  std::size_t n = 0;
   std::cin >> n;
 
   std::vector<geom::Triangle<double>> triangles{};
@@ -15,15 +15,15 @@ int main()
   triangles.resize(n);
   isIntersect.resize(n);
 
-  for (size_t i = 0; i < n; ++i)
+  for (std::size_t i = 0; i < n; ++i)
     std::cin >> triangles[i];
 
-  for (size_t i = 0; i < n; ++i)
-    for (size_t j = i + 1; j < n; ++j)
+  for (std::size_t i = 0; i < n; ++i)
+    for (std::size_t j = i + 1; j < n; ++j)
       if (geom::isIntersect(triangles[i], triangles[j]))
         isIntersect[i] = isIntersect[j] = true;
 
-  for (size_t i = 0; i < n; ++i)
+  for (std::size_t i = 0; i < n; ++i)
     if (isIntersect[i])
       std::cout << i << std::endl;
 

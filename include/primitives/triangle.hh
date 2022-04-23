@@ -32,6 +32,9 @@ private:
   std::array<Vec3<T>, 3> vertices_;
 
 public:
+  using Iterator = std::array<Vec3<T>, 3>::iterator;
+  using ConstIterator = std::array<Vec3<T>, 3>::const_iterator;
+
   /**
    * @brief Construct a new Triangle object
    */
@@ -61,6 +64,30 @@ public:
    * @return Vec3<T>& reference to vertex
    */
   Vec3<T> &operator[](std::size_t idx) &;
+
+  /**
+   * @brief Get begin iterator
+   * @return Iterator
+   */
+  Iterator begin() &;
+
+  /**
+   * @brief Get end iterator
+   * @return Iterator
+   */
+  Iterator end() &;
+
+  /**
+   * @brief Get begin const iterator
+   * @return ConstIterator
+   */
+  ConstIterator begin() const &;
+
+  /**
+   * @brief Get end const iterator
+   * @return ConstIterator
+   */
+  ConstIterator end() const &;
 
   /**
    * @brief Get triangle's plane
@@ -106,7 +133,7 @@ template <std::floating_point T>
 std::ostream &operator<<(std::ostream &ost, const Triangle<T> &tr)
 {
   ost << "Triangle: {";
-  for (size_t i = 0; i < 3; ++i)
+  for (std::size_t i = 0; i < 3; ++i)
     ost << tr[i] << (i == 2 ? "" : ", ");
 
   ost << "}";
@@ -140,6 +167,30 @@ template <std::floating_point T>
 Vec3<T> &Triangle<T>::operator[](std::size_t idx) &
 {
   return vertices_[idx % 3];
+}
+
+template <std::floating_point T>
+Triangle<T>::Iterator Triangle<T>::begin() &
+{
+  return vertices_.begin();
+}
+
+template <std::floating_point T>
+Triangle<T>::Iterator Triangle<T>::end() &
+{
+  return vertices_.end();
+}
+
+template <std::floating_point T>
+Triangle<T>::ConstIterator Triangle<T>::begin() const &
+{
+  return vertices_.begin();
+}
+
+template <std::floating_point T>
+Triangle<T>::ConstIterator Triangle<T>::end() const &
+{
+  return vertices_.end();
 }
 
 template <std::floating_point T>

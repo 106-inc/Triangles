@@ -21,8 +21,8 @@ template <std::floating_point T>
 class KdTree
 {
 private:
-  std::unique_ptr<Node<T>> root_;
-  std::vector<Triangle<T>> triangles_;
+  std::unique_ptr<Node<T>> root_{};
+  std::vector<Triangle<T>> triangles_{};
   std::size_t nodeCapacity_{1};
 
 public:
@@ -291,7 +291,7 @@ bool KdTree<T>::isOnSide(Axis axis, T separator, const Triangle<T> &tr,
     return false;
 
   auto axisIdx = static_cast<size_t>(axis);
-  for (size_t i = 0; i < 3; ++i)
+  for (std::size_t i = 0; i < 3; ++i)
     if (!comparator(tr[i][axisIdx], separator))
       return false;
 
@@ -390,7 +390,7 @@ void KdTree<T>::subdivide(Node<T> *node)
 {
   const auto &nodeBB = node->boundBox;
   auto axis = node->sepAxis = nodeBB.getMaxDim();
-  auto sep = node->separator = nodeBB.min(axis) + 0.5 * (nodeBB.max(axis) - nodeBB.min(axis));
+  auto sep = node->separator = nodeBB.min(axis) + (nodeBB.max(axis) - nodeBB.min(axis)) / 2;
 
   auto newRightBB = nodeBB;
   auto newLeftBB = nodeBB;

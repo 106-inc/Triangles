@@ -51,6 +51,7 @@ T &BoundBox<T>::min(Axis axis) &
     return minY;
   case Axis::Z:
     return minZ;
+  case Axis::NONE:
   default:
     throw std::logic_error("BoundBox<T>::min(): Wrong input axis");
   }
@@ -67,6 +68,7 @@ T &BoundBox<T>::max(Axis axis) &
     return maxY;
   case Axis::Z:
     return maxZ;
+  case Axis::NONE:
   default:
     throw std::logic_error("BoundBox<T>::max(): Wrong input axis");
   }
@@ -83,6 +85,7 @@ const T &BoundBox<T>::min(Axis axis) const &
     return minY;
   case Axis::Z:
     return minZ;
+  case Axis::NONE:
   default:
     throw std::logic_error("BoundBox<T>::min(): Wrong input axis");
   }
@@ -99,6 +102,7 @@ const T &BoundBox<T>::max(Axis axis) const &
     return maxY;
   case Axis::Z:
     return maxZ;
+  case Axis::NONE:
   default:
     throw std::logic_error("BoundBox<T>::max(): Wrong input axis");
   }
