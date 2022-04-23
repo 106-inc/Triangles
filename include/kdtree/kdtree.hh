@@ -292,7 +292,7 @@ bool KdTree<T>::isOnSide(Axis axis, T separator, const Triangle<T> &tr,
 
   auto axisIdx = static_cast<size_t>(axis);
   return std::all_of(tr.begin(), tr.end(), [&](auto && v){
-    comparator(v[axisIdx], separator);
+    return comparator(v[axisIdx], separator);
   }); 
 }
 
