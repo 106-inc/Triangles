@@ -291,11 +291,9 @@ bool KdTree<T>::isOnSide(Axis axis, T separator, const Triangle<T> &tr,
     return false;
 
   auto axisIdx = static_cast<size_t>(axis);
-  for (std::size_t i = 0; i < 3; ++i)
-    if (!comparator(tr[i][axisIdx], separator))
-      return false;
-
-  return true;
+  return std::all_of(tr.begin(), tr.end(), [&](auto && v){
+    comparator(v[axisIdx], separator);
+  }); 
 }
 
 template <std::floating_point T>
