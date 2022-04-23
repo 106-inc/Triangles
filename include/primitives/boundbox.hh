@@ -30,8 +30,8 @@ struct BoundBox
   T min(Axis axis) &&;
   T max(Axis axis) &&;
 
-  const T &min(Axis axis) const &;
-  const T &max(Axis axis) const &;
+  T min(Axis axis) const &;
+  T max(Axis axis) const &;
 
   Axis getMaxDim() const;
 };
@@ -85,13 +85,13 @@ T BoundBox<T>::max(Axis axis) &&
 }
 
 template <std::floating_point T>
-const T &BoundBox<T>::min(Axis axis) const &
+T BoundBox<T>::min(Axis axis) const &
 {
   BBFILL(min);
 }
 
 template <std::floating_point T>
-const T &BoundBox<T>::max(Axis axis) const &
+T BoundBox<T>::max(Axis axis) const &
 {
   BBFILL(max);
 }
