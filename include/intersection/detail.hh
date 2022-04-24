@@ -82,7 +82,6 @@ bool isIntersect2D(const Triangle<T> &tr1, const Triangle<T> &tr2)
   auto trian2 = getTrian2(pl, tr2);
 
   for (auto trian : {trian1, trian2})
-  {
     for (std::size_t i0 = 0, i1 = 2; i0 < 3; i1 = i0, ++i0)
     {
       auto d = (trian[i0] - trian[i1]).getPerp();
@@ -93,7 +92,6 @@ bool isIntersect2D(const Triangle<T> &tr1, const Triangle<T> &tr2)
       if (s2.second < s1.first || s1.second < s2.first)
         return false;
     }
-  }
 
   return true;
 }
@@ -143,16 +141,13 @@ Segment2D<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const
         rogue = (i + 2) % 3;
   }
 
-  std::vector<T> segm{};
+  std::array<T, 2> segm{};
   std::array<size_t, 2> arr{(rogue + 1) % 3, (rogue + 2) % 3};
+  std::transform(arr.begin(), arr.end(), segm.begin(), [&vert, &sdist, rogue](auto i) {
+    return vert[i] + (vert[rogue] - vert[i]) * sdist[i] / (sdist[i] - sdist[rogue]);
+  });
 
-  for (std::size_t i : arr)
-    segm.push_back(vert[i] + (vert[rogue] - vert[i]) * sdist[i] / (sdist[i] - sdist[rogue]));
-
-  /* Sort segment's ends */
-  if (segm[0] > segm[1])
-    std::swap(segm[0], segm[1]);
-
+  std::sort(segm.begin(), segm.end());
   return {segm[0], segm[1]};
 }
 
@@ -359,17 +354,10 @@ bool isCounterClockwise(Trian2<T> &tr)
 template <std::floating_point T>
 Segment2D<T> computeInterval(const Trian2<T> &tr, const Vec2<T> &d)
 {
-  auto init = dot(d, tr[0]);
-  auto min = init;
-  auto max = init;
-
-  for (std::size_t i = 1; i < 3; ++i)
-    if (auto val = dot(d, tr[i]); val < min)
-      min = val;
-    else if (val > max)
-      max = val;
-
-  return {min, max};
+  std::array<T, 3> dotArr{};
+  std::transform(tr.begin(), tr.end(), dotArr.begin(), [&d](auto &&v) { return dot(d, v); });
+  auto mmIt = std::minmax_element(dotArr.begin(), dotArr.end());
+  return {*mmIt.first, *mmIt.second};
 }
 
 template <std::floating_point T>
