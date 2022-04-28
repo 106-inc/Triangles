@@ -21,12 +21,6 @@ private:
 
 public:
   Container(const KdTree<T> *tree, const Node<T> *node);
-  Container(const Container &cont) = default;
-  Container(Container &&cont) = default;
-  ~Container() = default;
-
-  Container &operator=(const Container &cont) = default;
-  Container &operator=(Container &&cont) = default;
 
   class ConstIterator;
   ConstIterator cbegin() const &;
@@ -63,13 +57,6 @@ public:
 
   public:
     ConstIterator(const Container *cont, bool isEnd = false);
-    ConstIterator(const ConstIterator &iter) = default;
-    ConstIterator(ConstIterator &&iter) = default;
-
-    ConstIterator &operator=(const ConstIterator &cont) = default;
-    ConstIterator &operator=(ConstIterator &&cont) = default;
-
-    ~ConstIterator() = default;
 
     Index getIndex();
 

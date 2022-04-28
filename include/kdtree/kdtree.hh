@@ -97,13 +97,6 @@ public:
 
   public:
     ConstIterator(const KdTree<T> *tree, const Node<T> *node);
-    ConstIterator(const ConstIterator &iter) = default;
-    ConstIterator(ConstIterator &&iter) = default;
-
-    ConstIterator &operator=(const ConstIterator &cont) = default;
-    ConstIterator &operator=(ConstIterator &&cont) = default;
-
-    ~ConstIterator() = default;
 
     ConstIterator &operator++();
     ConstIterator operator++(int);
