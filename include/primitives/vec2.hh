@@ -163,6 +163,16 @@ public:
   T operator[](std::size_t i) const &;
 
   /**
+   * @brief Overloaded operator [] (const version)
+   * To get access to coordinates
+   * @param i index of coordinate (0 - x, 1 - y)
+   * @return T coordinate value
+   *
+   * @note Coordinates calculated by mod 2
+   */
+  T &&operator[](std::size_t i) &&;
+
+  /**
    * @brief Check if vector is parallel to another
    *
    * @param[in] rhs vector to check parallelism with
@@ -475,6 +485,20 @@ T Vec2<T>::operator[](std::size_t i) const &
     return x;
   case 1:
     return y;
+  default:
+    throw std::logic_error{"Impossible case in operator[]\n"};
+  }
+}
+
+template <std::floating_point T>
+T &&Vec2<T>::operator[](std::size_t i) &&
+{
+  switch (i % 2)
+  {
+  case 0:
+    return std::move(x);
+  case 1:
+    return std::move(y);
   default:
     throw std::logic_error{"Impossible case in operator[]\n"};
   }
