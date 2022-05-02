@@ -195,7 +195,7 @@ Vec3<T> &&Plane<T>::norm() &&
 template <std::floating_point T>
 bool Plane<T>::belongs(const Vec3<T> &pt) const
 {
-  return Vec3<T>::isNumEq(norm_.dot(pt), dist_);
+  return ThresComp<T>::isEqual(norm_.dot(pt), dist_);
 }
 
 template <std::floating_point T>

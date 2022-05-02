@@ -230,9 +230,10 @@ BoundBox<T> Triangle<T>::boundBox() const
   auto minMaxY = std::minmax({vertices_[0].y, vertices_[1].y, vertices_[2].y});
   auto minMaxZ = std::minmax({vertices_[0].z, vertices_[1].z, vertices_[2].z});
 
-  return {minMaxX.first - Vec3<T>::getThreshold(), minMaxX.second + Vec3<T>::getThreshold(),
-          minMaxY.first - Vec3<T>::getThreshold(), minMaxY.second + Vec3<T>::getThreshold(),
-          minMaxZ.first - Vec3<T>::getThreshold(), minMaxZ.second + Vec3<T>::getThreshold()};
+  return {
+    minMaxX.first - ThresComp<T>::getThreshold(), minMaxX.second + ThresComp<T>::getThreshold(),
+    minMaxY.first - ThresComp<T>::getThreshold(), minMaxY.second + ThresComp<T>::getThreshold(),
+    minMaxZ.first - ThresComp<T>::getThreshold(), minMaxZ.second + ThresComp<T>::getThreshold()};
 }
 
 template <std::floating_point T>

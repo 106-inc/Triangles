@@ -209,7 +209,7 @@ template <std::floating_point T>
 bool Line<T>::isSkew(const Line<T> &line) const
 {
   auto res = triple(line.org_ - org_, dir_, line.dir_);
-  return !Vec3<T>::isNumEq(res, T{0});
+  return !ThresComp<T>::isZero(res);
 }
 
 template <std::floating_point T>

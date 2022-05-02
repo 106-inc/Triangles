@@ -15,8 +15,8 @@ int main()
   triangles.resize(n);
   isIntersect.resize(n);
 
-  for (std::size_t i = 0; i < n; ++i)
-    std::cin >> triangles[i];
+  for (auto &tr : triangles)
+    std::cin >> tr;
 
   for (std::size_t i = 0; i < n; ++i)
     for (std::size_t j = i + 1; j < n; ++j)

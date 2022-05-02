@@ -25,13 +25,6 @@ namespace geom
 template <std::floating_point T>
 struct Vec3 final
 {
-private:
-  /**
-   * @brief Threshold static variable for numbers comparision
-   */
-  static inline T threshold_ = 1e3 * std::numeric_limits<T>::epsilon();
-
-public:
   /**
    * @brief Vec3 coordinates
    */
@@ -198,40 +191,8 @@ public:
    * @param[in] rhs vector to check equality with
    * @return true if vector is equal
    * @return false otherwise
-   *
-   * @note Equality check performs using isNumEq(T lhs, T rhs) function
    */
   bool isEqual(const Vec3 &rhs) const;
-
-  /**
-   * @brief Check equality (with threshold) of two floating point numbers function
-   *
-   * @param[in] lhs first number
-   * @param[in] rhs second number
-   * @return true if numbers equals with threshold (|lhs - rhs| < threshold)
-   * @return false otherwise
-   *
-   * @note Threshold defined by threshold_ static member
-   */
-  static bool isNumEq(T lhs, T rhs);
-
-  /**
-   * @brief Set new threshold value
-   *
-   * @param[in] thres value to set
-   */
-  static void setThreshold(T thres);
-
-  /**
-   * @brief Get current threshold value
-   */
-  static T getThreshold();
-
-  /**
-   * @brief Set threshold to default value
-   * @note default value equals float point epsilon
-   */
-  static void setDefThreshold();
 };
 
 /**
@@ -509,7 +470,7 @@ template <std::floating_point T>
 Vec3<T> &Vec3<T>::normalize() &
 {
   T len2 = length2();
-  if (isNumEq(len2, 0) || isNumEq(len2, 1))
+  if (ThresComp<T>::isZero(len2) || ThresComp<T>::isEqual(len2, T{1}))
     return *this;
   return *this /= std::sqrt(len2);
 }
@@ -571,37 +532,14 @@ bool Vec3<T>::isPar(const Vec3 &rhs) const
 template <std::floating_point T>
 bool Vec3<T>::isPerp(const Vec3 &rhs) const
 {
-  return isNumEq(dot(rhs), 0);
+  return ThresComp<T>::isZero(dot(rhs));
 }
 
 template <std::floating_point T>
 bool Vec3<T>::isEqual(const Vec3 &rhs) const
 {
-  return isNumEq(x, rhs.x) && isNumEq(y, rhs.y) && isNumEq(z, rhs.z);
-}
-
-template <std::floating_point T>
-bool Vec3<T>::isNumEq(T lhs, T rhs)
-{
-  return std::abs(rhs - lhs) < threshold_;
-}
-
-template <std::floating_point T>
-void Vec3<T>::setThreshold(T thres)
-{
-  threshold_ = thres;
-}
-
-template <std::floating_point T>
-T Vec3<T>::getThreshold()
-{
-  return threshold_;
-}
-
-template <std::floating_point T>
-void Vec3<T>::setDefThreshold()
-{
-  threshold_ = std::numeric_limits<T>::epsilon();
+  return ThresComp<T>::isEqual(x, rhs.x) && ThresComp<T>::isEqual(y, rhs.y) &&
+         ThresComp<T>::isEqual(z, rhs.z);
 }
 
 } // namespace geom

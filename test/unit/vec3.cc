@@ -31,7 +31,7 @@ TYPED_TEST(Vec3Test, dot)
   auto res = v1.dot(v2);
 
   // Assert
-  EXPECT_NEAR(res, 32, Vec3<TypeParam>::getThreshold());
+  EXPECT_NEAR(res, 32, ThresComp<TypeParam>::getThreshold());
 }
 
 TYPED_TEST(Vec3Test, isEq)
@@ -84,11 +84,11 @@ TYPED_TEST(Vec3Test, triple)
   auto nres2 = triple(v6, v5, v4);
 
   // Assert
-  EXPECT_TRUE(Vec3<TypeParam>::isNumEq(res, 0));
-  EXPECT_TRUE(Vec3<TypeParam>::isNumEq(nres, 0));
+  EXPECT_TRUE(ThresComp<TypeParam>::isEqual(res, 0));
+  EXPECT_TRUE(ThresComp<TypeParam>::isEqual(nres, 0));
 
-  EXPECT_TRUE(Vec3<TypeParam>::isNumEq(res2, 1));
-  EXPECT_TRUE(Vec3<TypeParam>::isNumEq(nres2, -1));
+  EXPECT_TRUE(ThresComp<TypeParam>::isEqual(res2, 1));
+  EXPECT_TRUE(ThresComp<TypeParam>::isEqual(nres2, -1));
 }
 
 TYPED_TEST(Vec3Test, normalize)

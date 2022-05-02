@@ -129,8 +129,7 @@ Segment2D<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const
   std::size_t rogue = 0;
   if (std::all_of(isOneSide.begin(), isOneSide.end(), [](const auto &elem) { return !elem; }))
   {
-    auto rogueIt =
-      std::find_if_not(sdist.rbegin(), sdist.rend(), std::bind_front(Vec3<T>::isNumEq, T{}));
+    auto rogueIt = std::find_if_not(sdist.rbegin(), sdist.rend(), ThresComp<T>::isZero);
     if (rogueIt != sdist.rend())
       rogue = std::distance(rogueIt, sdist.rend()) - 1;
   }
@@ -184,7 +183,7 @@ bool isIntersectValidInvalid(const Triangle<T> &valid, const Triangle<T> &invali
   if (dst1 * dst2 > 0)
     return false;
 
-  if (Vec3<T>::isNumEq(dst1, 0) && Vec3<T>::isNumEq(dst2, 0))
+  if (ThresComp<T>::isZero(dst1) && ThresComp<T>::isZero(dst2))
     return isIntersect2D(valid, invalid);
 
   dst1 = std::abs(dst1);
@@ -218,7 +217,7 @@ bool isIntersectPointTriangle(const Vec3<T> &pt, const Triangle<T> &tr)
   auto v = (dotE1E1 * dotE2PT - dotE1E2 * dotE1PT) / denom;
 
   /* Point belongs to triangle if: (u >= 0) && (v >= 0) && (u + v <= 1) */
-  auto eps = Vec3<T>::getThreshold();
+  auto eps = ThresComp<T>::getThreshold();
   return (u > -eps) && (v > -eps) && (u + v < 1 + eps);
 }
 
@@ -278,14 +277,15 @@ bool isAllPosNeg(It begin, It end)
     return true;
 
   bool fst = (*begin > 0);
-  return std::none_of(std::next(begin), end,
-                      [fst](auto &&elt) { return (elt > 0) != fst || elt == 0; });
+  return std::none_of(std::next(begin), end, [fst](auto &&elt) {
+    return (elt > 0) != fst || ThresComp<std::remove_reference_t<decltype(elt)>>::isZero(elt);
+  });
 }
 
 template <std::floating_point T>
 bool isAllPosNeg(T num1, T num2)
 {
-  auto thres = Vec3<T>::getThreshold();
+  auto thres = ThresComp<T>::getThreshold();
   return (num1 > thres && num2 > thres) || (num1 < -thres && num2 < -thres);
 }
 

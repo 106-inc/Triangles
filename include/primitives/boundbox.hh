@@ -109,9 +109,9 @@ Axis BoundBox<T>::getMaxDim() const
 template <std::floating_point T>
 bool operator==(const BoundBox<T> &lhs, const BoundBox<T> &rhs)
 {
-  return Vec3<T>::isNumEq(lhs.minX, rhs.minX) && Vec3<T>::isNumEq(lhs.maxX, rhs.maxX) &&
-         Vec3<T>::isNumEq(lhs.minY, rhs.minY) && Vec3<T>::isNumEq(lhs.maxY, rhs.maxY) &&
-         Vec3<T>::isNumEq(lhs.minZ, rhs.minZ) && Vec3<T>::isNumEq(lhs.maxY, rhs.maxY);
+  return ThresComp<T>::isEqual(lhs.minX, rhs.minX) && ThresComp<T>::isEqual(lhs.maxX, rhs.maxX) &&
+         ThresComp<T>::isEqual(lhs.minY, rhs.minY) && ThresComp<T>::isEqual(lhs.maxY, rhs.maxY) &&
+         ThresComp<T>::isEqual(lhs.minZ, rhs.minZ) && ThresComp<T>::isEqual(lhs.maxY, rhs.maxY);
 }
 
 template <std::floating_point T>
