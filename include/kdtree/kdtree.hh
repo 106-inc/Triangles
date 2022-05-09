@@ -21,8 +21,8 @@ template <std::floating_point T>
 class KdTree
 {
 private:
-  std::unique_ptr<Node<T>> root_;
-  std::vector<Triangle<T>> triangles_;
+  std::unique_ptr<Node<T>> root_{};
+  std::vector<Triangle<T>> triangles_{};
   std::size_t nodeCapacity_{1};
 
 public:
@@ -38,13 +38,13 @@ public:
   class ConstIterator;
 
   // ConstIterators
-  ConstIterator cbegin() const;
-  ConstIterator cend() const;
+  ConstIterator cbegin() const &;
+  ConstIterator cend() const &;
 
-  ConstIterator begin() const;
-  ConstIterator end() const;
+  ConstIterator begin() const &;
+  ConstIterator end() const &;
 
-  ConstIterator beginFrom(const ConstIterator &iter) const;
+  ConstIterator beginFrom(const ConstIterator &iter) const &;
 
   // Modifiers
   void insert(const Triangle<T> &tr);
@@ -56,7 +56,7 @@ public:
   std::size_t size() const;
   std::size_t nodeCapacity() const;
 
-  const Triangle<T> &triangleByIndex(Index index) const;
+  const Triangle<T> &triangleByIndex(Index index) const &;
 
   void dumpRecursive(std::ostream &ost = std::cout) const;
 
@@ -97,13 +97,6 @@ public:
 
   public:
     ConstIterator(const KdTree<T> *tree, const Node<T> *node);
-    ConstIterator(const ConstIterator &iter) = default;
-    ConstIterator(ConstIterator &&iter) = default;
-
-    ConstIterator &operator=(const ConstIterator &cont) = default;
-    ConstIterator &operator=(ConstIterator &&cont) = default;
-
-    ~ConstIterator() = default;
 
     ConstIterator &operator++();
     ConstIterator operator++(int);
@@ -153,32 +146,32 @@ KdTree<T> &KdTree<T>::operator=(const KdTree<T> &tree)
 
 // ConstIterators
 template <std::floating_point T>
-typename KdTree<T>::ConstIterator KdTree<T>::cbegin() const
+typename KdTree<T>::ConstIterator KdTree<T>::cbegin() const &
 {
   return ConstIterator{this, root_.get()};
 }
 
 template <std::floating_point T>
-typename KdTree<T>::ConstIterator KdTree<T>::cend() const
+typename KdTree<T>::ConstIterator KdTree<T>::cend() const &
 {
   return ConstIterator{this, nullptr};
 }
 
 template <std::floating_point T>
-typename KdTree<T>::ConstIterator KdTree<T>::begin() const
+typename KdTree<T>::ConstIterator KdTree<T>::begin() const &
 {
   return cbegin();
 }
 
 template <std::floating_point T>
-typename KdTree<T>::ConstIterator KdTree<T>::end() const
+typename KdTree<T>::ConstIterator KdTree<T>::end() const &
 {
   return cend();
 }
 
 template <std::floating_point T>
 typename KdTree<T>::ConstIterator KdTree<T>::beginFrom(
-  const typename KdTree<T>::ConstIterator &iter) const
+  const typename KdTree<T>::ConstIterator &iter) const &
 {
   return KdTree<T>::ConstIterator::beginFrom(iter);
 }
@@ -257,7 +250,7 @@ std::size_t KdTree<T>::nodeCapacity() const
 }
 
 template <std::floating_point T>
-const Triangle<T> &KdTree<T>::triangleByIndex(Index index) const
+const Triangle<T> &KdTree<T>::triangleByIndex(Index index) const &
 {
   return triangles_[index];
 }
@@ -291,11 +284,8 @@ bool KdTree<T>::isOnSide(Axis axis, T separator, const Triangle<T> &tr,
     return false;
 
   auto axisIdx = static_cast<size_t>(axis);
-  for (size_t i = 0; i < 3; ++i)
-    if (!comparator(tr[i][axisIdx], separator))
-      return false;
-
-  return true;
+  return std::all_of(tr.begin(), tr.end(),
+                     [&](auto &&v) { return comparator(v[axisIdx], separator); });
 }
 
 template <std::floating_point T>
@@ -390,7 +380,7 @@ void KdTree<T>::subdivide(Node<T> *node)
 {
   const auto &nodeBB = node->boundBox;
   auto axis = node->sepAxis = nodeBB.getMaxDim();
-  auto sep = node->separator = nodeBB.min(axis) + 0.5 * (nodeBB.max(axis) - nodeBB.min(axis));
+  auto sep = node->separator = nodeBB.min(axis) + (nodeBB.max(axis) - nodeBB.min(axis)) / 2;
 
   auto newRightBB = nodeBB;
   auto newLeftBB = nodeBB;

@@ -51,10 +51,10 @@ template <std::floating_point T>
 bool isOverlap(Segment2D<T> &segm1, Segment2D<T> &segm2);
 
 template <std::forward_iterator It>
-bool isSameSign(It begin, It end);
+bool isAllPosNeg(It begin, It end);
 
-template <Number T>
-bool isSameSign(T num1, T num2);
+template <std::floating_point T>
+bool isAllPosNeg(T num1, T num2);
 
 template <std::floating_point T>
 bool isOnOneSide(const Plane<T> &pl, const Triangle<T> &tr);
@@ -82,8 +82,7 @@ bool isIntersect2D(const Triangle<T> &tr1, const Triangle<T> &tr2)
   auto trian2 = getTrian2(pl, tr2);
 
   for (auto trian : {trian1, trian2})
-  {
-    for (size_t i0 = 0, i1 = 2; i0 < 3; i1 = i0, ++i0)
+    for (std::size_t i0 = 0, i1 = 2; i0 < 3; i1 = i0, ++i0)
     {
       auto d = (trian[i0] - trian[i1]).getPerp();
 
@@ -93,7 +92,6 @@ bool isIntersect2D(const Triangle<T> &tr1, const Triangle<T> &tr2)
       if (s2.second < s1.first || s1.second < s2.first)
         return false;
     }
-  }
 
   return true;
 }
@@ -117,42 +115,38 @@ Segment2D<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const
 {
   /* Project the triangle vertices onto line */
   std::array<T, 3> vert{};
-  for (size_t i = 0; i < 3; ++i)
-    vert[i] = dot(l.dir(), tr[i] - l.org());
+  std::transform(tr.begin(), tr.end(), vert.begin(),
+                 [dir = l.dir(), org = l.org()](auto &&v) { return dot(dir, v - org); });
 
   std::array<T, 3> sdist{};
-  for (size_t i = 0; i < 3; ++i)
-    sdist[i] = distance(pl, tr[i]);
+  std::transform(tr.begin(), tr.end(), sdist.begin(), std::bind_front(distance<T>, pl));
 
   std::array<bool, 3> isOneSide{};
-  for (size_t i = 0; i < 3; ++i)
-    isOneSide[i] = isSameSign(sdist[i], sdist[(i + 1) % 3]);
+  for (std::size_t i = 0; i < 3; ++i)
+    isOneSide[i] = isAllPosNeg(sdist[i], sdist[(i + 1) % 3]);
 
   /* Looking for vertex which is alone on it's side */
-  size_t rogue = 0;
+  std::size_t rogue = 0;
   if (std::all_of(isOneSide.begin(), isOneSide.end(), [](const auto &elem) { return !elem; }))
   {
-    for (size_t i = 0; i < 3; ++i)
-      if (!Vec3<T>::isNumEq(0, sdist[i]))
-        rogue = i;
+    auto rogueIt = std::find_if_not(sdist.rbegin(), sdist.rend(), ThresComp<T>::isZero);
+    if (rogueIt != sdist.rend())
+      rogue = std::distance(rogueIt, sdist.rend()) - 1;
   }
   else
   {
-    for (size_t i = 0; i < 3; ++i)
+    for (std::size_t i = 0; i < 3; ++i)
       if (isOneSide[i])
         rogue = (i + 2) % 3;
   }
 
-  std::vector<T> segm{};
+  std::array<T, 2> segm{};
   std::array<size_t, 2> arr{(rogue + 1) % 3, (rogue + 2) % 3};
+  std::transform(arr.begin(), arr.end(), segm.begin(), [&vert, &sdist, rogue](auto i) {
+    return vert[i] + (vert[rogue] - vert[i]) * sdist[i] / (sdist[i] - sdist[rogue]);
+  });
 
-  for (size_t i : arr)
-    segm.push_back(vert[i] + (vert[rogue] - vert[i]) * sdist[i] / (sdist[i] - sdist[rogue]));
-
-  /* Sort segment's ends */
-  if (segm[0] > segm[1])
-    std::swap(segm[0], segm[1]);
-
+  std::sort(segm.begin(), segm.end());
   return {segm[0], segm[1]};
 }
 
@@ -189,7 +183,7 @@ bool isIntersectValidInvalid(const Triangle<T> &valid, const Triangle<T> &invali
   if (dst1 * dst2 > 0)
     return false;
 
-  if (Vec3<T>::isNumEq(dst1, 0) && Vec3<T>::isNumEq(dst2, 0))
+  if (ThresComp<T>::isZero(dst1) && ThresComp<T>::isZero(dst2))
     return isIntersect2D(valid, invalid);
 
   dst1 = std::abs(dst1);
@@ -223,7 +217,7 @@ bool isIntersectPointTriangle(const Vec3<T> &pt, const Triangle<T> &tr)
   auto v = (dotE1E1 * dotE2PT - dotE1E2 * dotE1PT) / denom;
 
   /* Point belongs to triangle if: (u >= 0) && (v >= 0) && (u + v <= 1) */
-  auto eps = Vec3<T>::getThreshold();
+  auto eps = ThresComp<T>::getThreshold();
   return (u > -eps) && (v > -eps) && (u + v < 1 + eps);
 }
 
@@ -237,7 +231,7 @@ bool isIntersectPointSegment(const Vec3<T> &pt, const Segment3D<T> &segm)
   auto beg = dot(l.dir(), segm.first - pt);
   auto end = dot(l.dir(), segm.second - pt);
 
-  return !isSameSign(beg, end);
+  return !isAllPosNeg(beg, end);
 }
 
 template <std::floating_point T>
@@ -277,37 +271,30 @@ bool isOverlap(Segment2D<T> &segm1, Segment2D<T> &segm2)
 }
 
 template <std::forward_iterator It>
-bool isSameSign(It begin, It end)
+bool isAllPosNeg(It begin, It end)
 {
-  auto cur = begin;
-  auto prev = begin;
+  if (begin == end)
+    return true;
 
-  for (++cur; cur != end; ++cur)
-    if ((*cur) * (*prev) <= 0)
-      return false;
-
-  return true;
+  bool fst = (*begin > 0);
+  return std::none_of(std::next(begin), end, [fst](auto &&elt) {
+    return (elt > 0) != fst || ThresComp<std::remove_reference_t<decltype(elt)>>::isZero(elt);
+  });
 }
 
-template <Number T>
-bool isSameSign(T num1, T num2)
+template <std::floating_point T>
+bool isAllPosNeg(T num1, T num2)
 {
-  if (num1 * num2 > Vec3<T>::getThreshold())
-    return true;
-  return Vec3<T>::isNumEq(num1, 0) && Vec3<T>::isNumEq(num2, 0);
+  auto thres = ThresComp<T>::getThreshold();
+  return (num1 > thres && num2 > thres) || (num1 < -thres && num2 < -thres);
 }
 
 template <std::floating_point T>
 bool isOnOneSide(const Plane<T> &pl, const Triangle<T> &tr)
 {
   std::array<T, 3> sdist{};
-  for (size_t i = 0; i < 3; ++i)
-    sdist[i] = distance(pl, tr[i]);
-
-  if (detail::isSameSign(sdist.begin(), sdist.end()))
-    return true;
-
-  return false;
+  std::transform(tr.begin(), tr.end(), sdist.begin(), std::bind_front(distance<T>, pl));
+  return detail::isAllPosNeg(sdist.begin(), sdist.end());
 }
 
 template <std::floating_point T>
@@ -326,11 +313,11 @@ Trian2<T> getTrian2(const Plane<T> &pl, const Triangle<T> &tr)
                  [&norm](const auto &axis) { return std::abs(dot(axis, norm)); });
 
   auto maxIt = std::max_element(xyzDot.begin(), xyzDot.end());
-  auto maxIdx = static_cast<size_t>(maxIt - xyzDot.begin());
+  auto maxIdx = static_cast<std::size_t>(std::distance(xyzDot.begin(), maxIt));
 
   Trian2<T> res;
-  for (size_t i = 0; i < 3; ++i)
-    for (size_t j = 0, k = 0; j < 2; ++j, ++k)
+  for (std::size_t i = 0; i < 3; ++i)
+    for (std::size_t j = 0, k = 0; j < 2; ++j, ++k)
     {
       if (k == maxIdx)
         ++k;
@@ -367,28 +354,21 @@ bool isCounterClockwise(Trian2<T> &tr)
 template <std::floating_point T>
 Segment2D<T> computeInterval(const Trian2<T> &tr, const Vec2<T> &d)
 {
-  auto init = dot(d, tr[0]);
-  auto min = init;
-  auto max = init;
-
-  for (size_t i = 1; i < 3; ++i)
-    if (auto val = dot(d, tr[i]); val < min)
-      min = val;
-    else if (val > max)
-      max = val;
-
-  return {min, max};
+  std::array<T, 3> dotArr{};
+  std::transform(tr.begin(), tr.end(), dotArr.begin(), [&d](auto &&v) { return dot(d, v); });
+  auto mmIt = std::minmax_element(dotArr.begin(), dotArr.end());
+  return {*mmIt.first, *mmIt.second};
 }
 
 template <std::floating_point T>
 Segment3D<T> getSegment(const Triangle<T> &tr)
 {
   std::array<T, 3> lenArr{};
-  for (size_t i = 0; i < 3; ++i)
+  for (std::size_t i = 0; i < 3; ++i)
     lenArr[i] = (tr[i] - tr[i + 1]).length2();
 
   auto maxIt = std::max_element(lenArr.begin(), lenArr.end());
-  auto maxIdx = static_cast<size_t>(maxIt - lenArr.begin());
+  auto maxIdx = static_cast<std::size_t>(std::distance(lenArr.begin(), maxIt));
 
   return {tr[maxIdx], tr[maxIdx + 1]};
 }

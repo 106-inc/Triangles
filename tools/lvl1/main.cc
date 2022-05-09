@@ -54,16 +54,17 @@ void intersect(typename Container<T>::ConstIterator &trIt, std::set<Index> &intI
   }
 }
 
-int main()
+template <std::floating_point T>
+int lvl1Main()
 {
-  size_t n = 0;
+  std::size_t n = 0;
   std::cin >> n;
   std::set<Index> intersectIndicies{};
 
-  KdTree<float> tree{};
-  for (size_t i = 0; i < n; ++i)
+  KdTree<T> tree{};
+  for (std::size_t i = 0; i < n; ++i)
   {
-    Triangle<float> tr{};
+    Triangle<T> tr{};
     std::cin >> tr;
     tree.insert(tr);
   }
@@ -72,9 +73,16 @@ int main()
   {
     selfIntersect(cont, intersectIndicies);
     for (auto trIt = cont.begin(), trEnd = cont.end(); trIt != trEnd; ++trIt)
-      intersect<float>(trIt, intersectIndicies, cont);
+      intersect<T>(trIt, intersectIndicies, cont);
   }
 
   for (auto elem : intersectIndicies)
     std::cout << elem << std::endl;
+
+  return 0;
+}
+
+int main()
+{
+  return lvl1Main<float>();
 }

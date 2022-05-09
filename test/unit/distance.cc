@@ -19,7 +19,7 @@ TYPED_TEST(DistanceTest, PlanePoint1)
   auto dist = distance(pl, pt);
 
   // Assert
-  EXPECT_NEAR(dist, 1, Vec3<TypeParam>::getThreshold());
+  EXPECT_NEAR(dist, 1, ThresComp<TypeParam>::getThreshold());
 }
 
 TYPED_TEST(DistanceTest, PlanePoint2)
@@ -32,7 +32,7 @@ TYPED_TEST(DistanceTest, PlanePoint2)
   auto dist = distance(pl, pt);
 
   // Assert
-  EXPECT_NEAR(dist, -7, Vec3<TypeParam>::getThreshold());
+  EXPECT_NEAR(dist, -7, ThresComp<TypeParam>::getThreshold());
 }
 
 #include "test_footer.hh"

@@ -243,7 +243,7 @@ TYPED_TEST(IntersectionDetail, intervalOverlap)
   EXPECT_FALSE(detail::isOverlap(interv7, interv1));
 }
 
-TYPED_TEST(IntersectionDetail, isSameSign)
+TYPED_TEST(IntersectionDetail, isAllPosNeg)
 {
   // Arrange
   std::vector<TypeParam> arr1{1.0, 34.0, 5.0, 2.0};
@@ -251,9 +251,9 @@ TYPED_TEST(IntersectionDetail, isSameSign)
   std::vector<TypeParam> arr3{0.0, 34.0, 5.0, 2.0};
 
   // Act & Assert
-  EXPECT_TRUE(detail::isSameSign(arr1.begin(), arr1.end()));
-  EXPECT_FALSE(detail::isSameSign(arr2.begin(), arr2.end()));
-  EXPECT_FALSE(detail::isSameSign(arr3.begin(), arr3.end()));
+  EXPECT_TRUE(detail::isAllPosNeg(arr1.begin(), arr1.end()));
+  EXPECT_FALSE(detail::isAllPosNeg(arr2.begin(), arr2.end()));
+  EXPECT_FALSE(detail::isAllPosNeg(arr3.begin(), arr3.end()));
 }
 
 TYPED_TEST(IntersectionDetail, isOnOneSide)

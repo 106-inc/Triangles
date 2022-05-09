@@ -8,20 +8,15 @@
 
 ## Building
 
-To build and test Triangle project you have to install several packages: `libgtest-dev`.
-
-```bash
-$ sudo apt-get install libgtest-dev
-```
-
-After that you have to configure `cmake`. You are able to set any compiler which supports C++20 concepts, any build type, turn on/off documentation build or set generator:
+At first you have to configure `cmake`. You are able to set any compiler which supports C++20 concepts, any build type, turn on/off documentation build or set generator:
 
 ```bash
 $ cd /path/to/Triangles
 $ mkdir build & cd build
 $ cmake .. -DCMAKE_BUILD_TYPE=Release \
            -DCMAKE_CXX_COMPILER=clang++-10 \
-           -DBUILD_DOC=OFF
+           -DBUILD_DOC=OFF \
+           -DBUILD_TESTS=ON
 ```
 
 Then build project:
@@ -34,9 +29,11 @@ All the executables will be placed in `/path/to/Triangles/build/bin`.
 
 ## Running tests
 
-To run tests you have to install `llvm-10-tools` package and python library named `lit`:
+To configure project with tests use option `BUILD_TESTS`.
+To run tests you have to install `llvm-10-tools` and `libgtest-dev` packages and also python library named `lit`:
 
 ```bash
+$ sudo apt-get install libgtest-dev
 $ sudo apt-get install llvm-10-tools
 $ pip3 install lit
 ```

@@ -40,14 +40,28 @@ public:
    *
    * @return const Vec3<T>& const reference to origin vector
    */
-  const Vec3<T> &org() const;
+  const Vec3<T> &org() const &;
 
   /**
    * @brief Getter for direction vector
    *
    * @return const Vec3<T>& const reference to direction vector
    */
-  const Vec3<T> &dir() const;
+  const Vec3<T> &dir() const &;
+
+  /**
+   * @brief Getter for origin vector
+   *
+   * @return Vec3<T>&& reference to origin vector
+   */
+  Vec3<T> &&org() &&;
+
+  /**
+   * @brief Getter for direction vector
+   *
+   * @return Vec3<T>&& reference to direction vector
+   */
+  Vec3<T> &&dir() &&;
 
   /**
    * @brief Get point on line by parameter t
@@ -143,15 +157,27 @@ Line<T>::Line(const Vec3<T> &org, const Vec3<T> &dir) : org_{org}, dir_{dir}
 }
 
 template <std::floating_point T>
-const Vec3<T> &Line<T>::org() const
+const Vec3<T> &Line<T>::org() const &
 {
   return org_;
 }
 
 template <std::floating_point T>
-const Vec3<T> &Line<T>::dir() const
+const Vec3<T> &Line<T>::dir() const &
 {
   return dir_;
+}
+
+template <std::floating_point T>
+Vec3<T> &&Line<T>::org() &&
+{
+  return std::move(org_);
+}
+
+template <std::floating_point T>
+Vec3<T> &&Line<T>::dir() &&
+{
+  return std::move(dir_);
 }
 
 template <std::floating_point T>
@@ -183,7 +209,7 @@ template <std::floating_point T>
 bool Line<T>::isSkew(const Line<T> &line) const
 {
   auto res = triple(line.org_ - org_, dir_, line.dir_);
-  return !Vec3<T>::isNumEq(res, T{0});
+  return !ThresComp<T>::isZero(res);
 }
 
 template <std::floating_point T>

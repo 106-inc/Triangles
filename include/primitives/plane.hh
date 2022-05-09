@@ -53,7 +53,14 @@ public:
    *
    * @return const Vec3<T>& const reference to normal vector
    */
-  const Vec3<T> &norm() const;
+  const Vec3<T> &norm() const &;
+
+  /**
+   * @brief Getter for normal vector
+   *
+   * @return Vec3<T>&& reference to normal vector
+   */
+  Vec3<T> &&norm() &&;
 
   /**
    * @brief Checks if point belongs to plane
@@ -174,15 +181,21 @@ T Plane<T>::dist() const
 }
 
 template <std::floating_point T>
-const Vec3<T> &Plane<T>::norm() const
+const Vec3<T> &Plane<T>::norm() const &
 {
   return norm_;
 }
 
 template <std::floating_point T>
+Vec3<T> &&Plane<T>::norm() &&
+{
+  return std::move(norm_);
+}
+
+template <std::floating_point T>
 bool Plane<T>::belongs(const Vec3<T> &pt) const
 {
-  return Vec3<T>::isNumEq(norm_.dot(pt), dist_);
+  return ThresComp<T>::isEqual(norm_.dot(pt), dist_);
 }
 
 template <std::floating_point T>

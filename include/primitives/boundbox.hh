@@ -24,11 +24,14 @@ struct BoundBox
 
   bool belongsTo(const BoundBox<T> &bb);
 
-  T &min(Axis axis);
-  T &max(Axis axis);
+  T &min(Axis axis) &;
+  T &max(Axis axis) &;
 
-  const T &min(Axis axis) const;
-  const T &max(Axis axis) const;
+  T min(Axis axis) &&;
+  T max(Axis axis) &&;
+
+  T min(Axis axis) const &;
+  T max(Axis axis) const &;
 
   Axis getMaxDim() const;
 };
@@ -40,69 +43,60 @@ bool BoundBox<T>::belongsTo(const BoundBox<T> &bb)
          (maxY <= bb.maxY) && (maxZ <= bb.maxZ);
 }
 
+#define BBFILL(minmax)                                                                             \
+  do                                                                                               \
+  {                                                                                                \
+    switch (axis)                                                                                  \
+    {                                                                                              \
+    case Axis::X:                                                                                  \
+      return minmax##X;                                                                            \
+    case Axis::Y:                                                                                  \
+      return minmax##Y;                                                                            \
+    case Axis::Z:                                                                                  \
+      return minmax##Z;                                                                            \
+    case Axis::NONE:                                                                               \
+    default:                                                                                       \
+      throw std::logic_error("BoundBox<T>::" #minmax " (): Wrong input axis");                     \
+    }                                                                                              \
+  } while (false)
+
 template <std::floating_point T>
-T &BoundBox<T>::min(Axis axis)
+T &BoundBox<T>::min(Axis axis) &
 {
-  switch (axis)
-  {
-  case Axis::X:
-    return minX;
-  case Axis::Y:
-    return minY;
-  case Axis::Z:
-    return minZ;
-  default:
-    throw std::logic_error("BoundBox<T>::min(): Wrong input axis");
-  }
+  BBFILL(min);
 }
 
 template <std::floating_point T>
-T &BoundBox<T>::max(Axis axis)
+T &BoundBox<T>::max(Axis axis) &
 {
-  switch (axis)
-  {
-  case Axis::X:
-    return maxX;
-  case Axis::Y:
-    return maxY;
-  case Axis::Z:
-    return maxZ;
-  default:
-    throw std::logic_error("BoundBox<T>::max(): Wrong input axis");
-  }
+  BBFILL(max);
 }
 
 template <std::floating_point T>
-const T &BoundBox<T>::min(Axis axis) const
+T BoundBox<T>::min(Axis axis) &&
 {
-  switch (axis)
-  {
-  case Axis::X:
-    return minX;
-  case Axis::Y:
-    return minY;
-  case Axis::Z:
-    return minZ;
-  default:
-    throw std::logic_error("BoundBox<T>::min(): Wrong input axis");
-  }
+  BBFILL(min);
 }
 
 template <std::floating_point T>
-const T &BoundBox<T>::max(Axis axis) const
+T BoundBox<T>::max(Axis axis) &&
 {
-  switch (axis)
-  {
-  case Axis::X:
-    return maxX;
-  case Axis::Y:
-    return maxY;
-  case Axis::Z:
-    return maxZ;
-  default:
-    throw std::logic_error("BoundBox<T>::max(): Wrong input axis");
-  }
+  BBFILL(max);
 }
+
+template <std::floating_point T>
+T BoundBox<T>::min(Axis axis) const &
+{
+  BBFILL(min);
+}
+
+template <std::floating_point T>
+T BoundBox<T>::max(Axis axis) const &
+{
+  BBFILL(max);
+}
+
+#undef BBFILL
 
 template <std::floating_point T>
 Axis BoundBox<T>::getMaxDim() const
@@ -115,9 +109,9 @@ Axis BoundBox<T>::getMaxDim() const
 template <std::floating_point T>
 bool operator==(const BoundBox<T> &lhs, const BoundBox<T> &rhs)
 {
-  return Vec3<T>::isNumEq(lhs.minX, rhs.minX) && Vec3<T>::isNumEq(lhs.maxX, rhs.maxX) &&
-         Vec3<T>::isNumEq(lhs.minY, rhs.minY) && Vec3<T>::isNumEq(lhs.maxY, rhs.maxY) &&
-         Vec3<T>::isNumEq(lhs.minZ, rhs.minZ) && Vec3<T>::isNumEq(lhs.maxY, rhs.maxY);
+  return ThresComp<T>::isEqual(lhs.minX, rhs.minX) && ThresComp<T>::isEqual(lhs.maxX, rhs.maxX) &&
+         ThresComp<T>::isEqual(lhs.minY, rhs.minY) && ThresComp<T>::isEqual(lhs.maxY, rhs.maxY) &&
+         ThresComp<T>::isEqual(lhs.minZ, rhs.minZ) && ThresComp<T>::isEqual(lhs.maxY, rhs.maxY);
 }
 
 template <std::floating_point T>

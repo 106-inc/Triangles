@@ -10,7 +10,7 @@
 namespace geom::kdtree
 {
 
-using Index = size_t;
+using Index = std::size_t;
 
 template <std::floating_point T>
 struct Node final

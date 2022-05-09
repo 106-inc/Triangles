@@ -31,7 +31,7 @@ TYPED_TEST(Vec2Test, dot)
   auto res = v1.dot(v2);
 
   // Assert
-  EXPECT_NEAR(res, 14, Vec2<TypeParam>::getThreshold());
+  EXPECT_NEAR(res, 14, ThresComp<TypeParam>::getThreshold());
 }
 
 TYPED_TEST(Vec2Test, isEq)
