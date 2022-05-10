@@ -18,7 +18,7 @@ namespace geom::kdtree
 {
 
 template <std::floating_point T>
-class KdTree
+class KdTree final
 {
 private:
   std::unique_ptr<Node<T>> root_{};

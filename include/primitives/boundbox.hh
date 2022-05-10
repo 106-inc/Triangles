@@ -11,7 +11,7 @@ namespace geom
 {
 
 template <std::floating_point T>
-struct BoundBox
+struct BoundBox final
 {
   T minX{};
   T maxX{};
