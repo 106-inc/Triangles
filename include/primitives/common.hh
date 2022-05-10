@@ -68,15 +68,15 @@ public:
 };
 
 template <Number T>
-isEqualThreshold(T num1, T num2)
+bool isEqualThreshold(T num1, T num2)
 {
   return ThresComp<T>::isEqual(num1, num2);
 }
 
 template <Number T>
-isZeroThreshold(T num)
+bool isZeroThreshold(T num)
 {
-  return ThresComp<T>::isZero(num)
+  return ThresComp<T>::isZero(num);
 }
 
 } // namespace geom
