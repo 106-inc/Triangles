@@ -109,9 +109,9 @@ Axis BoundBox<T>::getMaxDim() const
 template <std::floating_point T>
 bool operator==(const BoundBox<T> &lhs, const BoundBox<T> &rhs)
 {
-  return ThresComp<T>::isEqual(lhs.minX, rhs.minX) && ThresComp<T>::isEqual(lhs.maxX, rhs.maxX) &&
-         ThresComp<T>::isEqual(lhs.minY, rhs.minY) && ThresComp<T>::isEqual(lhs.maxY, rhs.maxY) &&
-         ThresComp<T>::isEqual(lhs.minZ, rhs.minZ) && ThresComp<T>::isEqual(lhs.maxY, rhs.maxY);
+  return isEqualThreshold(lhs.minX, rhs.minX) && isEqualThreshold(lhs.maxX, rhs.maxX) &&
+         isEqualThreshold(lhs.minY, rhs.minY) && isEqualThreshold(lhs.maxY, rhs.maxY) &&
+         isEqualThreshold(lhs.minZ, rhs.minZ) && isEqualThreshold(lhs.maxY, rhs.maxY);
 }
 
 template <std::floating_point T>

@@ -418,7 +418,7 @@ template <std::floating_point T>
 Vec2<T> &Vec2<T>::normalize() &
 {
   T len2 = length2();
-  if (ThresComp<T>::isZero(len2) || ThresComp<T>::isEqual(len2, T{1}))
+  if (isZeroThreshold(len2) || isEqualThreshold(len2, T{1}))
     return *this;
   return *this /= std::sqrt(len2);
 }
@@ -469,19 +469,19 @@ template <std::floating_point T>
 bool Vec2<T>::isPar(const Vec2 &rhs) const
 {
   auto det = x * rhs.y - rhs.x * y;
-  return ThresComp<T>::isZero(det);
+  return isZeroThreshold(det);
 }
 
 template <std::floating_point T>
 bool Vec2<T>::isPerp(const Vec2 &rhs) const
 {
-  return ThresComp<T>::isZero(dot(rhs));
+  return isZeroThreshold(dot(rhs));
 }
 
 template <std::floating_point T>
 bool Vec2<T>::isEqual(const Vec2 &rhs) const
 {
-  return ThresComp<T>::isEqual(x, rhs.x) && ThresComp<T>::isEqual(y, rhs.y);
+  return isEqualThreshold(x, rhs.x) && isEqualThreshold(y, rhs.y);
 }
 
 } // namespace geom

@@ -129,7 +129,7 @@ Segment2D<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const
   std::size_t rogue = 0;
   if (std::all_of(isOneSide.begin(), isOneSide.end(), [](const auto &elem) { return !elem; }))
   {
-    auto rogueIt = std::find_if_not(sdist.rbegin(), sdist.rend(), ThresComp<T>::isZero);
+    auto rogueIt = std::find_if_not(sdist.rbegin(), sdist.rend(), isZeroThreshold<T>);
     if (rogueIt != sdist.rend())
       rogue = std::distance(rogueIt, sdist.rend()) - 1;
   }
@@ -183,7 +183,7 @@ bool isIntersectValidInvalid(const Triangle<T> &valid, const Triangle<T> &invali
   if (dst1 * dst2 > 0)
     return false;
 
-  if (ThresComp<T>::isZero(dst1) && ThresComp<T>::isZero(dst2))
+  if (isZeroThreshold(dst1) && isZeroThreshold(dst2))
     return isIntersect2D(valid, invalid);
 
   dst1 = std::abs(dst1);
@@ -278,7 +278,7 @@ bool isAllPosNeg(It begin, It end)
 
   bool fst = (*begin > 0);
   return std::none_of(std::next(begin), end, [fst](auto &&elt) {
-    return (elt > 0) != fst || ThresComp<std::remove_reference_t<decltype(elt)>>::isZero(elt);
+    return (elt > 0) != fst || isZeroThreshold(elt);
   });
 }
 

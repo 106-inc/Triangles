@@ -22,7 +22,7 @@ static void checkCtor(const Plane<T> &pl, const Vec3<T> &normExpected, T distExp
 
   // Assert
   EXPECT_TRUE(normExpected.isEqual(norm));
-  EXPECT_TRUE(ThresComp<T>::isEqual(distExpected, dist));
+  EXPECT_TRUE(isEqualThreshold(distExpected, dist));
 }
 
 TYPED_TEST(PlaneTest, ctor)
