@@ -66,8 +66,7 @@ public:
     reference operator*() const;
     pointer operator->() const;
 
-    bool operator==(const ConstIterator &lhs) const;
-    bool operator!=(const ConstIterator &lhs) const;
+    bool operator==(const ConstIterator &lhs) const = default;
   };
 };
 
@@ -204,18 +203,6 @@ template <std::floating_point T>
 typename Container<T>::ConstIterator::pointer Container<T>::ConstIterator::operator->() const
 {
   return &cont_->triangleByIndex(*curIdxIt_);
-}
-
-template <std::floating_point T>
-bool Container<T>::ConstIterator::operator==(const Container<T>::ConstIterator &lhs) const
-{
-  return (cont_ == lhs.cont_) && (curIdxIt_ == lhs.curIdxIt_);
-}
-
-template <std::floating_point T>
-bool Container<T>::ConstIterator::operator!=(const Container<T>::ConstIterator &lhs) const
-{
-  return !operator==(lhs);
 }
 
 } // namespace geom::kdtree
