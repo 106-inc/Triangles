@@ -146,8 +146,7 @@ Segment2D<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const
     return vert[i] + (vert[rogue] - vert[i]) * sdist[i] / (sdist[i] - sdist[rogue]);
   });
 
-  std::sort(segm.begin(), segm.end());
-  return {segm[0], segm[1]};
+  return std::minmax(segm[0], segm[1]);
 }
 
 template <std::floating_point T>
