@@ -1,0 +1,33 @@
+buildType:
+  default: debug
+  choices:
+    debug:
+      short: Debug
+      long: Build Triangles project in Debug mode
+      buildType: Debug
+    release:
+      short: Release
+      long: Build Triangles project in Release mode
+      buildType: Release
+
+buildDoc:
+  default: doc-on
+  choices:
+    doc-on:
+      short: build docs
+      long: Build Triangles project with documentation
+      settings:
+        BUILD_DOC: ON
+    doc-off:
+      short: not build docs
+      long: Build Triangles project without documentation
+      settings:
+        BUILD_DOC: OFF
+
+# Common way to use variants in settings.json:
+#
+# "cmake.buildDirectory": "${workspaceFolder}/build-${variant:buildType}-${variant:buildDoc}",
+# "cmake.configureSettings": {
+#   "CMAKE_CXX_COMPILER" : "/usr/bin/clang++-10",
+#   "BUILD_TESTS" : "ON"
+# }
