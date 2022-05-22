@@ -362,27 +362,32 @@ template <std::bidirectional_iterator It>
 std::size_t roguePos(It beg, It end)
 {
   using T = typename std::iterator_traits<It>::value_type;
+
+  auto isDiffSides = [thres = ThresComp<T>::getThreshold()](auto lhs, auto rhs) {
+    return (lhs > thres && rhs < -thres) || (lhs < -thres && rhs > thres);
+  };
+
+  for (std::size_t i = 0; i < 3; ++i)
+    if (isDiffSides(*(beg + i), *(beg + (i + 1) % 3)))
+      return i;
+
   std::array<bool, 3> isOneSide{};
   for (std::size_t i = 0; i < 3; ++i)
     isOneSide[i] = isAllPosNeg(*(beg + i), *(beg + (i + 1) % 3));
 
-  /* Looking for vertex which is alone on it's side */
-  std::size_t rogue = 0;
   if (std::none_of(isOneSide.begin(), isOneSide.end(), std::identity{}))
   {
     auto rbeg = std::reverse_iterator(end);
     auto rend = std::reverse_iterator(beg);
     auto rogueIt = std::find_if_not(rbeg, rend, isZeroThreshold<T>);
-    if (rogueIt != rend)
-      rogue = std::distance(rogueIt, rend) - 1;
+    return (rogueIt == rend) ? 0 : std::distance(rogueIt, rend) - 1;
   }
-  else
-  {
-    for (std::size_t i = 0; i < 3; ++i)
-      if (isOneSide[i])
-        rogue = (i + 2) % 3;
-  }
-  return rogue;
+
+  for (std::size_t i = 0; i < 3; ++i)
+    if (isOneSide[i])
+      return (i + 2) % 3;
+
+  return 0;
 }
 
 } // namespace geom::detail
