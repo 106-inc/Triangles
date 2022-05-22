@@ -58,9 +58,10 @@ TYPED_TEST(TriangleTest, boundBox)
 {
   // Arrange
   Triangle<TypeParam> tr{{-3, 4, 0}, {1, 1, -5}, {6, 0, 5}};
-  BoundBox<TypeParam> bb{-3 - ThresComp<TypeParam>::getThreshold(), 6 + ThresComp<TypeParam>::getThreshold(),
-                         0 - ThresComp<TypeParam>::getThreshold(),  4 + ThresComp<TypeParam>::getThreshold(),
-                         -5 - ThresComp<TypeParam>::getThreshold(), 5 + ThresComp<TypeParam>::getThreshold()};
+  BoundBox<TypeParam> bb{
+    -3 - ThresComp<TypeParam>::getThreshold(), 6 + ThresComp<TypeParam>::getThreshold(),
+    0 - ThresComp<TypeParam>::getThreshold(),  4 + ThresComp<TypeParam>::getThreshold(),
+    -5 - ThresComp<TypeParam>::getThreshold(), 5 + ThresComp<TypeParam>::getThreshold()};
 
   // Act & Assert
   EXPECT_EQ(tr.boundBox(), bb);

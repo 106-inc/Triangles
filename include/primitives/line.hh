@@ -36,6 +36,26 @@ public:
   Line(const Vec3<T> &org, const Vec3<T> &dir);
 
   /**
+   * @brief Line equality operator
+   *
+   * @tparam T - floating point type of coordinates
+   * @param[in] rhs 2nd line
+   * @return true if lines are equal
+   * @return false if lines are not equal
+   */
+  bool operator==(const Line &rhs) const;
+
+  /**
+   * @brief Line inequality operator
+   *
+   * @tparam T - floating point type of coordinates
+   * @param[in] rhs 2nd line
+   * @return true if lines are not equal
+   * @return false if lines are equal
+   */
+  bool operator!=(const Line &rhs) const;
+
+  /**
    * @brief Getter for origin vector
    *
    * @return const Vec3<T>& const reference to origin vector
@@ -134,26 +154,23 @@ std::ostream &operator<<(std::ostream &ost, const Line<T> &line)
   return ost;
 }
 
-/**
- * @brief Line equality operator
- *
- * @tparam T - floating point type of coordinates
- * @param[in] lhs 1st line
- * @param[in] rhs 2nd line
- * @return true if lines are equal
- * @return false if lines are not equal
- */
-template <std::floating_point T>
-bool operator==(const Line<T> &lhs, const Line<T> &rhs)
-{
-  return lhs.isEqual(rhs);
-}
-
 template <std::floating_point T>
 Line<T>::Line(const Vec3<T> &org, const Vec3<T> &dir) : org_{org}, dir_{dir}
 {
   if (dir_ == Vec3<T>{0})
     throw std::logic_error{"Direction vector equals zero."};
+}
+
+template <std::floating_point T>
+bool Line<T>::operator==(const Line &rhs) const
+{
+  return isEqual(rhs);
+}
+
+template <std::floating_point T>
+bool Line<T>::operator!=(const Line &rhs) const
+{
+  return !operator==(rhs);
 }
 
 template <std::floating_point T>
@@ -209,7 +226,7 @@ template <std::floating_point T>
 bool Line<T>::isSkew(const Line<T> &line) const
 {
   auto res = triple(line.org_ - org_, dir_, line.dir_);
-  return !ThresComp<T>::isZero(res);
+  return !isZeroThreshold(res);
 }
 
 template <std::floating_point T>

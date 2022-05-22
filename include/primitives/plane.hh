@@ -42,6 +42,26 @@ private:
 
 public:
   /**
+   * @brief Plane equality operator
+   *
+   * @tparam T - floating point type of coordinates
+   * @param[in] rhs 2nd plane
+   * @return true if planes are equal
+   * @return false if planes are not equal
+   */
+  bool operator==(const Plane &rhs) const;
+
+  /**
+   * @brief Plane inequality operator
+   *
+   * @tparam T - floating point type of coordinates
+   * @param[in] rhs 2nd plane
+   * @return true if planes are not equal
+   * @return false if planes are equal
+   */
+  bool operator!=(const Plane &rhs) const;
+
+  /**
    * @brief Getter for distance
    *
    * @return T value of distance
@@ -138,21 +158,6 @@ public:
 };
 
 /**
- * @brief Plane equality operator
- *
- * @tparam T - floating point type of coordinates
- * @param[in] lhs 1st plane
- * @param[in] rhs 2nd plane
- * @return true if planes are equal
- * @return false if planes are not equal
- */
-template <std::floating_point T>
-bool operator==(const Plane<T> &lhs, const Plane<T> &rhs)
-{
-  return lhs.isEqual(rhs);
-}
-
-/**
  * @brief Plane print operator
  *
  * @tparam T - floating point type of coordinates
@@ -172,6 +177,18 @@ Plane<T>::Plane(const Vec3<T> &norm, T dist) : norm_(norm), dist_(dist)
 {
   if (norm == Vec3<T>{0})
     throw std::logic_error{"normal vector equals to zero"};
+}
+
+template <std::floating_point T>
+bool Plane<T>::operator==(const Plane &rhs) const
+{
+  return isEqual(rhs);
+}
+
+template <std::floating_point T>
+bool Plane<T>::operator!=(const Plane &rhs) const
+{
+  return !operator==(rhs);
 }
 
 template <std::floating_point T>
@@ -195,7 +212,7 @@ Vec3<T> &&Plane<T>::norm() &&
 template <std::floating_point T>
 bool Plane<T>::belongs(const Vec3<T> &pt) const
 {
-  return ThresComp<T>::isEqual(norm_.dot(pt), dist_);
+  return isEqualThreshold(norm_.dot(pt), dist_);
 }
 
 template <std::floating_point T>

@@ -49,6 +49,26 @@ struct Vec3 final
   {}
 
   /**
+   * @brief Vec3 equality operator
+   *
+   * @tparam T vector template parameter
+   * @param[in] rhs second vector
+   * @return true if vectors are equal
+   * @return false otherwise
+   */
+  bool operator==(const Vec3 &rhs) const;
+
+  /**
+   * @brief Vec3 inequality operator
+   *
+   * @tparam T vector template parameter
+   * @param[in] rhs second vector
+   * @return true if vectors are not equal
+   * @return false otherwise
+   */
+  bool operator!=(const Vec3 &rhs) const;
+
+  /**
    * @brief Overloaded += operator
    * Increments vector coordinates by corresponding coordinates of vec
    * @param[in] vec vector to incremented with
@@ -322,36 +342,6 @@ T triple(const Vec3<T> &v1, const Vec3<T> &v2, const Vec3<T> &v3)
 }
 
 /**
- * @brief Vec3 equality operator
- *
- * @tparam T vector template parameter
- * @param[in] lhs first vector
- * @param[in] rhs second vector
- * @return true if vectors are equal
- * @return false otherwise
- */
-template <std::floating_point T>
-bool operator==(const Vec3<T> &lhs, const Vec3<T> &rhs)
-{
-  return lhs.isEqual(rhs);
-}
-
-/**
- * @brief Vec3 inequality operator
- *
- * @tparam T vector template parameter
- * @param[in] lhs first vector
- * @param[in] rhs second vector
- * @return true if vectors are not equal
- * @return false otherwise
- */
-template <std::floating_point T>
-bool operator!=(const Vec3<T> &lhs, const Vec3<T> &rhs)
-{
-  return !(lhs == rhs);
-}
-
-/**
  * @brief Vec3 print operator
  *
  * @tparam T vector template parameter
@@ -383,6 +373,18 @@ std::istream &operator>>(std::istream &ist, Vec3<T> &vec)
 
 using Vec3D = Vec3<double>;
 using Vec3F = Vec3<float>;
+
+template <std::floating_point T>
+bool Vec3<T>::operator==(const Vec3 &rhs) const
+{
+  return isEqual(rhs);
+}
+
+template <std::floating_point T>
+bool Vec3<T>::operator!=(const Vec3 &rhs) const
+{
+  return !operator==(rhs);
+}
 
 template <std::floating_point T>
 Vec3<T> &Vec3<T>::operator+=(const Vec3 &vec)
@@ -470,7 +472,7 @@ template <std::floating_point T>
 Vec3<T> &Vec3<T>::normalize() &
 {
   T len2 = length2();
-  if (ThresComp<T>::isZero(len2) || ThresComp<T>::isEqual(len2, T{1}))
+  if (isZeroThreshold(len2) || isEqualThreshold(len2, T{1}))
     return *this;
   return *this /= std::sqrt(len2);
 }
@@ -532,14 +534,13 @@ bool Vec3<T>::isPar(const Vec3 &rhs) const
 template <std::floating_point T>
 bool Vec3<T>::isPerp(const Vec3 &rhs) const
 {
-  return ThresComp<T>::isZero(dot(rhs));
+  return isZeroThreshold(dot(rhs));
 }
 
 template <std::floating_point T>
 bool Vec3<T>::isEqual(const Vec3 &rhs) const
 {
-  return ThresComp<T>::isEqual(x, rhs.x) && ThresComp<T>::isEqual(y, rhs.y) &&
-         ThresComp<T>::isEqual(z, rhs.z);
+  return isEqualThreshold(x, rhs.x) && isEqualThreshold(y, rhs.y) && isEqualThreshold(z, rhs.z);
 }
 
 } // namespace geom

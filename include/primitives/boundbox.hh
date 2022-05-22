@@ -11,7 +11,7 @@ namespace geom
 {
 
 template <std::floating_point T>
-struct BoundBox
+struct BoundBox final
 {
   T minX{};
   T maxX{};
@@ -34,6 +34,9 @@ struct BoundBox
   T max(Axis axis) const &;
 
   Axis getMaxDim() const;
+
+  bool operator==(const BoundBox &rhs) const;
+  bool operator!=(const BoundBox &rhs) const;
 };
 
 template <std::floating_point T>
@@ -101,17 +104,23 @@ T BoundBox<T>::max(Axis axis) const &
 template <std::floating_point T>
 Axis BoundBox<T>::getMaxDim() const
 {
-  return std::max({Axis::X, Axis::Y, Axis::Z}, [this](const auto &lhs, const auto &rhs) {
+  return std::max({Axis::X, Axis::Y, Axis::Z}, [this](auto lhs, auto rhs) {
     return (this->max(lhs) - this->min(lhs)) < (this->max(rhs) - this->min(rhs));
   });
 }
 
 template <std::floating_point T>
-bool operator==(const BoundBox<T> &lhs, const BoundBox<T> &rhs)
+bool BoundBox<T>::operator==(const BoundBox &rhs) const
 {
-  return ThresComp<T>::isEqual(lhs.minX, rhs.minX) && ThresComp<T>::isEqual(lhs.maxX, rhs.maxX) &&
-         ThresComp<T>::isEqual(lhs.minY, rhs.minY) && ThresComp<T>::isEqual(lhs.maxY, rhs.maxY) &&
-         ThresComp<T>::isEqual(lhs.minZ, rhs.minZ) && ThresComp<T>::isEqual(lhs.maxY, rhs.maxY);
+  return isEqualThreshold(minX, rhs.minX) && isEqualThreshold(maxX, rhs.maxX) &&
+         isEqualThreshold(minY, rhs.minY) && isEqualThreshold(maxY, rhs.maxY) &&
+         isEqualThreshold(minZ, rhs.minZ) && isEqualThreshold(maxY, rhs.maxY);
+}
+
+template <std::floating_point T>
+bool BoundBox<T>::operator!=(const BoundBox &rhs) const
+{
+  return !operator==(rhs);
 }
 
 template <std::floating_point T>

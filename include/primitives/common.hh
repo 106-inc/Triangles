@@ -67,6 +67,18 @@ public:
   }
 };
 
+template <Number T>
+bool isEqualThreshold(T num1, T num2)
+{
+  return ThresComp<T>::isEqual(num1, num2);
+}
+
+template <Number T>
+bool isZeroThreshold(T num)
+{
+  return ThresComp<T>::isZero(num);
+}
+
 } // namespace geom
 
 #endif // __INCLUDE_PRIMITIVES_COMMON_HH__
