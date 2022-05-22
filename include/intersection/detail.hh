@@ -71,6 +71,9 @@ Segment2D<T> computeInterval(const Trian2<T> &tr, const Vec2<T> &d);
 template <std::floating_point T>
 Segment3D<T> getSegment(const Triangle<T> &tr);
 
+template <std::bidirectional_iterator It>
+std::size_t roguePos(It begin, It end);
+
 //======================================================================
 
 template <std::floating_point T>
@@ -121,24 +124,8 @@ Segment2D<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const
   std::array<T, 3> sdist{};
   std::transform(tr.begin(), tr.end(), sdist.begin(), std::bind_front(distance<T>, pl));
 
-  std::array<bool, 3> isOneSide{};
-  for (std::size_t i = 0; i < 3; ++i)
-    isOneSide[i] = isAllPosNeg(sdist[i], sdist[(i + 1) % 3]);
-
   /* Looking for vertex which is alone on it's side */
-  std::size_t rogue = 0;
-  if (std::all_of(isOneSide.begin(), isOneSide.end(), [](auto elem) { return !elem; }))
-  {
-    auto rogueIt = std::find_if_not(sdist.rbegin(), sdist.rend(), isZeroThreshold<T>);
-    if (rogueIt != sdist.rend())
-      rogue = std::distance(rogueIt, sdist.rend()) - 1;
-  }
-  else
-  {
-    for (std::size_t i = 0; i < 3; ++i)
-      if (isOneSide[i])
-        rogue = (i + 2) % 3;
-  }
+  std::size_t rogue = roguePos(sdist.begin(), sdist.end());
 
   std::array<T, 2> segm{};
   std::array<size_t, 2> arr{(rogue + 1) % 3, (rogue + 2) % 3};
@@ -369,6 +356,33 @@ Segment3D<T> getSegment(const Triangle<T> &tr)
   auto maxIdx = static_cast<std::size_t>(std::distance(lenArr.begin(), maxIt));
 
   return {tr[maxIdx], tr[maxIdx + 1]};
+}
+
+template <std::bidirectional_iterator It>
+std::size_t roguePos(It beg, It end)
+{
+  using T = typename std::iterator_traits<It>::value_type;
+  std::array<bool, 3> isOneSide{};
+  for (std::size_t i = 0; i < 3; ++i)
+    isOneSide[i] = isAllPosNeg(*(beg + i), *(beg + (i + 1) % 3));
+
+  /* Looking for vertex which is alone on it's side */
+  std::size_t rogue = 0;
+  if (std::none_of(isOneSide.begin(), isOneSide.end(), std::identity{}))
+  {
+    auto rbeg = std::reverse_iterator(end);
+    auto rend = std::reverse_iterator(beg);
+    auto rogueIt = std::find_if_not(rbeg, rend, isZeroThreshold<T>);
+    if (rogueIt != rend)
+      rogue = std::distance(rogueIt, rend) - 1;
+  }
+  else
+  {
+    for (std::size_t i = 0; i < 3; ++i)
+      if (isOneSide[i])
+        rogue = (i + 2) % 3;
+  }
+  return rogue;
 }
 
 } // namespace geom::detail
