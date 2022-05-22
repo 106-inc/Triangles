@@ -104,7 +104,7 @@ T BoundBox<T>::max(Axis axis) const &
 template <std::floating_point T>
 Axis BoundBox<T>::getMaxDim() const
 {
-  return std::max({Axis::X, Axis::Y, Axis::Z}, [this](const auto &lhs, const auto &rhs) {
+  return std::max({Axis::X, Axis::Y, Axis::Z}, [this](auto lhs, auto rhs) {
     return (this->max(lhs) - this->min(lhs)) < (this->max(rhs) - this->min(rhs));
   });
 }

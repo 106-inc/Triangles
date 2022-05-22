@@ -127,7 +127,7 @@ Segment2D<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const
 
   /* Looking for vertex which is alone on it's side */
   std::size_t rogue = 0;
-  if (std::all_of(isOneSide.begin(), isOneSide.end(), [](const auto &elem) { return !elem; }))
+  if (std::all_of(isOneSide.begin(), isOneSide.end(), [](auto elem) { return !elem; }))
   {
     auto rogueIt = std::find_if_not(sdist.rbegin(), sdist.rend(), isZeroThreshold<T>);
     if (rogueIt != sdist.rend())
