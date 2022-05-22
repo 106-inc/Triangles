@@ -276,9 +276,8 @@ bool isAllPosNeg(It begin, It end)
     return true;
 
   bool fst = (*begin > 0);
-  return std::none_of(std::next(begin), end, [fst](auto &&elt) {
-    return (elt > 0) != fst || isZeroThreshold(elt);
-  });
+  return std::none_of(std::next(begin), end,
+                      [fst](auto &&elt) { return (elt > 0) != fst || isZeroThreshold(elt); });
 }
 
 template <std::floating_point T>

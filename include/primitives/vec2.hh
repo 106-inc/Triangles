@@ -48,6 +48,26 @@ struct Vec2 final
   {}
 
   /**
+   * @brief Vec2 equality operator
+   *
+   * @tparam T vector template parameter
+   * @param[in] rhs second vector
+   * @return true if vectors are equal
+   * @return false otherwise
+   */
+  bool operator==(const Vec2 &rhs) const;
+
+  /**
+   * @brief Vec2 equality operator
+   *
+   * @tparam T vector template parameter
+   * @param[in] rhs second vector
+   * @return true if vectors are not equal
+   * @return false otherwise
+   */
+  bool operator!=(const Vec2 &rhs) const;
+
+  /**
    * @brief Overloaded += operator
    * Increments vector coordinates by corresponding coordinates of vec
    * @param[in] vec vector to incremented with
@@ -291,36 +311,6 @@ T dot(const Vec2<T> &lhs, const Vec2<T> &rhs)
 }
 
 /**
- * @brief Vec2 equality operator
- *
- * @tparam T vector template parameter
- * @param[in] lhs first vector
- * @param[in] rhs second vector
- * @return true if vectors are equal
- * @return false otherwise
- */
-template <std::floating_point T>
-bool operator==(const Vec2<T> &lhs, const Vec2<T> &rhs)
-{
-  return lhs.isEqual(rhs);
-}
-
-/**
- * @brief Vec2 inequality operator
- *
- * @tparam T vector template parameter
- * @param[in] lhs first vector
- * @param[in] rhs second vector
- * @return true if vectors are not equal
- * @return false otherwise
- */
-template <std::floating_point T>
-bool operator!=(const Vec2<T> &lhs, const Vec2<T> &rhs)
-{
-  return !(lhs == rhs);
-}
-
-/**
  * @brief Vec2 print operator
  *
  * @tparam T vector template parameter
@@ -337,6 +327,18 @@ std::ostream &operator<<(std::ostream &ost, const Vec2<T> &vec)
 
 using Vec2D = Vec2<double>;
 using Vec2F = Vec2<float>;
+
+template <std::floating_point T>
+bool Vec2<T>::operator==(const Vec2 &rhs) const
+{
+  return isEqual(rhs);
+}
+
+template <std::floating_point T>
+bool Vec2<T>::operator!=(const Vec2 &rhs) const
+{
+  return !operator==(rhs);
+}
 
 template <std::floating_point T>
 Vec2<T> &Vec2<T>::operator+=(const Vec2 &vec)

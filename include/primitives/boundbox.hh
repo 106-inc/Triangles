@@ -34,6 +34,9 @@ struct BoundBox final
   T max(Axis axis) const &;
 
   Axis getMaxDim() const;
+
+  bool operator==(const BoundBox &rhs) const;
+  bool operator!=(const BoundBox &rhs) const;
 };
 
 template <std::floating_point T>
@@ -107,11 +110,17 @@ Axis BoundBox<T>::getMaxDim() const
 }
 
 template <std::floating_point T>
-bool operator==(const BoundBox<T> &lhs, const BoundBox<T> &rhs)
+bool BoundBox<T>::operator==(const BoundBox &rhs) const
 {
-  return isEqualThreshold(lhs.minX, rhs.minX) && isEqualThreshold(lhs.maxX, rhs.maxX) &&
-         isEqualThreshold(lhs.minY, rhs.minY) && isEqualThreshold(lhs.maxY, rhs.maxY) &&
-         isEqualThreshold(lhs.minZ, rhs.minZ) && isEqualThreshold(lhs.maxY, rhs.maxY);
+  return isEqualThreshold(minX, rhs.minX) && isEqualThreshold(maxX, rhs.maxX) &&
+         isEqualThreshold(minY, rhs.minY) && isEqualThreshold(maxY, rhs.maxY) &&
+         isEqualThreshold(minZ, rhs.minZ) && isEqualThreshold(maxY, rhs.maxY);
+}
+
+template <std::floating_point T>
+bool BoundBox<T>::operator!=(const BoundBox &rhs) const
+{
+  return !operator==(rhs);
 }
 
 template <std::floating_point T>
