@@ -1,10 +1,12 @@
 #define VULKAN_HPP_NO_STRUCT_CONSTRUCTORS
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.hpp>
 
 #include <cstdlib>
 #include <iostream>
 #include <optional>
+#include <set>
 #include <stdexcept>
 
 constexpr uint32_t WIDTH = 800;
@@ -48,15 +50,11 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 struct QueueFamilyIndices
 {
   std::optional<uint32_t> graphicsFamily;
+  std::optional<uint32_t> presentFamily;
 
   bool isComplete()
   {
-    return graphicsFamily.has_value();
-  }
-
-  uint32_t value()
-  {
-    return graphicsFamily.value();
+    return graphicsFamily.has_value() && presentFamily.has_value();
   }
 };
 
@@ -75,12 +73,14 @@ private:
   GLFWwindow *window_;
 
   vk::UniqueInstance instance_;
-  VkDebugUtilsMessengerEXT debugMessenger_; // move to vulkan.hpp somehow...
+  VkDebugUtilsMessengerEXT debugMessenger_;
+  vk::SurfaceKHR surface_;
 
   vk::PhysicalDevice physicalDevice_;
   vk::UniqueDevice device_;
 
   vk::Queue graphicsQueue_;
+  vk::Queue presentQueue_;
 
   void initWindow()
   {
@@ -96,6 +96,7 @@ private:
   {
     createInstance();
     setupDebugMessenger();
+    createSurface();
     pickPhysicalDevice();
     createLogicalDevice();
   }
@@ -112,6 +113,8 @@ private:
   {
     if constexpr (enableValidationLayers)
       DestroyDebugUtilsMessengerEXT(*instance_, debugMessenger_, nullptr);
+
+    instance_->destroySurfaceKHR(surface_);
 
     glfwDestroyWindow(window_);
     glfwTerminate();
@@ -161,7 +164,7 @@ private:
                   .messageType = vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
                                  vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
                                  vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance,
-                  .pfnUserCallback = debugCallback};
+                  .pfnUserCallback = &debugCallback};
   }
 
   void setupDebugMessenger()
@@ -177,6 +180,14 @@ private:
       nullptr, &debugMessenger_);
     if (createDebugRes != VK_SUCCESS)
       throw std::runtime_error("failed to set up debug callback!");
+  }
+
+  void createSurface()
+  {
+    VkSurfaceKHR rawSurface;
+    if (glfwCreateWindowSurface(*instance_, window_, nullptr, &rawSurface) != VK_SUCCESS)
+      throw std::runtime_error("failed to create window surface!");
+    surface_ = rawSurface;
   }
 
   void pickPhysicalDevice()
@@ -200,13 +211,21 @@ private:
   {
     auto indices = findQueueFamilies(physicalDevice_);
 
+    std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos{};
+    std::set<uint32_t> uniqueQueueFamilies{indices.graphicsFamily.value(),
+                                           indices.presentFamily.value()};
+
     float queuePriority = 1.0;
-    vk::DeviceQueueCreateInfo queueCreateInfo{
-      .queueFamilyIndex = indices.value(), .queueCount = 1, .pQueuePriorities = &queuePriority};
+    for (auto queueFamily : uniqueQueueFamilies)
+    {
+      vk::DeviceQueueCreateInfo queueCreateInfo{
+        .queueFamilyIndex = queueFamily, .queueCount = 1, .pQueuePriorities = &queuePriority};
+      queueCreateInfos.push_back(queueCreateInfo);
+    }
 
     vk::PhysicalDeviceFeatures deviceFeatures{};
-    vk::DeviceCreateInfo createInfo{.queueCreateInfoCount = 1,
-                                    .pQueueCreateInfos = &queueCreateInfo,
+    vk::DeviceCreateInfo createInfo{.queueCreateInfoCount = queueCreateInfos.size(),
+                                    .pQueueCreateInfos = queueCreateInfos.data(),
                                     .enabledExtensionCount = 0,
                                     .pEnabledFeatures = &deviceFeatures};
 
@@ -217,7 +236,8 @@ private:
     }
 
     device_ = physicalDevice_.createDeviceUnique(createInfo);
-    graphicsQueue_ = device_->getQueue(indices.value(), 0);
+    graphicsQueue_ = device_->getQueue(indices.graphicsFamily.value(), 0);
+    presentQueue_ = device_->getQueue(indices.presentFamily.value(), 0);
   }
 
   QueueFamilyIndices findQueueFamilies(vk::PhysicalDevice device)
@@ -228,6 +248,9 @@ private:
     for (const auto &queueFamily : queueFamilies)
     {
       if (queueFamily.queueFlags & vk::QueueFlagBits::eGraphics)
+        indices.graphicsFamily = i;
+
+      if (device.getSurfaceSupportKHR(i, surface_))
         indices.graphicsFamily = i;
 
       if (indices.isComplete())
