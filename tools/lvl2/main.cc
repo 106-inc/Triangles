@@ -12,7 +12,8 @@
 constexpr uint32_t WIDTH = 800;
 constexpr uint32_t HEIGHT = 600;
 
-const std::vector<const char *> validationLayers{"VK_LAYER_KHRONOS_validation"};
+const std::vector<const char *> VALIDATION_LAYERS{"VK_LAYER_KHRONOS_validation"};
+const std::vector<const char *> DEVICE_EXTENSIONS{VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
 #ifdef NDEBUG
 constexpr bool enableValidationLayers = false;
@@ -73,7 +74,7 @@ private:
   GLFWwindow *window_;
 
   vk::UniqueInstance instance_;
-  VkDebugUtilsMessengerEXT debugMessenger_;
+  vk::DebugUtilsMessengerEXT debugMessenger_;
   vk::SurfaceKHR surface_;
 
   vk::PhysicalDevice physicalDevice_;
@@ -141,8 +142,8 @@ private:
     vk::DebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
     if constexpr (enableValidationLayers)
     {
-      createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-      createInfo.ppEnabledLayerNames = validationLayers.data();
+      createInfo.enabledLayerCount = static_cast<uint32_t>(VALIDATION_LAYERS.size());
+      createInfo.ppEnabledLayerNames = VALIDATION_LAYERS.data();
 
       populateDebugMessengerCreateInfo(debugCreateInfo);
       vk::StructureChain<vk::InstanceCreateInfo, vk::DebugUtilsMessengerCreateInfoEXT>
@@ -172,14 +173,11 @@ private:
     if constexpr (!enableValidationLayers)
       return;
 
+    vk::DispatchLoaderDynamic dld{*instance_, vkGetInstanceProcAddr};
     vk::DebugUtilsMessengerCreateInfoEXT createInfo{};
     populateDebugMessengerCreateInfo(createInfo);
 
-    auto createDebugRes = CreateDebugUtilsMessengerEXT(
-      *instance_, reinterpret_cast<const VkDebugUtilsMessengerCreateInfoEXT *>(&createInfo),
-      nullptr, &debugMessenger_);
-    if (createDebugRes != VK_SUCCESS)
-      throw std::runtime_error("failed to set up debug callback!");
+    debugMessenger_ = instance_->createDebugUtilsMessengerEXT(createInfo, nullptr, dld);
   }
 
   void createSurface()
@@ -231,8 +229,8 @@ private:
 
     if constexpr (enableValidationLayers)
     {
-      createInfo.setEnabledLayerCount(validationLayers.size());
-      createInfo.setPpEnabledLayerNames(validationLayers.data());
+      createInfo.setEnabledLayerCount(VALIDATION_LAYERS.size());
+      createInfo.setPpEnabledLayerNames(VALIDATION_LAYERS.data());
     }
 
     device_ = physicalDevice_.createDeviceUnique(createInfo);
@@ -265,7 +263,13 @@ private:
   bool isDeviceSuitable(vk::PhysicalDevice device)
   {
     auto indices = findQueueFamilies(device);
-    return indices.isComplete();
+    return indices.isComplete() && checkDeviceExtensionSupport(device);
+  }
+
+  bool checkDeviceExtensionSupport(vk::PhysicalDevice device)
+  {
+    // device.enumerateDeviceExtensionProperties()
+    return true;
   }
 
   std::vector<const char *> getRequiredExtensions()
@@ -284,7 +288,7 @@ private:
   {
     auto availableLayers = vk::enumerateInstanceLayerProperties();
 
-    for (std::string_view layerName : validationLayers)
+    for (std::string_view layerName : VALIDATION_LAYERS)
     {
       bool layerFound = false;
 
