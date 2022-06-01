@@ -251,7 +251,7 @@ private:
         indices.graphicsFamily = i;
 
       if (device.getSurfaceSupportKHR(i, surface_))
-        indices.graphicsFamily = i;
+        indices.presentFamily = i;
 
       if (indices.isComplete())
         break;
