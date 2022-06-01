@@ -75,6 +75,7 @@ private:
 
   vk::UniqueInstance instance_;
   vk::DebugUtilsMessengerEXT debugMessenger_;
+  vk::DispatchLoaderDynamic dld_;
   vk::SurfaceKHR surface_;
 
   vk::PhysicalDevice physicalDevice_;
@@ -113,7 +114,7 @@ private:
   void cleanup()
   {
     if constexpr (enableValidationLayers)
-      DestroyDebugUtilsMessengerEXT(*instance_, debugMessenger_, nullptr);
+      instance_->destroyDebugUtilsMessengerEXT(debugMessenger_, nullptr, dld_);
 
     instance_->destroySurfaceKHR(surface_);
 
@@ -151,10 +152,11 @@ private:
     }
 
     instance_ = vk::createInstanceUnique(createInfo);
+    dld_ = {*instance_, vkGetInstanceProcAddr};
 
-    std::cout << "available extensions:\n";
-    for (const auto &extension : vk::enumerateInstanceExtensionProperties())
-      std::cout << '\t' << extension.extensionName << std::endl;
+    // std::cout << "available extensions:\n";
+    // for (const auto &extension : vk::enumerateInstanceExtensionProperties())
+    //   std::cout << '\t' << extension.extensionName << std::endl;
   }
 
   void populateDebugMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT &createInfo)
@@ -173,11 +175,9 @@ private:
     if constexpr (!enableValidationLayers)
       return;
 
-    vk::DispatchLoaderDynamic dld{*instance_, vkGetInstanceProcAddr};
     vk::DebugUtilsMessengerCreateInfoEXT createInfo{};
     populateDebugMessengerCreateInfo(createInfo);
-
-    debugMessenger_ = instance_->createDebugUtilsMessengerEXT(createInfo, nullptr, dld);
+    debugMessenger_ = instance_->createDebugUtilsMessengerEXT(createInfo, nullptr, dld_);
   }
 
   void createSurface()
@@ -222,10 +222,12 @@ private:
     }
 
     vk::PhysicalDeviceFeatures deviceFeatures{};
-    vk::DeviceCreateInfo createInfo{.queueCreateInfoCount = queueCreateInfos.size(),
-                                    .pQueueCreateInfos = queueCreateInfos.data(),
-                                    .enabledExtensionCount = 0,
-                                    .pEnabledFeatures = &deviceFeatures};
+    vk::DeviceCreateInfo createInfo{
+      .queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size()),
+      .pQueueCreateInfos = queueCreateInfos.data(),
+      .enabledExtensionCount = static_cast<uint32_t>(DEVICE_EXTENSIONS.size()),
+      .ppEnabledExtensionNames = DEVICE_EXTENSIONS.data(),
+      .pEnabledFeatures = &deviceFeatures};
 
     if constexpr (enableValidationLayers)
     {
@@ -268,8 +270,13 @@ private:
 
   bool checkDeviceExtensionSupport(vk::PhysicalDevice device)
   {
-    // device.enumerateDeviceExtensionProperties()
-    return true;
+    auto availableExtrnsions = device.enumerateDeviceExtensionProperties();
+    std::set<std::string> requiredExtensions(DEVICE_EXTENSIONS.begin(), DEVICE_EXTENSIONS.end());
+
+    for (const auto &extension : availableExtrnsions)
+      requiredExtensions.erase(extension.extensionName);
+
+    return requiredExtensions.empty();
   }
 
   std::vector<const char *> getRequiredExtensions()
@@ -325,11 +332,11 @@ try
 }
 catch (const std::exception &e)
 {
-  std::cerr << e.what() << std::endl;
+  std::cerr << "[ERROR] " << e.what() << std::endl;
   return EXIT_FAILURE;
 }
 catch (...)
 {
-  std::cerr << "Unkwnown error" << std::endl;
+  std::cerr << "[ERROR] Unkwnown error" << std::endl;
   return EXIT_FAILURE;
 }
