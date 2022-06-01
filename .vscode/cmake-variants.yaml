@@ -5,10 +5,14 @@ buildType:
       short: Debug
       long: Build Triangles project in Debug mode
       buildType: Debug
+      settings:
+        BUILD_TESTS: ON
     release:
       short: Release
       long: Build Triangles project in Release mode
       buildType: Release
+      settings:
+        BUILD_TESTS: OFF
 
 buildDoc:
   default: doc-on
