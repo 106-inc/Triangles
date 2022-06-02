@@ -97,6 +97,7 @@ private:
   std::vector<vk::Image> swapChainImages_;
   vk::Format swapChainImageFormat_;
   vk::Extent2D swapChainExtent_;
+  std::vector<vk::UniqueImageView> swapChainImageViews_;
 
   void initWindow()
   {
@@ -116,6 +117,7 @@ private:
     pickPhysicalDevice();
     createLogicalDevice();
     createSwapChain();
+    createImageViews();
   }
 
   void mainLoop()
@@ -286,7 +288,8 @@ private:
                                           .imageExtent = extent,
                                           .imageArrayLayers = 1,
                                           .imageUsage = vk::ImageUsageFlagBits::eColorAttachment,
-                                          .preTransform = swapChainSupport.capabilities.currentTransform,
+                                          .preTransform =
+                                            swapChainSupport.capabilities.currentTransform,
                                           .compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque,
                                           .presentMode = presentMode,
                                           .clipped = VK_TRUE};
@@ -307,6 +310,36 @@ private:
     swapChainImages_ = device_->getSwapchainImagesKHR(swapChain_);
     swapChainImageFormat_ = surfaceFormat.format;
     swapChainExtent_ = extent;
+  }
+
+  void createImageViews()
+  {
+    auto swapChainImageSize = swapChainImages_.size();
+    swapChainImageViews_.resize(swapChainImageSize);
+
+    for (std::size_t i = 0; i < swapChainImageSize; ++i)
+    {
+      vk::ComponentMapping components{
+        .r = vk::ComponentSwizzle::eIdentity,
+        .g = vk::ComponentSwizzle::eIdentity,
+        .b = vk::ComponentSwizzle::eIdentity,
+        .a = vk::ComponentSwizzle::eIdentity,
+      };
+
+      vk::ImageSubresourceRange imageSubresourceRange{.aspectMask = vk::ImageAspectFlagBits::eColor,
+                                                      .baseMipLevel = 0,
+                                                      .levelCount = 1,
+                                                      .baseArrayLayer = 0,
+                                                      .layerCount = 1};
+
+      vk::ImageViewCreateInfo createInfo{.image = swapChainImages_[i],
+                                         .viewType = vk::ImageViewType::e2D,
+                                         .format = swapChainImageFormat_,
+                                         .components = components,
+                                         .subresourceRange = imageSubresourceRange};
+
+      swapChainImageViews_[i] = device_->createImageViewUnique(createInfo);
+    }
   }
 
   vk::PresentModeKHR chooseSwapPresentMode(
