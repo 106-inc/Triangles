@@ -88,7 +88,7 @@ private:
   vk::UniqueInstance instance_;
   vk::DebugUtilsMessengerEXT debugMessenger_;
   vk::DispatchLoaderDynamic dld_;
-  vk::SurfaceKHR surface_; // TODO: Figure out how to use unique version
+  vk::UniqueSurfaceKHR surface_;
 
   vk::PhysicalDevice physicalDevice_;
   vk::UniqueDevice device_;
@@ -96,7 +96,7 @@ private:
   vk::Queue graphicsQueue_;
   vk::Queue presentQueue_;
 
-  vk::SwapchainKHR swapChain_; // Not unique because it has to be destroyed before surface
+  vk::UniqueSwapchainKHR swapChain_;
   std::vector<vk::Image> swapChainImages_;
   vk::Format swapChainImageFormat_;
   vk::Extent2D swapChainExtent_;
@@ -139,9 +139,6 @@ private:
 
   void cleanup()
   {
-    device_->destroySwapchainKHR(swapChain_);
-    instance_->destroySurfaceKHR(surface_);
-
     if constexpr (enableValidationLayers)
       instance_->destroyDebugUtilsMessengerEXT(debugMessenger_, nullptr, dld_);
 
@@ -211,7 +208,8 @@ private:
     VkSurfaceKHR rawSurface;
     if (glfwCreateWindowSurface(*instance_, window_, nullptr, &rawSurface) != VK_SUCCESS)
       throw std::runtime_error("failed to create window surface!");
-    surface_ = rawSurface;
+
+    surface_ =  vk::UniqueSurfaceKHR{rawSurface, *instance_};
   }
 
   void pickPhysicalDevice()
@@ -374,7 +372,7 @@ private:
     vk::ShaderModuleCreateInfo createInfo{.codeSize = code.size(),
                                           .pCode = reinterpret_cast<const uint32_t *>(code.data())};
 
-    return device_->createShaderModuleUnique(createInfo); // ok?
+    return device_->createShaderModuleUnique(createInfo);
   }
 
   vk::SurfaceFormatKHR chooseSwapSurfaceFormat(
@@ -401,7 +399,7 @@ private:
         swapChainSupport.capabilities.maxImageCount < imageCount)
       imageCount = swapChainSupport.capabilities.maxImageCount;
 
-    vk::SwapchainCreateInfoKHR createInfo{.surface = surface_,
+    vk::SwapchainCreateInfoKHR createInfo{.surface = *surface_,
                                           .minImageCount = imageCount,
                                           .imageFormat = surfaceFormat.format,
                                           .imageColorSpace = surfaceFormat.colorSpace,
@@ -426,8 +424,8 @@ private:
       createInfo.setQueueFamilyIndices(queueFamilyIndices);
     }
 
-    swapChain_ = device_->createSwapchainKHR(createInfo);
-    swapChainImages_ = device_->getSwapchainImagesKHR(swapChain_);
+    swapChain_ = device_->createSwapchainKHRUnique(createInfo);
+    swapChainImages_ = device_->getSwapchainImagesKHR(*swapChain_);
     swapChainImageFormat_ = surfaceFormat.format;
     swapChainExtent_ = extent;
   }
@@ -526,7 +524,7 @@ private:
       if (queueFamily.queueFlags & vk::QueueFlagBits::eGraphics)
         indices.graphicsFamily = i;
 
-      if (device.getSurfaceSupportKHR(i, surface_))
+      if (device.getSurfaceSupportKHR(i, *surface_))
         indices.presentFamily = i;
 
       if (indices.isComplete())
@@ -540,9 +538,9 @@ private:
 
   SwapChainSupportDetails querySwapChainSupport(vk::PhysicalDevice device)
   {
-    SwapChainSupportDetails details{.capabilities = device.getSurfaceCapabilitiesKHR(surface_),
-                                    .formats = device.getSurfaceFormatsKHR(surface_),
-                                    .presentModes = device.getSurfacePresentModesKHR(surface_)};
+    SwapChainSupportDetails details{.capabilities = device.getSurfaceCapabilitiesKHR(*surface_),
+                                    .formats = device.getSurfaceFormatsKHR(*surface_),
+                                    .presentModes = device.getSurfacePresentModesKHR(*surface_)};
 
     return details;
   }
@@ -631,7 +629,7 @@ debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
               VkDebugUtilsMessageTypeFlagsEXT messageType,
               const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData)
 {
-  std::string prompt = "[v layer]";
+  std::string prompt = "[validation]";
 
   if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
     prompt += "[ERROR]";
