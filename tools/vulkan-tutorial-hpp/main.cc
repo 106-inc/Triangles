@@ -102,7 +102,9 @@ private:
   vk::Extent2D swapChainExtent_;
   std::vector<vk::UniqueImageView> swapChainImageViews_;
 
+  vk::UniqueRenderPass renderPass_;
   vk::UniquePipelineLayout pipelineLayout_;
+  vk::UniquePipeline graphicsPipeline_;
 
   void initWindow()
   {
@@ -123,6 +125,7 @@ private:
     createLogicalDevice();
     createSwapChain();
     createImageViews();
+    createRenderPass();
     createGraphicsPipeline();
   }
 
@@ -343,18 +346,35 @@ private:
 
     pipelineLayout_ = device_->createPipelineLayoutUnique(pipelineLayoutInfo);
 
-    // device_->destroyShaderModule(vertShaderModule);
-    // device_->destroyShaderModule(fragShaderModule);
+    vk::GraphicsPipelineCreateInfo pipelineInfo{.stageCount = 2,
+                                                .pStages = shaderStages,
+                                                .pVertexInputState = &vertexInputInfo,
+                                                .pInputAssemblyState = &inputAssembly,
+                                                .pViewportState = &viewportState,
+                                                .pRasterizationState = &rasterizer,
+                                                .pMultisampleState = &multisampling,
+                                                .pDepthStencilState = nullptr,
+                                                .pColorBlendState = &colorBlending,
+                                                .pDynamicState = nullptr,
+                                                .layout = *pipelineLayout_,
+                                                .renderPass = *renderPass_,
+                                                .subpass = 0,
+                                                .basePipelineHandle = nullptr,
+                                                .basePipelineIndex = -1};
+
+    auto graphicsPipelinesResult = device_->createGraphicsPipelinesUnique(nullptr, pipelineInfo);
+    if (graphicsPipelinesResult.result != vk::Result::eSuccess)
+      throw std::runtime_error{"failed to create graphics pipeline!"};
+
+    graphicsPipeline_ = std::move(graphicsPipelinesResult.value[0]);
   }
 
   vk::UniqueShaderModule createShaderModule(const std::vector<char> &code)
-  // vk::ShaderModule createShaderModule(const std::vector<char> &code)
   {
     vk::ShaderModuleCreateInfo createInfo{.codeSize = code.size(),
                                           .pCode = reinterpret_cast<const uint32_t *>(code.data())};
 
     return device_->createShaderModuleUnique(createInfo); // ok?
-    // return device_->createShaderModule(createInfo);
   }
 
   vk::SurfaceFormatKHR chooseSwapSurfaceFormat(
@@ -438,6 +458,32 @@ private:
 
       swapChainImageViews_[i] = device_->createImageViewUnique(createInfo);
     }
+  }
+
+  void createRenderPass()
+  {
+    vk::AttachmentDescription colorAttachment{.format = swapChainImageFormat_,
+                                              .samples = vk::SampleCountFlagBits::e1,
+                                              .loadOp = vk::AttachmentLoadOp::eClear,
+                                              .storeOp = vk::AttachmentStoreOp::eStore,
+                                              .stencilLoadOp = vk::AttachmentLoadOp::eDontCare,
+                                              .stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
+                                              .initialLayout = vk::ImageLayout::eUndefined,
+                                              .finalLayout = vk::ImageLayout::ePresentSrcKHR};
+
+    vk::AttachmentReference colorAttachmentRef{.attachment = 0,
+                                               .layout = vk::ImageLayout::eColorAttachmentOptimal};
+
+    vk::SubpassDescription subpass{.pipelineBindPoint = vk::PipelineBindPoint::eGraphics,
+                                   .colorAttachmentCount = 1,
+                                   .pColorAttachments = &colorAttachmentRef};
+
+    vk::RenderPassCreateInfo renderPassInfo{.attachmentCount = 1,
+                                            .pAttachments = &colorAttachment,
+                                            .subpassCount = 1,
+                                            .pSubpasses = &subpass};
+
+    renderPass_ = device_->createRenderPassUnique(renderPassInfo);
   }
 
   vk::PresentModeKHR chooseSwapPresentMode(
