@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <fstream>
 #include <iostream>
 #include <limits>
 #include <optional>
@@ -22,6 +23,8 @@ constexpr bool enableValidationLayers = false;
 #else
 constexpr bool enableValidationLayers = true;
 #endif
+
+static std::vector<char> readFile(const std::string &filename);
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL
 debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -99,6 +102,8 @@ private:
   vk::Extent2D swapChainExtent_;
   std::vector<vk::UniqueImageView> swapChainImageViews_;
 
+  vk::UniquePipelineLayout pipelineLayout_;
+
   void initWindow()
   {
     glfwInit();
@@ -118,6 +123,7 @@ private:
     createLogicalDevice();
     createSwapChain();
     createImageViews();
+    createGraphicsPipeline();
   }
 
   void mainLoop()
@@ -255,6 +261,100 @@ private:
     device_ = physicalDevice_.createDeviceUnique(createInfo);
     graphicsQueue_ = device_->getQueue(indices.graphicsFamily.value(), 0);
     presentQueue_ = device_->getQueue(indices.presentFamily.value(), 0);
+  }
+
+  void createGraphicsPipeline()
+  {
+    auto vertShaderCode = readFile("shaders/vert.spv");
+    auto fragShaderCode = readFile("shaders/frag.spv");
+
+    auto vertShaderModule = createShaderModule(vertShaderCode);
+    auto fragShaderModule = createShaderModule(fragShaderCode);
+
+    vk::PipelineShaderStageCreateInfo vertShaderStageInfo{
+      .stage = vk::ShaderStageFlagBits::eVertex, .module = *vertShaderModule, .pName = "main"};
+
+    vk::PipelineShaderStageCreateInfo fragShaderStageInfo{
+      .stage = vk::ShaderStageFlagBits::eFragment, .module = *fragShaderModule, .pName = "main"};
+
+    vk::PipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
+
+    vk::PipelineVertexInputStateCreateInfo vertexInputInfo{.vertexBindingDescriptionCount = 0,
+                                                           .pVertexBindingDescriptions = nullptr,
+                                                           .vertexAttributeDescriptionCount = 0,
+                                                           .pVertexAttributeDescriptions = nullptr};
+
+    vk::PipelineInputAssemblyStateCreateInfo inputAssembly{
+      .topology = vk::PrimitiveTopology::eTriangleList, .primitiveRestartEnable = VK_FALSE};
+
+    vk::Viewport viewport{.x = 0.0f,
+                          .y = 0.0f,
+                          .width = static_cast<float>(swapChainExtent_.width),
+                          .height = static_cast<float>(swapChainExtent_.height),
+                          .minDepth = 0.0f,
+                          .maxDepth = 1.0f};
+
+    vk::Rect2D scissor{.offset = {0, 0}, .extent = swapChainExtent_};
+
+    vk::PipelineViewportStateCreateInfo viewportState{
+      .viewportCount = 1, .pViewports = &viewport, .scissorCount = 1, .pScissors = &scissor};
+
+    vk::PipelineRasterizationStateCreateInfo rasterizer{.depthClampEnable = VK_FALSE,
+                                                        .rasterizerDiscardEnable = VK_FALSE,
+                                                        .polygonMode = vk::PolygonMode::eFill,
+                                                        .cullMode = vk::CullModeFlagBits::eBack,
+                                                        .frontFace = vk::FrontFace::eClockwise,
+                                                        .depthBiasEnable = VK_FALSE,
+                                                        .depthBiasConstantFactor = 0.0f,
+                                                        .depthBiasClamp = 0.0f,
+                                                        .depthBiasSlopeFactor = 0.0f,
+                                                        .lineWidth = 1.0f};
+
+    vk::PipelineMultisampleStateCreateInfo multisampling{.rasterizationSamples =
+                                                           vk::SampleCountFlagBits::e1,
+                                                         .sampleShadingEnable = VK_FALSE,
+                                                         .minSampleShading = 1.0f,
+                                                         .pSampleMask = nullptr,
+                                                         .alphaToCoverageEnable = VK_FALSE,
+                                                         .alphaToOneEnable = VK_FALSE};
+
+    vk::PipelineColorBlendAttachmentState colorBlendAttachment{
+      .blendEnable = VK_FALSE,
+      .srcColorBlendFactor = vk::BlendFactor::eOne,
+      .dstColorBlendFactor = vk::BlendFactor::eZero,
+      .colorBlendOp = vk::BlendOp::eAdd,
+      .srcAlphaBlendFactor = vk::BlendFactor::eOne,
+      .dstAlphaBlendFactor = vk::BlendFactor::eZero,
+      .alphaBlendOp = vk::BlendOp::eAdd,
+      .colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
+                        vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA};
+
+    vk::PipelineColorBlendStateCreateInfo colorBlending{
+      .logicOpEnable = VK_FALSE,
+      .logicOp = vk::LogicOp::eCopy,
+      .attachmentCount = 1,
+      .pAttachments = &colorBlendAttachment,
+      .blendConstants = std::array<float, 4>{0.0f, 0.0f, 0.0f, 0.0f}};
+
+    vk::PipelineLayoutCreateInfo pipelineLayoutInfo{.setLayoutCount = 0,
+                                                    .pSetLayouts = nullptr,
+                                                    .pushConstantRangeCount = 0,
+                                                    .pPushConstantRanges = nullptr};
+
+    pipelineLayout_ = device_->createPipelineLayoutUnique(pipelineLayoutInfo);
+
+    // device_->destroyShaderModule(vertShaderModule);
+    // device_->destroyShaderModule(fragShaderModule);
+  }
+
+  vk::UniqueShaderModule createShaderModule(const std::vector<char> &code)
+  // vk::ShaderModule createShaderModule(const std::vector<char> &code)
+  {
+    vk::ShaderModuleCreateInfo createInfo{.codeSize = code.size(),
+                                          .pCode = reinterpret_cast<const uint32_t *>(code.data())};
+
+    return device_->createShaderModuleUnique(createInfo); // ok?
+    // return device_->createShaderModule(createInfo);
   }
 
   vk::SurfaceFormatKHR chooseSwapSurfaceFormat(
@@ -462,6 +562,23 @@ private:
     return true;
   }
 };
+
+static std::vector<char> readFile(const std::string &filename)
+{
+  std::ifstream file{filename, std::ios::ate | std::ios::binary};
+
+  if (!file.is_open())
+    throw std::runtime_error{"failed to open file!"};
+
+  auto fileSize = static_cast<size_t>(file.tellg());
+  std::vector<char> buffer(fileSize);
+
+  file.seekg(0);
+  file.read(buffer.data(), fileSize);
+  file.close();
+
+  return buffer;
+}
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL
 debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
