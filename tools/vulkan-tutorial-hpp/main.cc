@@ -631,7 +631,18 @@ debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
               VkDebugUtilsMessageTypeFlagsEXT messageType,
               const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData)
 {
-  std::cerr << "[validation layer] " << pCallbackData->pMessage << std::endl;
+  std::string prompt = "[v layer]";
+
+  if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+    prompt += "[ERROR]";
+  if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+    prompt += "[WARNING]";
+  if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
+    prompt += "[info]";
+  if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
+    prompt += "[verbose]";
+
+  std::cerr << prompt << " " << pCallbackData->pMessage << std::endl;
   return VK_FALSE;
 }
 
