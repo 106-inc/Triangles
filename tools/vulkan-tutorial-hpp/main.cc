@@ -24,12 +24,42 @@ constexpr bool enableValidationLayers = false;
 constexpr bool enableValidationLayers = true;
 #endif
 
-static std::vector<char> readFile(const std::string &filename);
+static std::vector<char> readFile(const std::string &filename)
+{
+  std::ifstream file{filename, std::ios::ate | std::ios::binary};
+
+  if (!file.is_open())
+    throw std::runtime_error{"failed to open file!"};
+
+  auto fileSize = static_cast<size_t>(file.tellg());
+  std::vector<char> buffer(fileSize);
+
+  file.seekg(0);
+  file.read(buffer.data(), fileSize);
+  file.close();
+
+  return buffer;
+}
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL
 debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
               VkDebugUtilsMessageTypeFlagsEXT messageType,
-              const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData);
+              const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData)
+{
+  std::string prompt = "[validation]";
+
+  if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+    prompt += "[ERROR]";
+  if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+    prompt += "[WARNING]";
+  if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
+    prompt += "[info]";
+  if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
+    prompt += "[verbose]";
+
+  std::cerr << prompt << " " << pCallbackData->pMessage << std::endl;
+  return VK_FALSE;
+}
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance,
                                       const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
@@ -606,43 +636,6 @@ private:
     return true;
   }
 };
-
-static std::vector<char> readFile(const std::string &filename)
-{
-  std::ifstream file{filename, std::ios::ate | std::ios::binary};
-
-  if (!file.is_open())
-    throw std::runtime_error{"failed to open file!"};
-
-  auto fileSize = static_cast<size_t>(file.tellg());
-  std::vector<char> buffer(fileSize);
-
-  file.seekg(0);
-  file.read(buffer.data(), fileSize);
-  file.close();
-
-  return buffer;
-}
-
-static VKAPI_ATTR VkBool32 VKAPI_CALL
-debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-              VkDebugUtilsMessageTypeFlagsEXT messageType,
-              const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData)
-{
-  std::string prompt = "[validation]";
-
-  if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
-    prompt += "[ERROR]";
-  if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
-    prompt += "[WARNING]";
-  if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
-    prompt += "[info]";
-  if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
-    prompt += "[verbose]";
-
-  std::cerr << prompt << " " << pCallbackData->pMessage << std::endl;
-  return VK_FALSE;
-}
 
 int main()
 try
