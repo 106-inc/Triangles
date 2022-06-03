@@ -83,10 +83,13 @@ public:
   }
 
 private:
+  using UniqueDebugUtilsMessengerEXTDynamic =
+    vk::UniqueHandle<vk::DebugUtilsMessengerEXT, vk::DispatchLoaderDynamic>;
+
   GLFWwindow *window_;
 
   vk::UniqueInstance instance_;
-  vk::DebugUtilsMessengerEXT debugMessenger_;
+  UniqueDebugUtilsMessengerEXTDynamic debugMessenger_;
   vk::DispatchLoaderDynamic dld_;
   vk::UniqueSurfaceKHR surface_;
 
@@ -139,9 +142,6 @@ private:
 
   void cleanup()
   {
-    if constexpr (enableValidationLayers)
-      instance_->destroyDebugUtilsMessengerEXT(debugMessenger_, nullptr, dld_);
-
     glfwDestroyWindow(window_);
     glfwTerminate();
   }
@@ -200,7 +200,7 @@ private:
 
     vk::DebugUtilsMessengerCreateInfoEXT createInfo{};
     populateDebugMessengerCreateInfo(createInfo);
-    debugMessenger_ = instance_->createDebugUtilsMessengerEXT(createInfo, nullptr, dld_);
+    debugMessenger_ = instance_->createDebugUtilsMessengerEXTUnique(createInfo, nullptr, dld_);
   }
 
   void createSurface()
@@ -209,7 +209,7 @@ private:
     if (glfwCreateWindowSurface(*instance_, window_, nullptr, &rawSurface) != VK_SUCCESS)
       throw std::runtime_error("failed to create window surface!");
 
-    surface_ =  vk::UniqueSurfaceKHR{rawSurface, *instance_};
+    surface_ = vk::UniqueSurfaceKHR{rawSurface, *instance_};
   }
 
   void pickPhysicalDevice()
