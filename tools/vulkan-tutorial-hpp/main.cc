@@ -319,12 +319,10 @@ private:
 
     for (std::size_t i = 0; i < swapChainImageSize; ++i)
     {
-      vk::ComponentMapping components{
-        .r = vk::ComponentSwizzle::eIdentity,
-        .g = vk::ComponentSwizzle::eIdentity,
-        .b = vk::ComponentSwizzle::eIdentity,
-        .a = vk::ComponentSwizzle::eIdentity,
-      };
+      vk::ComponentMapping components{.r = vk::ComponentSwizzle::eIdentity,
+                                      .g = vk::ComponentSwizzle::eIdentity,
+                                      .b = vk::ComponentSwizzle::eIdentity,
+                                      .a = vk::ComponentSwizzle::eIdentity};
 
       vk::ImageSubresourceRange imageSubresourceRange{.aspectMask = vk::ImageAspectFlagBits::eColor,
                                                       .baseMipLevel = 0,
