@@ -134,10 +134,14 @@ private:
   vk::Format swapChainImageFormat_;
   vk::Extent2D swapChainExtent_;
   std::vector<vk::UniqueImageView> swapChainImageViews_;
+  std::vector<vk::UniqueFramebuffer> swapChainFramebuffers_;
 
   vk::UniqueRenderPass renderPass_;
   vk::UniquePipelineLayout pipelineLayout_;
   vk::UniquePipeline graphicsPipeline_;
+
+  vk::UniqueCommandPool commandPool_;
+  vk::UniqueCommandBuffer commandBuffer_;
 
   void initWindow()
   {
@@ -160,6 +164,9 @@ private:
     createImageViews();
     createRenderPass();
     createGraphicsPipeline();
+    createFramebuffer();
+    createCommandPool();
+    createCommandBuffer();
   }
 
   void mainLoop()
@@ -395,6 +402,70 @@ private:
       throw std::runtime_error{"failed to create graphics pipeline!"};
 
     graphicsPipeline_ = std::move(graphicsPipelinesResult.value[0]);
+  }
+
+  void createFramebuffer()
+  {
+    auto swapChainImageViewsSize = swapChainImageViews_.size();
+    swapChainFramebuffers_.resize(swapChainImageViewsSize);
+
+    for (std::size_t i = 0; i < swapChainImageViewsSize; ++i)
+    {
+      vk::ImageView attachments[] = {*swapChainImageViews_[i]};
+
+      vk::FramebufferCreateInfo framebufferInfo{.renderPass = *renderPass_,
+                                                .attachmentCount = 1,
+                                                .pAttachments = attachments,
+                                                .width = swapChainExtent_.width,
+                                                .height = swapChainExtent_.height,
+                                                .layers = 1};
+
+      swapChainFramebuffers_[i] = device_->createFramebufferUnique(framebufferInfo);
+    }
+  }
+
+  void createCommandPool()
+  {
+    auto queueFamiliIndices = findQueueFamilies(physicalDevice_);
+
+    vk::CommandPoolCreateInfo poolInfo{.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
+                                       .queueFamilyIndex =
+                                         queueFamiliIndices.graphicsFamily.value()};
+
+    commandPool_ = device_->createCommandPoolUnique(poolInfo);
+  }
+
+  void createCommandBuffer()
+  {
+    vk::CommandBufferAllocateInfo allocInfo{.commandPool = *commandPool_,
+                                            .level = vk::CommandBufferLevel::ePrimary,
+                                            .commandBufferCount = 1};
+
+    commandBuffer_ = std::move(device_->allocateCommandBuffersUnique(allocInfo)[0]);
+  }
+
+  void recordCommandBuffer(vk::CommandBuffer commandBuffer, uint32_t imageIndex)
+  {
+    vk::CommandBufferBeginInfo beginInfo{.flags = {}, .pInheritanceInfo = nullptr};
+    commandBuffer_->begin(beginInfo);
+
+    vk::RenderPassBeginInfo renderPassInfo{
+      .renderPass = *renderPass_,
+      .framebuffer = *swapChainFramebuffers_[imageIndex],
+      .renderArea = vk::Rect2D{.offset = {0, 0}, .extent = swapChainExtent_}};
+
+    vk::ClearValue clearColor = {std::array<float, 4>{0.0f, 0.0f, 0.0f, 1.0f}};
+    renderPassInfo.setClearValues(clearColor);
+
+    commandBuffer_->beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
+
+    commandBuffer_->bindPipeline(vk::PipelineBindPoint::eGraphics, *graphicsPipeline_);
+    commandBuffer_->draw(/* vertexCount = */ 3, /* instanceCount = */ 1,
+                         /* firstVertex = */ 0, /* firstInstance = */ 0);
+
+    commandBuffer_->endRenderPass();
+
+    commandBuffer_->end();
   }
 
   vk::UniqueShaderModule createShaderModule(const std::vector<char> &code)
