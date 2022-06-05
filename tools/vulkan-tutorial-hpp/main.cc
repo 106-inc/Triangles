@@ -151,15 +151,22 @@ private:
   std::vector<vk::UniqueFence> inFlightFences_;
 
   uint32_t currentFrame_ = 0;
+  bool framebufferResized_ = false;
 
   void initWindow()
   {
     glfwInit();
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
     window_ = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
+  }
+
+  static void framebufferResizeCallback(GLFWwindow * window, int width, int height)
+  {
+    auto app = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(window));
+    app->framebufferResized_ = true;
   }
 
   void initVulkan()
@@ -194,6 +201,25 @@ private:
   {
     glfwDestroyWindow(window_);
     glfwTerminate();
+  }
+
+  void recreateSwapChain()
+  {
+    int width = 0, height = 0;
+    glfwGetFramebufferSize(window_, &width, &height);
+    while(width == 0 || height == 0)
+    {
+      glfwGetFramebufferSize(window_, &width, &height);
+      glfwWaitEvents();
+    }
+
+    device_->waitIdle();
+
+    createSwapChain();
+    createImageViews();
+    createRenderPass();
+    createGraphicsPipeline();
+    createFramebuffer();
   }
 
   void createInstance()
@@ -499,13 +525,21 @@ private:
                                std::numeric_limits<uint64_t>::max()) != vk::Result::eSuccess)
       throw std::runtime_error{"error while waiting fence!"};
 
+    auto acquireRes = device_->acquireNextImageKHR(
+      *swapChain_, std::numeric_limits<uint64_t>::max(), *imageAvailableSemaphores_[currentFrame_]);
+
+    if (auto res = acquireRes.result; res == vk::Result::eErrorOutOfDateKHR)
+    {
+      framebufferResized_ = false;
+      return recreateSwapChain();
+    }
+    else if (res != vk::Result::eSuccess && res != vk::Result::eSuboptimalKHR)
+      throw std::runtime_error{"failed to acquire swap chain image!"};
+
+    auto imageIndex = acquireRes.value;
+
     if (device_->resetFences(1, &inFlightFences_[currentFrame_].get()) != vk::Result::eSuccess)
       throw std::runtime_error{"error while reseting fence!"};
-
-    auto imageIndex = device_
-                        ->acquireNextImageKHR(*swapChain_, std::numeric_limits<uint64_t>::max(),
-                                              *imageAvailableSemaphores_[currentFrame_])
-                        .value;
 
     commandBuffers_[currentFrame_]->reset();
     recordCommandBuffer(*commandBuffers_[currentFrame_], imageIndex);
@@ -522,7 +556,8 @@ private:
                               .signalSemaphoreCount = 1,
                               .pSignalSemaphores = signalSemaphores};
 
-    if (graphicsQueue_.submit(1, &submitInfo, *inFlightFences_[currentFrame_]) != vk::Result::eSuccess)
+    if (graphicsQueue_.submit(1, &submitInfo, *inFlightFences_[currentFrame_]) !=
+        vk::Result::eSuccess)
       throw std::runtime_error{"failed to submit draw command buffer!"};
 
     vk::SwapchainKHR swapChains[] = {*swapChain_};
@@ -533,8 +568,11 @@ private:
                                    .pImageIndices = &imageIndex,
                                    .pResults = nullptr};
 
-    if (presentQueue_.presentKHR(presentInfo) != vk::Result::eSuccess)
-      throw std::runtime_error{"failet to present"};
+    auto res = presentQueue_.presentKHR(presentInfo);
+    if (res == vk::Result::eErrorOutOfDateKHR || res == vk::Result::eSuboptimalKHR)
+      recreateSwapChain();
+    else if (res != vk::Result::eSuccess)
+      throw std::runtime_error{"failed to present"};
 
     currentFrame_ = (currentFrame_ + 1) % MAX_FRAMES_IN_FLIGHT;
   }
