@@ -15,6 +15,8 @@
 constexpr uint32_t WIDTH = 800;
 constexpr uint32_t HEIGHT = 600;
 
+constexpr int MAX_FRAMES_IN_FLIGHT = 2;
+
 const std::vector<const char *> VALIDATION_LAYERS{"VK_LAYER_KHRONOS_validation"};
 const std::vector<const char *> DEVICE_EXTENSIONS{VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
@@ -141,7 +143,14 @@ private:
   vk::UniquePipeline graphicsPipeline_;
 
   vk::UniqueCommandPool commandPool_;
-  vk::UniqueCommandBuffer commandBuffer_;
+  std::vector<vk::UniqueCommandBuffer> commandBuffers_;
+
+  std::vector<vk::UniqueSemaphore> imageAvailableSemaphores_;
+  std::vector<vk::UniqueSemaphore> renderFinishedSemaphores_;
+
+  std::vector<vk::UniqueFence> inFlightFences_;
+
+  uint32_t currentFrame_ = 0;
 
   void initWindow()
   {
@@ -166,7 +175,8 @@ private:
     createGraphicsPipeline();
     createFramebuffer();
     createCommandPool();
-    createCommandBuffer();
+    createCommandBuffers();
+    createSyncObjects();
   }
 
   void mainLoop()
@@ -174,7 +184,10 @@ private:
     while (!glfwWindowShouldClose(window_))
     {
       glfwPollEvents();
+      drawFrame();
     }
+
+    device_->waitIdle();
   }
 
   void cleanup()
@@ -435,19 +448,19 @@ private:
     commandPool_ = device_->createCommandPoolUnique(poolInfo);
   }
 
-  void createCommandBuffer()
+  void createCommandBuffers()
   {
     vk::CommandBufferAllocateInfo allocInfo{.commandPool = *commandPool_,
                                             .level = vk::CommandBufferLevel::ePrimary,
-                                            .commandBufferCount = 1};
+                                            .commandBufferCount = MAX_FRAMES_IN_FLIGHT};
 
-    commandBuffer_ = std::move(device_->allocateCommandBuffersUnique(allocInfo)[0]);
+    commandBuffers_ = device_->allocateCommandBuffersUnique(allocInfo);
   }
 
   void recordCommandBuffer(vk::CommandBuffer commandBuffer, uint32_t imageIndex)
   {
     vk::CommandBufferBeginInfo beginInfo{.flags = {}, .pInheritanceInfo = nullptr};
-    commandBuffer_->begin(beginInfo);
+    commandBuffer.begin(beginInfo);
 
     vk::RenderPassBeginInfo renderPassInfo{
       .renderPass = *renderPass_,
@@ -457,15 +470,73 @@ private:
     vk::ClearValue clearColor = {std::array<float, 4>{0.0f, 0.0f, 0.0f, 1.0f}};
     renderPassInfo.setClearValues(clearColor);
 
-    commandBuffer_->beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
+    commandBuffer.beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
 
-    commandBuffer_->bindPipeline(vk::PipelineBindPoint::eGraphics, *graphicsPipeline_);
-    commandBuffer_->draw(/* vertexCount = */ 3, /* instanceCount = */ 1,
-                         /* firstVertex = */ 0, /* firstInstance = */ 0);
+    commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *graphicsPipeline_);
+    commandBuffer.draw(/* vertexCount = */ 3, /* instanceCount = */ 1,
+                       /* firstVertex = */ 0, /* firstInstance = */ 0);
 
-    commandBuffer_->endRenderPass();
+    commandBuffer.endRenderPass();
 
-    commandBuffer_->end();
+    commandBuffer.end();
+  }
+
+  void createSyncObjects()
+  {
+    vk::FenceCreateInfo fenceInfo{.flags = vk::FenceCreateFlagBits::eSignaled};
+    for (std::size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
+    {
+      imageAvailableSemaphores_.push_back(device_->createSemaphoreUnique({}));
+      renderFinishedSemaphores_.push_back(device_->createSemaphoreUnique({}));
+
+      inFlightFences_.push_back(device_->createFenceUnique(fenceInfo));
+    }
+  }
+
+  void drawFrame()
+  {
+    if (device_->waitForFences(1, &inFlightFences_[currentFrame_].get(), VK_TRUE,
+                               std::numeric_limits<uint64_t>::max()) != vk::Result::eSuccess)
+      throw std::runtime_error{"error while waiting fence!"};
+
+    if (device_->resetFences(1, &inFlightFences_[currentFrame_].get()) != vk::Result::eSuccess)
+      throw std::runtime_error{"error while reseting fence!"};
+
+    auto imageIndex = device_
+                        ->acquireNextImageKHR(*swapChain_, std::numeric_limits<uint64_t>::max(),
+                                              *imageAvailableSemaphores_[currentFrame_])
+                        .value;
+
+    commandBuffers_[currentFrame_]->reset();
+    recordCommandBuffer(*commandBuffers_[currentFrame_], imageIndex);
+
+    vk::Semaphore waitSemaphores[] = {*imageAvailableSemaphores_[currentFrame_]};
+    vk::Semaphore signalSemaphores[] = {*renderFinishedSemaphores_[currentFrame_]};
+    vk::PipelineStageFlags waitStages[] = {vk::PipelineStageFlagBits::eColorAttachmentOutput};
+
+    vk::SubmitInfo submitInfo{.waitSemaphoreCount = 1,
+                              .pWaitSemaphores = waitSemaphores,
+                              .pWaitDstStageMask = waitStages,
+                              .commandBufferCount = 1,
+                              .pCommandBuffers = &commandBuffers_[currentFrame_].get(),
+                              .signalSemaphoreCount = 1,
+                              .pSignalSemaphores = signalSemaphores};
+
+    if (graphicsQueue_.submit(1, &submitInfo, *inFlightFences_[currentFrame_]) != vk::Result::eSuccess)
+      throw std::runtime_error{"failed to submit draw command buffer!"};
+
+    vk::SwapchainKHR swapChains[] = {*swapChain_};
+    vk::PresentInfoKHR presentInfo{.waitSemaphoreCount = 1,
+                                   .pWaitSemaphores = signalSemaphores,
+                                   .swapchainCount = 1,
+                                   .pSwapchains = swapChains,
+                                   .pImageIndices = &imageIndex,
+                                   .pResults = nullptr};
+
+    if (presentQueue_.presentKHR(presentInfo) != vk::Result::eSuccess)
+      throw std::runtime_error{"failet to present"};
+
+    currentFrame_ = (currentFrame_ + 1) % MAX_FRAMES_IN_FLIGHT;
   }
 
   vk::UniqueShaderModule createShaderModule(const std::vector<char> &code)
@@ -577,10 +648,20 @@ private:
                                    .colorAttachmentCount = 1,
                                    .pColorAttachments = &colorAttachmentRef};
 
+    vk::SubpassDependency dependency{
+      .srcSubpass = VK_SUBPASS_EXTERNAL,
+      .dstSubpass = 0,
+      .srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput,
+      .dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput,
+      .srcAccessMask = {},
+      .dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite};
+
     vk::RenderPassCreateInfo renderPassInfo{.attachmentCount = 1,
                                             .pAttachments = &colorAttachment,
                                             .subpassCount = 1,
-                                            .pSubpasses = &subpass};
+                                            .pSubpasses = &subpass,
+                                            .dependencyCount = 1,
+                                            .pDependencies = &dependency};
 
     renderPass_ = device_->createRenderPassUnique(renderPassInfo);
   }
