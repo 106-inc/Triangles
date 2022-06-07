@@ -75,9 +75,9 @@ struct Vertex
   }
 };
 
-const std::vector<Vertex> VERTICES = {{{0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}},
-                                      {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-                                      {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
+const std::vector<Vertex> VERTICES = {{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+                                      {{0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}},
+                                      {{-0.5f, 0.5f}, {1.0f, 0.0f, .0f}}};
 
 static std::vector<char> readFile(const std::string &filename)
 {
@@ -199,7 +199,7 @@ private:
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    window_ = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
+    window_ = glfwCreateWindow(WIDTH, HEIGHT, "Triangle", nullptr, nullptr);
   }
 
   static void framebufferResizeCallback(GLFWwindow *window, int width, int height)
@@ -293,7 +293,7 @@ private:
     instance_ = vk::createInstanceUnique(createInfo);
     dld_ = {*instance_, vkGetInstanceProcAddr};
 
-    std::cout << "available extensions:\n";
+    std::cout << "available extensions:" << std::endl;
     for (const auto &extension : vk::enumerateInstanceExtensionProperties())
       std::cout << '\t' << extension.extensionName << std::endl;
   }
@@ -334,9 +334,15 @@ private:
     if (0 == devices.size())
       throw std::runtime_error("failed to find GPUs with Vulkan support!");
 
+    std::cout << "available devices:" << std::endl;
+    for (const auto &device : devices)
+      std::cout << '\t' << device.getProperties().deviceName << std::endl;
+
     for (const auto &device : devices)
       if (isDeviceSuitable(device))
       {
+        std::cout << "chosen device: " << std::endl;
+        std::cout << '\t' << device.getProperties().deviceName << std::endl;
         physicalDevice_ = device;
         break;
       }
