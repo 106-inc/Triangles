@@ -3,7 +3,10 @@
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.hpp>
 
+#include <glm/glm.hpp>
+
 #include <algorithm>
+#include <array>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -25,6 +28,56 @@ constexpr bool enableValidationLayers = false;
 #else
 constexpr bool enableValidationLayers = true;
 #endif
+
+struct QueueFamilyIndices
+{
+  std::optional<uint32_t> graphicsFamily;
+  std::optional<uint32_t> presentFamily;
+
+  bool isComplete()
+  {
+    return graphicsFamily.has_value() && presentFamily.has_value();
+  }
+};
+
+struct SwapChainSupportDetails
+{
+  vk::SurfaceCapabilitiesKHR capabilities;
+  std::vector<vk::SurfaceFormatKHR> formats;
+  std::vector<vk::PresentModeKHR> presentModes;
+};
+
+struct Vertex
+{
+  glm::vec2 pos;
+  glm::vec3 color;
+
+  static vk::VertexInputBindingDescription getBindingDescription()
+  {
+    vk::VertexInputBindingDescription bindingDescription{
+      .binding = 0, .stride = sizeof(Vertex), .inputRate = vk::VertexInputRate::eVertex};
+    return bindingDescription;
+  }
+
+  static std::array<vk::VertexInputAttributeDescription, 2> getAttributeDescriptions()
+  {
+    std::array<vk::VertexInputAttributeDescription, 2> attributeDescriptions{
+      vk::VertexInputAttributeDescription{.location = 0,
+                                          .binding = 0,
+                                          .format = vk::Format::eR32G32Sfloat,
+                                          .offset = offsetof(Vertex, pos)},
+      vk::VertexInputAttributeDescription{.location = 1,
+                                          .binding = 0,
+                                          .format = vk::Format::eR32G32B32Sfloat,
+                                          .offset = offsetof(Vertex, color)}};
+
+    return attributeDescriptions;
+  }
+};
+
+const std::vector<Vertex> VERTICES = {{{0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}},
+                                      {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+                                      {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
 
 static std::vector<char> readFile(const std::string &filename)
 {
@@ -85,24 +138,6 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
     func(instance, debugMessenger, pAllocator);
 }
 
-struct QueueFamilyIndices
-{
-  std::optional<uint32_t> graphicsFamily;
-  std::optional<uint32_t> presentFamily;
-
-  bool isComplete()
-  {
-    return graphicsFamily.has_value() && presentFamily.has_value();
-  }
-};
-
-struct SwapChainSupportDetails
-{
-  vk::SurfaceCapabilitiesKHR capabilities;
-  std::vector<vk::SurfaceFormatKHR> formats;
-  std::vector<vk::PresentModeKHR> presentModes;
-};
-
 class HelloTriangleApplication
 {
 public:
@@ -143,6 +178,10 @@ private:
   vk::UniquePipeline graphicsPipeline_;
 
   vk::UniqueCommandPool commandPool_;
+
+  vk::UniqueBuffer vertexBuffer_;
+  vk::UniqueDeviceMemory vertexBufferMemory_;
+
   std::vector<vk::UniqueCommandBuffer> commandBuffers_;
 
   std::vector<vk::UniqueSemaphore> imageAvailableSemaphores_;
@@ -163,9 +202,9 @@ private:
     window_ = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
   }
 
-  static void framebufferResizeCallback(GLFWwindow * window, int width, int height)
+  static void framebufferResizeCallback(GLFWwindow *window, int width, int height)
   {
-    auto app = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(window));
+    auto app = reinterpret_cast<HelloTriangleApplication *>(glfwGetWindowUserPointer(window));
     app->framebufferResized_ = true;
   }
 
@@ -182,6 +221,7 @@ private:
     createGraphicsPipeline();
     createFramebuffer();
     createCommandPool();
+    createVertexBuffer();
     createCommandBuffers();
     createSyncObjects();
   }
@@ -207,7 +247,7 @@ private:
   {
     int width = 0, height = 0;
     glfwGetFramebufferSize(window_, &width, &height);
-    while(width == 0 || height == 0)
+    while (width == 0 || height == 0)
     {
       glfwGetFramebufferSize(window_, &width, &height);
       glfwWaitEvents();
@@ -356,10 +396,14 @@ private:
 
     vk::PipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
-    vk::PipelineVertexInputStateCreateInfo vertexInputInfo{.vertexBindingDescriptionCount = 0,
-                                                           .pVertexBindingDescriptions = nullptr,
-                                                           .vertexAttributeDescriptionCount = 0,
-                                                           .pVertexAttributeDescriptions = nullptr};
+    auto bindingDescription = Vertex::getBindingDescription();
+    auto attributeDescriptions = Vertex::getAttributeDescriptions();
+
+    vk::PipelineVertexInputStateCreateInfo vertexInputInfo{
+      .vertexBindingDescriptionCount = 1,
+      .pVertexBindingDescriptions = &bindingDescription,
+      .vertexAttributeDescriptionCount = attributeDescriptions.size(),
+      .pVertexAttributeDescriptions = attributeDescriptions.data()};
 
     vk::PipelineInputAssemblyStateCreateInfo inputAssembly{
       .topology = vk::PrimitiveTopology::eTriangleList, .primitiveRestartEnable = VK_FALSE};
@@ -474,6 +518,40 @@ private:
     commandPool_ = device_->createCommandPoolUnique(poolInfo);
   }
 
+  void createVertexBuffer()
+  {
+    vk::BufferCreateInfo bufferInfo{.size = sizeof(VERTICES[0]) * VERTICES.size(),
+                                    .usage = vk::BufferUsageFlagBits::eVertexBuffer,
+                                    .sharingMode = vk::SharingMode::eExclusive};
+    vertexBuffer_ = device_->createBufferUnique(bufferInfo);
+
+    auto memRequirements = device_->getBufferMemoryRequirements(*vertexBuffer_);
+
+    vk::MemoryAllocateInfo allocInfo{.allocationSize = memRequirements.size,
+                                     .memoryTypeIndex =
+                                       findMemoryType(memRequirements.memoryTypeBits,
+                                                      vk::MemoryPropertyFlagBits::eHostVisible |
+                                                        vk::MemoryPropertyFlagBits::eHostCoherent)};
+
+    vertexBufferMemory_ = device_->allocateMemoryUnique(allocInfo);
+    device_->bindBufferMemory(*vertexBuffer_, *vertexBufferMemory_, 0);
+
+    void *data = device_->mapMemory(*vertexBufferMemory_, 0, bufferInfo.size, {});
+    memcpy(data, VERTICES.data(), bufferInfo.size);
+    device_->unmapMemory(*vertexBufferMemory_);
+  }
+
+  uint32_t findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties)
+  {
+    auto memProperties = physicalDevice_.getMemoryProperties();
+    for (uint32_t i = 0; i < memProperties.memoryTypeCount; ++i)
+      if ((typeFilter & (1 << i)) &&
+          (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
+        return i;
+
+    throw std::runtime_error{"failed to find suitable memory type!"};
+  }
+
   void createCommandBuffers()
   {
     vk::CommandBufferAllocateInfo allocInfo{.commandPool = *commandPool_,
@@ -499,7 +577,12 @@ private:
     commandBuffer.beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
 
     commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *graphicsPipeline_);
-    commandBuffer.draw(/* vertexCount = */ 3, /* instanceCount = */ 1,
+
+    std::array<vk::Buffer, 1> vertexBuffers = {*vertexBuffer_};
+    std::array<vk::DeviceSize, 1> offsets = {0};
+    commandBuffer.bindVertexBuffers(0, vertexBuffers, offsets);
+
+    commandBuffer.draw(VERTICES.size(), /* instanceCount = */ 1,
                        /* firstVertex = */ 0, /* firstInstance = */ 0);
 
     commandBuffer.endRenderPass();
