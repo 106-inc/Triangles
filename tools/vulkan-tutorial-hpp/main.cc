@@ -75,9 +75,12 @@ struct Vertex
   }
 };
 
-const std::vector<Vertex> VERTICES = {{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-                                      {{0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}},
-                                      {{-0.5f, 0.5f}, {1.0f, 0.0f, .0f}}};
+const std::vector<Vertex> VERTICES = {{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+                                      {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+                                      {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+                                      {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}};
+
+const std::vector<uint16_t> INDICES = {0, 1, 2, 2, 3, 0};
 
 static std::vector<char> readFile(const std::string &filename)
 {
@@ -179,8 +182,11 @@ private:
 
   vk::UniqueCommandPool commandPool_;
 
-  vk::UniqueBuffer vertexBuffer_;
-  vk::UniqueDeviceMemory vertexBufferMemory_;
+  vk::Buffer vertexBuffer_;
+  vk::DeviceMemory vertexBufferMemory_;
+
+  vk::Buffer indexBuffer_;
+  vk::DeviceMemory indexBufferMemory_;
 
   std::vector<vk::UniqueCommandBuffer> commandBuffers_;
 
@@ -222,6 +228,7 @@ private:
     createFramebuffer();
     createCommandPool();
     createVertexBuffer();
+    createIndexBuffer();
     createCommandBuffers();
     createSyncObjects();
   }
@@ -241,6 +248,12 @@ private:
   {
     glfwDestroyWindow(window_);
     glfwTerminate();
+
+    device_->destroyBuffer(vertexBuffer_);
+    device_->freeMemory(vertexBufferMemory_);
+
+    device_->destroyBuffer(indexBuffer_);
+    device_->freeMemory(indexBufferMemory_);
   }
 
   void recreateSwapChain()
@@ -541,8 +554,32 @@ private:
 
     createBuffer(bufferSize,
                  vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer,
-                 vk::MemoryPropertyFlagBits::eDeviceLocal, *vertexBuffer_, *vertexBufferMemory_);
-    copyBuffer(stagingBuffer, *vertexBuffer_, bufferSize);
+                 vk::MemoryPropertyFlagBits::eDeviceLocal, vertexBuffer_, vertexBufferMemory_);
+    copyBuffer(stagingBuffer, vertexBuffer_, bufferSize);
+
+    device_->destroyBuffer(stagingBuffer);
+    device_->freeMemory(stagingBufferMemory);
+  }
+
+  void createIndexBuffer()
+  {
+    vk::DeviceSize bufferSize = sizeof(INDICES[0]) * INDICES.size();
+
+    vk::Buffer stagingBuffer{};
+    vk::DeviceMemory stagingBufferMemory{};
+    createBuffer(
+      bufferSize, vk::BufferUsageFlagBits::eTransferSrc | vk::BufferUsageFlagBits::eIndexBuffer,
+      vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
+      stagingBuffer, stagingBufferMemory);
+
+    void *data = device_->mapMemory(stagingBufferMemory, 0, bufferSize);
+    memcpy(data, INDICES.data(), bufferSize);
+    device_->unmapMemory(stagingBufferMemory);
+
+    createBuffer(bufferSize,
+                 vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer,
+                 vk::MemoryPropertyFlagBits::eDeviceLocal, indexBuffer_, indexBufferMemory_);
+    copyBuffer(stagingBuffer, indexBuffer_, bufferSize);
 
     device_->destroyBuffer(stagingBuffer);
     device_->freeMemory(stagingBufferMemory);
@@ -626,15 +663,15 @@ private:
 
     commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *graphicsPipeline_);
 
-    std::array<vk::Buffer, 1> vertexBuffers = {*vertexBuffer_};
+    std::array<vk::Buffer, 1> vertexBuffers = {vertexBuffer_};
     std::array<vk::DeviceSize, 1> offsets = {0};
     commandBuffer.bindVertexBuffers(0, vertexBuffers, offsets);
+    commandBuffer.bindIndexBuffer(indexBuffer_, 0, vk::IndexType::eUint16);
 
-    commandBuffer.draw(VERTICES.size(), /* instanceCount = */ 1,
-                       /* firstVertex = */ 0, /* firstInstance = */ 0);
+    commandBuffer.drawIndexed(INDICES.size(), /* instanceCount = */ 1,
+                              /* firstIndex = */ 0, 0, /* firstInstance = */ 0);
 
     commandBuffer.endRenderPass();
-
     commandBuffer.end();
   }
 
