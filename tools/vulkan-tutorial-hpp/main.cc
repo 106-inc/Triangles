@@ -199,7 +199,7 @@ private:
 
   vk::Image depthImage_;
   vk::DeviceMemory depthImageMemory_;
-  vk::ImageView depthImageView_;
+  vk::UniqueImageView depthImageView_;
 
   vk::Buffer vertexBuffer_;
   vk::DeviceMemory vertexBufferMemory_;
@@ -252,7 +252,7 @@ private:
     createDescriptorSetLayout();
     createGraphicsPipeline();
     createCommandPool();
-    // createDepthResources();
+    createDepthResources();
     createFramebuffer();
     createVertexBuffer();
     createIndexBuffer();
@@ -292,8 +292,8 @@ private:
     }
 
     // device_->destroyImageView(depthImageView_);
-    // device_->destroyImage(depthImage_);
-    // device_->freeMemory(depthImageMemory_);
+    device_->destroyImage(depthImage_);
+    device_->freeMemory(depthImageMemory_);
   }
 
   void recreateSwapChain()
@@ -309,14 +309,14 @@ private:
     device_->waitIdle();
 
     // device_->destroyImageView(depthImageView_);
-    // device_->destroyImage(depthImage_);
-    // device_->freeMemory(depthImageMemory_);
+    device_->destroyImage(depthImage_);
+    device_->freeMemory(depthImageMemory_);
 
     createSwapChain();
     createImageViews();
     createRenderPass();
     createGraphicsPipeline();
-    // createDepthResources();
+    createDepthResources();
     createFramebuffer();
   }
 
@@ -517,24 +517,24 @@ private:
                                                          .alphaToCoverageEnable = VK_FALSE,
                                                          .alphaToOneEnable = VK_FALSE};
 
-    // vk::PipelineDepthStencilStateCreateInfo depthStencil{.depthTestEnable = VK_TRUE,
-    //                                                      .depthWriteEnable = VK_TRUE,
-    //                                                      .depthCompareOp = vk::CompareOp::eLess,
-    //                                                      .depthBoundsTestEnable = VK_FALSE,
-    //                                                      .stencilTestEnable = VK_FALSE,
-    //                                                      .front = {},
-    //                                                      .back = {},
-    //                                                      .minDepthBounds = 0.0f,
-    //                                                      .maxDepthBounds = 1.0f};
+    vk::PipelineDepthStencilStateCreateInfo depthStencil{.depthTestEnable = VK_TRUE,
+                                                         .depthWriteEnable = VK_TRUE,
+                                                         .depthCompareOp = vk::CompareOp::eLess,
+                                                         .depthBoundsTestEnable = VK_FALSE,
+                                                         .stencilTestEnable = VK_FALSE,
+                                                         .front = {},
+                                                         .back = {},
+                                                         .minDepthBounds = 0.0f,
+                                                         .maxDepthBounds = 1.0f};
 
     vk::PipelineColorBlendAttachmentState colorBlendAttachment{
       .blendEnable = VK_FALSE,
-      .srcColorBlendFactor = vk::BlendFactor::eOne,
-      .dstColorBlendFactor = vk::BlendFactor::eZero,
-      .colorBlendOp = vk::BlendOp::eAdd,
-      .srcAlphaBlendFactor = vk::BlendFactor::eOne,
-      .dstAlphaBlendFactor = vk::BlendFactor::eZero,
-      .alphaBlendOp = vk::BlendOp::eAdd,
+      // .srcColorBlendFactor = vk::BlendFactor::eOne,
+      // .dstColorBlendFactor = vk::BlendFactor::eZero,
+      // .colorBlendOp = vk::BlendOp::eAdd,
+      // .srcAlphaBlendFactor = vk::BlendFactor::eOne,
+      // .dstAlphaBlendFactor = vk::BlendFactor::eZero,
+      // .alphaBlendOp = vk::BlendOp::eAdd,
       .colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
                         vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA};
 
@@ -559,7 +559,7 @@ private:
                                                 .pViewportState = &viewportState,
                                                 .pRasterizationState = &rasterizer,
                                                 .pMultisampleState = &multisampling,
-                                                .pDepthStencilState = nullptr /*&depthStencil*/,
+                                                .pDepthStencilState = &depthStencil,
                                                 .pColorBlendState = &colorBlending,
                                                 .pDynamicState = nullptr,
                                                 .layout = *pipelineLayout_,
@@ -582,7 +582,8 @@ private:
 
     for (std::size_t i = 0; i < swapChainImageViewsSize; ++i)
     {
-      std::array<vk::ImageView, 1 /*2*/> attachments = {*swapChainImageViews_[i] /*, depthImageView_*/};
+      std::array<vk::ImageView, 2> attachments = {
+        *swapChainImageViews_[i], *depthImageView_};
 
       vk::FramebufferCreateInfo framebufferInfo{.renderPass = *renderPass_,
                                                 .attachmentCount =
@@ -674,8 +675,8 @@ private:
     device_->bindImageMemory(image, imageMemory, 0);
   }
 
-  vk::ImageView createImageView(vk::Image image, vk::Format format,
-                                vk::ImageAspectFlags aspectFlags)
+  vk::UniqueImageView createImageView(vk::Image image, vk::Format format,
+                                      vk::ImageAspectFlags aspectFlags)
   {
     vk::ImageViewCreateInfo viewInfo{.image = image,
                                      .viewType = vk::ImageViewType::e2D,
@@ -687,7 +688,7 @@ private:
                                                                  .baseArrayLayer = 0,
                                                                  .layerCount = 1}};
 
-    return device_->createImageView(viewInfo);
+    return device_->createImageViewUnique(viewInfo);
   }
 
   void createVertexBuffer()
@@ -858,16 +859,16 @@ private:
     vk::CommandBufferBeginInfo beginInfo{.flags = {}, .pInheritanceInfo = nullptr};
     commandBuffer.begin(beginInfo);
 
-    // std::array<vk::ClearValue, 2> clearValues{};
-    // clearValues[0].color = vk::ClearColorValue{std::array<float, 4>{0.0f, 0.0f, 0.0f, 1.0f}};
-    // clearValues[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+    std::array<vk::ClearValue, 2> clearValues{};
+    clearValues[0].color = vk::ClearColorValue{std::array<float, 4>{0.0f, 0.0f, 0.0f, 1.0f}};
+    clearValues[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
 
     vk::RenderPassBeginInfo renderPassInfo{
       .renderPass = *renderPass_,
       .framebuffer = *swapChainFramebuffers_[imageIndex],
-      .renderArea = vk::Rect2D{.offset = {0, 0}, .extent = swapChainExtent_}/*,
+      .renderArea = vk::Rect2D{.offset = {0, 0}, .extent = swapChainExtent_},
       .clearValueCount = static_cast<uint32_t>(clearValues.size()),
-      .pClearValues = clearValues.data()*/};
+      .pClearValues = clearValues.data()};
 
     vk::ClearValue clearColor = {std::array<float, 4>{0.0f, 0.0f, 0.0f, 1.0f}};
     renderPassInfo.setClearValues(clearColor);
@@ -1052,26 +1053,8 @@ private:
     swapChainImageViews_.resize(swapChainImageSize);
 
     for (std::size_t i = 0; i < swapChainImageSize; ++i)
-    {
-      vk::ComponentMapping components{.r = vk::ComponentSwizzle::eIdentity,
-                                      .g = vk::ComponentSwizzle::eIdentity,
-                                      .b = vk::ComponentSwizzle::eIdentity,
-                                      .a = vk::ComponentSwizzle::eIdentity};
-
-      vk::ImageSubresourceRange imageSubresourceRange{.aspectMask = vk::ImageAspectFlagBits::eColor,
-                                                      .baseMipLevel = 0,
-                                                      .levelCount = 1,
-                                                      .baseArrayLayer = 0,
-                                                      .layerCount = 1};
-
-      vk::ImageViewCreateInfo createInfo{.image = swapChainImages_[i],
-                                         .viewType = vk::ImageViewType::e2D,
-                                         .format = swapChainImageFormat_,
-                                         .components = components,
-                                         .subresourceRange = imageSubresourceRange};
-
-      swapChainImageViews_[i] = device_->createImageViewUnique(createInfo);
-    }
+      swapChainImageViews_[i] = createImageView(swapChainImages_[i], swapChainImageFormat_,
+                                                vk::ImageAspectFlagBits::eColor);
   }
 
   void createRenderPass()
@@ -1085,39 +1068,40 @@ private:
                                               .initialLayout = vk::ImageLayout::eUndefined,
                                               .finalLayout = vk::ImageLayout::ePresentSrcKHR};
 
-    // vk::AttachmentDescription depthAttachment{.format = findDepthFormat(),
-    //                                           .samples = vk::SampleCountFlagBits::e1,
-    //                                           .loadOp = vk::AttachmentLoadOp::eClear,
-    //                                           .storeOp = vk::AttachmentStoreOp::eDontCare,
-    //                                           .stencilLoadOp = vk::AttachmentLoadOp::eDontCare,
-    //                                           .stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
-    //                                           .initialLayout = vk::ImageLayout::eUndefined,
-    //                                           .finalLayout =
-    //                                             vk::ImageLayout::eDepthStencilAttachmentOptimal};
+    vk::AttachmentDescription depthAttachment{.format = findDepthFormat(),
+                                              .samples = vk::SampleCountFlagBits::e1,
+                                              .loadOp = vk::AttachmentLoadOp::eClear,
+                                              .storeOp = vk::AttachmentStoreOp::eDontCare,
+                                              .stencilLoadOp = vk::AttachmentLoadOp::eDontCare,
+                                              .stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
+                                              .initialLayout = vk::ImageLayout::eUndefined,
+                                              .finalLayout =
+                                                vk::ImageLayout::eDepthStencilAttachmentOptimal};
 
     vk::AttachmentReference colorAttachmentRef{.attachment = 0,
                                                .layout = vk::ImageLayout::eColorAttachmentOptimal};
 
-    // vk::AttachmentReference depthAttachmentRef{
-    //   .attachment = 1, .layout = vk::ImageLayout::eDepthStencilAttachmentOptimal};
+    vk::AttachmentReference depthAttachmentRef{
+      .attachment = 1, .layout = vk::ImageLayout::eDepthStencilAttachmentOptimal};
 
     vk::SubpassDescription subpass{.pipelineBindPoint = vk::PipelineBindPoint::eGraphics,
                                    .colorAttachmentCount = 1,
-                                   .pColorAttachments = &colorAttachmentRef/*,
-                                   .pDepthStencilAttachment = &depthAttachmentRef*/};
+                                   .pColorAttachments = &colorAttachmentRef,
+                                   .pDepthStencilAttachment = &depthAttachmentRef};
 
     vk::SubpassDependency dependency{
       .srcSubpass = VK_SUBPASS_EXTERNAL,
       .dstSubpass = 0,
-      .srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput/* |
-                      vk::PipelineStageFlagBits::eEarlyFragmentTests*/,
-      .dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput/* |
-                      vk::PipelineStageFlagBits::eEarlyFragmentTests*/,
+      .srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                      vk::PipelineStageFlagBits::eEarlyFragmentTests,
+      .dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                      vk::PipelineStageFlagBits::eEarlyFragmentTests,
       .srcAccessMask = {},
-      .dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite /*|
-                       vk::AccessFlagBits::eDepthStencilAttachmentWrite*/};
+      .dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite |
+                       vk::AccessFlagBits::eDepthStencilAttachmentWrite};
 
-    std::array<vk::AttachmentDescription, 1/*2*/> attachments = {colorAttachment/*, depthAttachment*/};
+    std::array<vk::AttachmentDescription, 2> attachments = {
+      colorAttachment, depthAttachment};
 
     vk::RenderPassCreateInfo renderPassInfo{.attachmentCount =
                                               static_cast<uint32_t>(attachments.size()),
