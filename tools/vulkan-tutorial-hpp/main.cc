@@ -582,8 +582,7 @@ private:
 
     for (std::size_t i = 0; i < swapChainImageViewsSize; ++i)
     {
-      std::array<vk::ImageView, 2> attachments = {
-        *swapChainImageViews_[i], *depthImageView_};
+      std::array<vk::ImageView, 2> attachments = {*swapChainImageViews_[i], *depthImageView_};
 
       vk::FramebufferCreateInfo framebufferInfo{.renderPass = *renderPass_,
                                                 .attachmentCount =
@@ -874,19 +873,17 @@ private:
     renderPassInfo.setClearValues(clearColor);
 
     commandBuffer.beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
-    {
-      commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *graphicsPipeline_);
+    commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *graphicsPipeline_);
 
-      std::array<vk::Buffer, 1> vertexBuffers = {vertexBuffer_};
-      std::array<vk::DeviceSize, 1> offsets = {0};
-      commandBuffer.bindVertexBuffers(0, vertexBuffers, offsets);
-      commandBuffer.bindIndexBuffer(indexBuffer_, 0, vk::IndexType::eUint16);
+    std::array<vk::Buffer, 1> vertexBuffers = {vertexBuffer_};
+    std::array<vk::DeviceSize, 1> offsets = {0};
+    commandBuffer.bindVertexBuffers(0, vertexBuffers, offsets);
+    commandBuffer.bindIndexBuffer(indexBuffer_, 0, vk::IndexType::eUint16);
 
-      commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, *pipelineLayout_, 0, 1,
-                                       &descriptorSets_[currentFrame_], 0, nullptr);
-      commandBuffer.drawIndexed(INDICES.size(), /* instanceCount = */ 1,
-                                /* firstIndex = */ 0, 0, /* firstInstance = */ 0);
-    }
+    commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, *pipelineLayout_, 0, 1,
+                                     &descriptorSets_[currentFrame_], 0, nullptr);
+    commandBuffer.drawIndexed(INDICES.size(), /* instanceCount = */ 1,
+                              /* firstIndex = */ 0, 0, /* firstInstance = */ 0);
     commandBuffer.endRenderPass();
     commandBuffer.end();
   }
@@ -1100,8 +1097,7 @@ private:
       .dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite |
                        vk::AccessFlagBits::eDepthStencilAttachmentWrite};
 
-    std::array<vk::AttachmentDescription, 2> attachments = {
-      colorAttachment, depthAttachment};
+    std::array<vk::AttachmentDescription, 2> attachments = {colorAttachment, depthAttachment};
 
     vk::RenderPassCreateInfo renderPassInfo{.attachmentCount =
                                               static_cast<uint32_t>(attachments.size()),
