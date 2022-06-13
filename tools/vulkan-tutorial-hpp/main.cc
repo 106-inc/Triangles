@@ -114,23 +114,50 @@ static std::vector<char> readFile(const std::string &filename)
   return buffer;
 }
 
+std::string toStringMessageSeverity(VkDebugUtilsMessageSeverityFlagBitsEXT s)
+{
+  switch (s)
+  {
+  case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+    return "VERBOSE";
+  case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+    return "ERROR";
+  case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+    return "WARNING";
+  case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+    return "INFO";
+  default:
+    return "UNKNOWN";
+  }
+}
+std::string toStringMessageType(VkDebugUtilsMessageTypeFlagsEXT s)
+{
+  if (s == 7)
+    return "General | Validation | Performance";
+  if (s == 6)
+    return "Validation | Performance";
+  if (s == 5)
+    return "General | Performance";
+  if (s == 4 /*VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT*/)
+    return "Performance";
+  if (s == 3)
+    return "General | Validation";
+  if (s == 2 /*VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT*/)
+    return "Validation";
+  if (s == 1 /*VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT*/)
+    return "General";
+  return "Unknown";
+}
+
 static VKAPI_ATTR VkBool32 VKAPI_CALL
 debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
               VkDebugUtilsMessageTypeFlagsEXT messageType,
               const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData)
 {
-  std::string prompt = "[validation]";
+  auto ms = toStringMessageSeverity(messageSeverity);
+  auto mt = toStringMessageType(messageType);
 
-  if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
-    prompt += "[ERROR]";
-  if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
-    prompt += "[WARNING]";
-  if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
-    prompt += "[info]";
-  if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
-    prompt += "[verbose]";
-
-  std::cerr << prompt << " " << pCallbackData->pMessage << std::endl;
+  std::cerr << "[" << ms << ": " << mt << "] " << pCallbackData->pMessage << std::endl;
   return VK_FALSE;
 }
 
