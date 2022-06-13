@@ -2,8 +2,8 @@
 #include <set>
 #include <stack>
 
-#include "intersection/intersection.hh"
-#include "kdtree/kdtree.hh"
+#include "geom/intersection/intersection.hh"
+#include "geom/kdtree/kdtree.hh"
 
 using namespace geom;
 using namespace geom::kdtree;

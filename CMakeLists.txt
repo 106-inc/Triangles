@@ -13,12 +13,9 @@ include(cmake/comp_flags.cmake)
 
 # Prepare project libraries
 add_subdirectory(lib)
-message(STATUS "Collected libs: ${LIBLIST}")
+message(STATUS "Collected libs: ${GEOMLIBLIST}")
 
-foreach(LIB ${LIBLIST})
-  # Include paths
-  target_include_directories(${LIB} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-
+foreach(LIB ${GEOMLIBLIST})
   apply_compiler_flags(${LIB} INTERFACE)
   target_compile_features(${LIB} INTERFACE cxx_std_20)
 endforeach()
@@ -50,7 +47,7 @@ if(BUILD_TESTS)
   foreach(TEST ${TESTLIST})
     target_include_directories(${TEST} PRIVATE ${GTEST_INCLUDE_DIRS})
     target_link_libraries(${TEST} PRIVATE ${GTEST_BOTH_LIBRARIES} pthread)
-    target_link_libraries(${TEST} PRIVATE ${LIBLIST})
+    target_link_libraries(${TEST} PRIVATE ${GEOMLIBLIST})
 
     target_compile_features(${TEST} PRIVATE cxx_std_20)
     target_include_directories(${TEST} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)

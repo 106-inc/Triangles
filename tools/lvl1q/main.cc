@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
 
-#include "intersection/intersection.hh"
-#include "primitives/primitives.hh"
+#include "geom/intersection/intersection.hh"
+#include "geom/primitives/primitives.hh"
 
 int main()
 {
