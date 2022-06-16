@@ -1,6 +1,6 @@
 set(TOOL vulkan-tutorial-hpp)
 
-add_executable(${TOOL} main.cc)
+add_executable(${TOOL} main.cc engine.cc)
 format_target(${TOOL} ${CMAKE_CURRENT_SOURCE_DIR} main.cc)
 
 find_package(Vulkan REQUIRED)
