@@ -1,4 +1,4 @@
-set(LIBLIST primitives intersection distance kdtree)
+set(LIBLIST primitives intersection distance kdtree utils)
 
 foreach(LIB ${LIBLIST})
   add_subdirectory(${LIB})
