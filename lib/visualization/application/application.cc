@@ -91,7 +91,7 @@ void Application::disableInputProcessing()
   processInputEvents_ = false;
 }
 
-void Application::setWindowProperties(const Window::OptionalProperties &props)
+void Application::setWindowProperties(const IWindow::OptionalProperties &props)
 {
   /*...*/
 }
@@ -118,7 +118,7 @@ Engine &Application::getApp() const
   return *engine_;
 }
 
-Window &Application::getWindow()
+IWindow &Application::getWindow()
 {
   return *window_;
 }
@@ -184,7 +184,7 @@ void Application::inputEvent(const InputEvent &inputEvent)
 
 void Application::resize(uint32_t width, uint32_t height)
 {
-  Window::Extent extent{std::max<uint32_t>(width, MIN_WINDOW_WIDTH),
+  IWindow::Extent extent{std::max<uint32_t>(width, MIN_WINDOW_WIDTH),
                         std::max<uint32_t>(height, MIN_WINDOW_HEIGHT)};
 
   if (window_)

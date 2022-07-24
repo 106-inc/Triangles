@@ -4,13 +4,13 @@
 namespace visual
 {
 
-Window::Window(const Properties &props) : properties_(props)
+IWindow::IWindow(const Properties &props) : properties_(props)
 {}
 
-void Window::processEvents()
+void IWindow::processEvents()
 {}
 
-Window::Extent Window::resize(const Extent &newExtent)
+IWindow::Extent IWindow::resize(const Extent &newExtent)
 {
   if (properties_.resizable)
   {
@@ -21,12 +21,12 @@ Window::Extent Window::resize(const Extent &newExtent)
   return propterties_.extent;
 }
 
-const Window::Extent &Window::getExtent() const
+const IWindow::Extent &IWindow::getExtent() const
 {
   return properties_.extent;
 }
 
-Window::Mode Window::getWindowMode() const
+IWindow::Mode IWindow::getWindowMode() const
 {
   return properties_.mode;
 }

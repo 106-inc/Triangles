@@ -29,10 +29,10 @@ public:
   static const uint32_t MIN_WINDOW_HEIGHT;
 
 protected:
-  std::unique_ptr<Window> window_{nullptr};
+  std::unique_ptr<IWindow> window_{nullptr};
   std::unique_ptr<Engine> engine_{nullptr};
 
-  Window::Properties windowProps_;
+  IWindow::Properties windowProps_;
   bool processInputEvents_{true};
   bool closeRequested_{false};
 
@@ -69,7 +69,7 @@ public:
 
   virtual void inputEvent(const InputEvent &inputEvent);
 
-  Window &getWindow();
+  IWindow &getWindow();
 
   Engine &getEngine() const;
   Engine &getEngine();
@@ -83,7 +83,7 @@ public:
 
   void disableInputProcessing();
 
-  void setWindowProperties(/* const Window::OptionalProperties & properties */);
+  void setWindowProperties(/* const IWindow::OptionalProperties & properties */);
 };
 
 } // namespace visual

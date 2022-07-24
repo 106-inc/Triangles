@@ -10,7 +10,7 @@
 namespace visual
 {
 
-class Window
+class IWindow
 {
 public:
   struct Extent
@@ -62,8 +62,8 @@ protected:
   Properties properties_;
 
 public:
-  Window(const Properties &props);
-  virtual ~Window() = default;
+  IWindow(const Properties &props);
+  virtual ~IWindow() = default;
 
   // virtual vk::SurfaceKHR createSurface(Instance &instance) = 0; // TODO: Define Instance class
   virtual vk::SurfaceKHR createSurface(vk::Instance instance, vk::PhysicalDevice physicalDevice) = 0;

@@ -6,7 +6,7 @@
 namespace visual
 {
 
-class Window;
+class IWindow;
 class Application;
 
 class Engine
