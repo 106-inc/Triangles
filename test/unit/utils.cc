@@ -113,4 +113,50 @@ TEST(EnumerTest, arrowProxy)
   ASSERT_EQ(vec, expect);
 }
 
+TEST(EnumerTest, MoveSemantics)
+{
+  // Arrangse
+  struct WasMovedType
+  {};
+  struct WasCopiedType
+  {};
+  struct ToMove
+  {
+  private:
+    std::vector<int> dummy{};
+
+  public:
+    ToMove() = default;
+
+    ToMove(const ToMove &that) : dummy(that.dummy)
+    {
+      throw WasCopiedType{};
+    }
+    ToMove(ToMove &&that) : dummy(std::move(that.dummy))
+    {
+      throw WasMovedType{};
+    }
+
+    auto size() const
+    {
+      return dummy.size();
+    }
+
+    auto begin()
+    {
+      return dummy.begin();
+    }
+
+    auto end()
+    {
+      return dummy.end();
+    }
+  };
+
+  ToMove local;
+  // Act && Assert
+  EXPECT_THROW([[maybe_unused]] auto moved = makeEnumerate(ToMove{});, WasMovedType);
+  EXPECT_NO_THROW([[maybe_unused]] auto copied = makeEnumerate(local););
+}
+
 #include "test_footer.hh"

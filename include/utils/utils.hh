@@ -19,9 +19,6 @@ concept ItContainer = requires(T cont)
   {
     std::size(cont)
     } -> std::convertible_to<std::size_t>;
-  {
-    typename std::remove_reference_t<T>::iterator()
-    } -> std::forward_iterator;
 };
 
 namespace detail
@@ -101,64 +98,36 @@ bool operator!=(const EnumerIt<It> &lhs, const EnumerIt<It> &rhs)
 {
   return !(lhs == rhs);
 }
-
 } // namespace detail
 
 template <ItContainer C>
 class Enumerate final
 {
 private:
-  C &cont_;
-  using EnumItType = detail::EnumerIt<typename std::remove_reference_t<C>::iterator>;
+  using NoRefC = std::remove_reference_t<C>;
+  using ContStorageType = std::conditional_t<std::is_rvalue_reference_v<C>, NoRefC, NoRefC &>;
+
+  ContStorageType cont_;
+  using EnumItType = detail::EnumerIt<decltype(std::begin(cont_))>;
 
 public:
-  Enumerate(C &cont) : cont_(cont)
+  Enumerate(C &&cont) : cont_(std::forward<C>(cont))
   {}
 
-  auto begin() -> decltype(auto)
+  auto begin()
   {
     return EnumItType(0, std::begin(cont_));
   }
-  auto begin() const -> decltype(auto)
+  auto begin() const
   {
     return EnumItType(0, std::begin(cont_));
   }
 
-  auto end() -> decltype(auto)
+  auto end()
   {
     return EnumItType(std::size(cont_), std::end(cont_));
   }
-  auto end() const -> decltype(auto)
-  {
-    return EnumItType(std::size(cont_), std::end(cont_));
-  }
-};
-
-template <ItContainer C>
-class Enumerate<C &&> final
-{
-private:
-  C cont_;
-  using EnumItType = detail::EnumerIt<typename std::remove_reference_t<C>::iterator>;
-
-public:
-  Enumerate(C &&cont) : cont_(std::move(cont))
-  {}
-
-  auto begin() -> decltype(auto)
-  {
-    return EnumItType(0, std::begin(cont_));
-  }
-  auto begin() const -> decltype(auto)
-  {
-    return EnumItType(0, std::begin(cont_));
-  }
-
-  auto end() -> decltype(auto)
-  {
-    return EnumItType(std::size(cont_), std::end(cont_));
-  }
-  auto end() const -> decltype(auto)
+  auto end() const
   {
     return EnumItType(std::size(cont_), std::end(cont_));
   }
