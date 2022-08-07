@@ -42,23 +42,21 @@ public:
   using iterator_category = std::forward_iterator_tag;
   using difference_type =
     std::pair<std::make_signed_t<std::size_t>, typename std::iterator_traits<It>::difference_type>;
-  using value_type = std::pair<std::size_t, typename std::iterator_traits<It>::value_type>;
-  using reference = std::pair<std::size_t &, typename std::iterator_traits<It>::reference>;
+  using value_type = std::pair<const std::size_t, typename std::iterator_traits<It>::value_type>;
+  using reference = std::pair<const std::size_t, typename std::iterator_traits<It>::reference>;
   using pointer = ArrowProxy<reference>;
 
 private:
   std::size_t counter_;
-  mutable std::size_t dummy_;
   It iter_;
 
 public:
-  EnumerIt(std::size_t i, It iter) : counter_(i), dummy_(i), iter_(iter)
+  EnumerIt(std::size_t i, It iter) : counter_(i), iter_(iter)
   {}
 
   reference operator*() const
   {
-    dummy_ = counter_;
-    return {dummy_, *iter_};
+    return {counter_, *iter_};
   }
 
   EnumerIt &operator++()
@@ -82,8 +80,7 @@ public:
 
   pointer operator->() const
   {
-    dummy_ = counter_;
-    return pointer{{dummy_, *iter_}};
+    return pointer{{counter_, *iter_}};
   }
 };
 

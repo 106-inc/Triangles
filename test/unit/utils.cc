@@ -31,21 +31,6 @@ TEST(EnumerTest, ordVecStructBind)
     ASSERT_EQ(i, val);
 }
 
-TEST(EnumerTest, ordVecChangeCounter)
-{
-  // Arrange
-  std::vector<int> vec;
-  vec.resize(10);
-  std::iota(vec.begin(), vec.end(), 0);
-
-  // Act && Asserts
-  for (auto [i, val] : makeEnumerate(vec))
-    if (i == 0)
-      i = 22;
-    else
-      ASSERT_EQ(i, val);
-}
-
 TEST(EnumerTest, ordVecChangeValue)
 {
   // Arrange
@@ -60,7 +45,24 @@ TEST(EnumerTest, ordVecChangeValue)
     val = -static_cast<int>(i);
 
   // Assert
-  ASSERT_EQ(vec, expect);
+  EXPECT_EQ(vec, expect);
+}
+
+TEST(EnumerTest, twiceDeref)
+{
+  // Arrange
+  std::vector<int> vec = {1, 2, 3};
+
+  // Act
+  auto enumerate = makeEnumerate(vec);
+  auto it1 = enumerate.begin();
+  auto v1 = *it1;
+  ++it1;
+  auto v2 = *it1;
+
+  // Assert
+  EXPECT_EQ(v1.first, 0);
+  EXPECT_EQ(v2.first, 1);
 }
 
 TEST(EnumerTest, ordVecTemp)
@@ -74,7 +76,7 @@ TEST(EnumerTest, ordVecTemp)
     res[i] = val;
 
   // Assert
-  ASSERT_EQ(res, expect);
+  EXPECT_EQ(res, expect);
 }
 
 TEST(EnumerTest, arrowProxy)
@@ -110,7 +112,7 @@ TEST(EnumerTest, arrowProxy)
     it->second.inc();
 
   // Assert
-  ASSERT_EQ(vec, expect);
+  EXPECT_EQ(vec, expect);
 }
 
 TEST(EnumerTest, MoveSemantics)
