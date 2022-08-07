@@ -15,7 +15,7 @@ TEST(EnumerTest, ordVecSimpleBind)
   std::iota(vec.begin(), vec.end(), 0);
 
   // Act && Asserts
-  for (auto val : makeEnumerate(vec))
+  for (auto val : Enumerate(vec))
     ASSERT_EQ(val.first, val.second);
 }
 
@@ -27,7 +27,7 @@ TEST(EnumerTest, ordVecStructBind)
   std::iota(vec.begin(), vec.end(), 0);
 
   // Act && Asserts
-  for (auto [i, val] : makeEnumerate(vec))
+  for (auto [i, val] : Enumerate(vec))
     ASSERT_EQ(i, val);
 }
 
@@ -41,7 +41,7 @@ TEST(EnumerTest, ordVecChangeValue)
   std::iota(expect.rbegin(), expect.rend(), -expect.size() + 1);
 
   // Act
-  for (auto [i, val] : makeEnumerate(vec))
+  for (auto [i, val] : Enumerate(vec))
     val = -static_cast<int>(i);
 
   // Assert
@@ -54,7 +54,7 @@ TEST(EnumerTest, twiceDeref)
   std::vector<int> vec = {1, 2, 3};
 
   // Act
-  auto enumerate = makeEnumerate(vec);
+  auto enumerate = Enumerate(vec);
   auto it1 = enumerate.begin();
   auto v1 = *it1;
   ++it1;
@@ -72,7 +72,7 @@ TEST(EnumerTest, ordVecTemp)
   res.resize(10);
 
   // Act
-  for (auto [i, val] : makeEnumerate(std::vector<int>(expect.size(), 10)))
+  for (auto [i, val] : Enumerate(std::vector<int>(expect.size(), 10)))
     res[i] = val;
 
   // Assert
@@ -107,7 +107,7 @@ TEST(EnumerTest, arrowProxy)
   std::iota(expect.begin(), expect.end(), 1);
 
   // Act
-  auto enumerate = makeEnumerate(vec);
+  auto enumerate = Enumerate(vec);
   for (auto it = enumerate.begin(); it != enumerate.end(); it++)
     it->second.inc();
 
@@ -157,8 +157,8 @@ TEST(EnumerTest, MoveSemantics)
 
   ToMove local;
   // Act && Assert
-  EXPECT_THROW([[maybe_unused]] auto moved = makeEnumerate(ToMove{});, WasMovedType);
-  EXPECT_NO_THROW([[maybe_unused]] auto copied = makeEnumerate(local););
+  EXPECT_THROW([[maybe_unused]] auto moved = Enumerate(ToMove{});, WasMovedType);
+  EXPECT_NO_THROW([[maybe_unused]] auto copied = Enumerate(local););
 }
 
 #include "test_footer.hh"

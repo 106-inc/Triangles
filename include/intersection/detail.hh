@@ -130,7 +130,7 @@ Segment2D<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const
 
   std::array<T, 2> segm{};
   std::array<std::size_t, 2> arr = {(rogue + 1) % 3, (rogue + 2) % 3};
-  for (auto [idx, i] : utils::makeEnumerate(arr))
+  for (auto [idx, i] : utils::Enumerate(arr))
     segm[idx] = vert[i] + (vert[rogue] - vert[i]) * sdist[i] / (sdist[i] - sdist[rogue]);
 
   return std::minmax(segm[0], segm[1]);

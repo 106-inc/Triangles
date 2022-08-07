@@ -128,13 +128,15 @@ public:
   {
     return EnumItType(std::size(cont_), std::end(cont_));
   }
+
+  auto size() const
+  {
+    return std::size(cont_);
+  }
 };
 
 template <ItContainer C>
-auto makeEnumerate(C &&cont)
-{
-  return Enumerate<C &&>(std::forward<C>(cont));
-}
+Enumerate(C &&) -> Enumerate<C &&>;
 
 } // namespace utils
 
