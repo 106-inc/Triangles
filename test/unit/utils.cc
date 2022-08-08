@@ -7,7 +7,7 @@
 
 using namespace utils;
 
-TEST(EnumerTest, ordVecSimpleBind)
+TEST(EnumerateTest, ordVecSimpleBind)
 {
   // Arrange
   std::vector<int> vec;
@@ -19,7 +19,7 @@ TEST(EnumerTest, ordVecSimpleBind)
     ASSERT_EQ(val.first, val.second);
 }
 
-TEST(EnumerTest, ordVecStructBind)
+TEST(EnumerateTest, ordVecStructBind)
 {
   // Arrange
   std::vector<int> vec;
@@ -31,7 +31,7 @@ TEST(EnumerTest, ordVecStructBind)
     ASSERT_EQ(i, val);
 }
 
-TEST(EnumerTest, ordVecChangeValue)
+TEST(EnumerateTest, ordVecChangeValue)
 {
   // Arrange
   std::vector<int> vec, expect;
@@ -48,7 +48,7 @@ TEST(EnumerTest, ordVecChangeValue)
   EXPECT_EQ(vec, expect);
 }
 
-TEST(EnumerTest, twiceDeref)
+TEST(EnumerateTest, twiceDeref)
 {
   // Arrange
   std::vector<int> vec = {1, 2, 3};
@@ -56,16 +56,26 @@ TEST(EnumerTest, twiceDeref)
   // Act
   auto enumerate = Enumerate(vec);
   auto it1 = enumerate.begin();
-  auto v1 = *it1;
-  ++it1;
-  auto v2 = *it1;
+  auto it2 = enumerate.begin();
+
+  using value_type =
+    std::iterator_traits<detail::EnumerateIt<std::vector<int>::iterator>>::value_type;
+
+  value_type v1 = *it1++;
+  value_type v2 = *it1;
+
+  auto r1 = *it2;
+  ++it2;
+  auto r2 = *it2;
 
   // Assert
   EXPECT_EQ(v1.first, 0);
   EXPECT_EQ(v2.first, 1);
+
+  EXPECT_NE(r1, r2);
 }
 
-TEST(EnumerTest, ordVecTemp)
+TEST(EnumerateTest, ordVecTemp)
 {
   // Arrange
   std::vector<int> res, expect(10, 10);
@@ -79,7 +89,7 @@ TEST(EnumerTest, ordVecTemp)
   EXPECT_EQ(res, expect);
 }
 
-TEST(EnumerTest, arrowProxy)
+TEST(EnumerateTest, arrowProxy)
 {
   // Arrange
   struct Compl
@@ -115,9 +125,23 @@ TEST(EnumerTest, arrowProxy)
   EXPECT_EQ(vec, expect);
 }
 
-TEST(EnumerTest, MoveSemantics)
+TEST(EnumerateTest, constContainer)
 {
-  // Arrangse
+  // Arrange
+  const std::vector vec = {1, 2, 3, 4, 5};
+  std::vector<int> vec2(vec.size());
+
+  // Act
+  for (auto [idx, val] : Enumerate(vec))
+    vec2[idx] = val;
+
+  // Assert
+  EXPECT_EQ(vec, vec2);
+}
+
+TEST(EnumerateTest, MoveSemantics)
+{
+  // Arrange
   struct WasMovedType
   {};
   struct WasCopiedType

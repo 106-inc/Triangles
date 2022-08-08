@@ -24,7 +24,7 @@ concept ItContainer = requires(T cont)
 namespace detail
 {
 template <std::forward_iterator It>
-class EnumerIt final
+class EnumerateIt final
 {
 private:
   template <typename Ref>
@@ -42,8 +42,8 @@ public:
   using iterator_category = std::forward_iterator_tag;
   using difference_type =
     std::pair<std::make_signed_t<std::size_t>, typename std::iterator_traits<It>::difference_type>;
-  using value_type = std::pair<const std::size_t, typename std::iterator_traits<It>::value_type>;
-  using reference = std::pair<const std::size_t, typename std::iterator_traits<It>::reference>;
+  using value_type = std::pair<std::size_t, typename std::iterator_traits<It>::value_type>;
+  using reference = std::pair<std::size_t, typename std::iterator_traits<It>::reference>;
   using pointer = ArrowProxy<reference>;
 
 private:
@@ -51,7 +51,7 @@ private:
   It iter_;
 
 public:
-  EnumerIt(std::size_t i, It iter) : counter_(i), iter_(iter)
+  EnumerateIt(std::size_t i, It iter) : counter_(i), iter_(iter)
   {}
 
   reference operator*() const
@@ -59,21 +59,21 @@ public:
     return {counter_, *iter_};
   }
 
-  EnumerIt &operator++()
+  EnumerateIt &operator++()
   {
     ++counter_;
     ++iter_;
     return *this;
   }
 
-  EnumerIt operator++(int)
+  EnumerateIt operator++(int)
   {
     auto temp{*this};
     operator++();
     return temp;
   }
 
-  bool equals(const EnumerIt &rhs) const
+  bool equals(const EnumerateIt &rhs) const
   {
     return iter_ == rhs.iter_;
   }
@@ -85,15 +85,9 @@ public:
 };
 
 template <std::forward_iterator It>
-bool operator==(const EnumerIt<It> &lhs, const EnumerIt<It> &rhs)
+bool operator==(const EnumerateIt<It> &lhs, const EnumerateIt<It> &rhs)
 {
   return lhs.equals(rhs);
-}
-
-template <std::forward_iterator It>
-bool operator!=(const EnumerIt<It> &lhs, const EnumerIt<It> &rhs)
-{
-  return !(lhs == rhs);
 }
 } // namespace detail
 
@@ -105,7 +99,7 @@ private:
   using ContStorageType = std::conditional_t<std::is_rvalue_reference_v<C>, NoRefC, NoRefC &>;
 
   ContStorageType cont_;
-  using EnumItType = detail::EnumerIt<decltype(std::begin(cont_))>;
+  using EnumItType = detail::EnumerateIt<decltype(std::begin(cont_))>;
 
 public:
   Enumerate(C &&cont) : cont_(std::forward<C>(cont))
