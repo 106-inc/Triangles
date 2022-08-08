@@ -7,6 +7,7 @@
 #include "distance/distance.hh"
 #include "primitives/primitives.hh"
 #include "primitives/vec2.hh"
+#include "utils/utils.hh"
 
 namespace geom::detail
 {
@@ -128,10 +129,9 @@ Segment2D<T> helperMollerHaines(const Triangle<T> &tr, const Plane<T> &pl, const
   std::size_t rogue = roguePos(sdist.begin(), sdist.end());
 
   std::array<T, 2> segm{};
-  std::array<size_t, 2> arr{(rogue + 1) % 3, (rogue + 2) % 3};
-  std::transform(arr.begin(), arr.end(), segm.begin(), [&vert, &sdist, rogue](auto i) {
-    return vert[i] + (vert[rogue] - vert[i]) * sdist[i] / (sdist[i] - sdist[rogue]);
-  });
+  std::array<std::size_t, 2> arr = {(rogue + 1) % 3, (rogue + 2) % 3};
+  for (auto [idx, i] : utils::Enumerate(arr))
+    segm[idx] = vert[i] + (vert[rogue] - vert[i]) * sdist[i] / (sdist[i] - sdist[rogue]);
 
   return std::minmax(segm[0], segm[1]);
 }
